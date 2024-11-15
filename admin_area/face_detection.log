@@ -1,0 +1,2 @@
+2024-10-08 00:44:07,933 - ERROR - Database error: 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`admin_login`.`attendance`, CONSTRAINT `attendance_ibfk_1` FOREIGN KEY (`employee_no`) REFERENCES `adding_employee` (`employee_no`))
+2024-10-08 00:44:07,933 - ERROR - Error in face_detection_attendance: 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`admin_login`.`attendance`, CONSTRAINT `attendance_ibfk_1` FOREIGN KEY (`employee_no`) REFERENCES `adding_employee` (`employee_no`))

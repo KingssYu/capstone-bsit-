@@ -1,0 +1,260 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+/* Sidebar Navigation */
+.sidenav {
+    height: 100vh;
+    width: 250px;
+    background-color: #D5ED9F;
+    color: #fff;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Logo Section */
+.sidenav .logo {
+    padding: 20px;
+    text-align: center;
+    background-color: #D5ED9F;
+    border-bottom: 1px solid #D5ED9F;
+}
+
+.sidenav .logo img {
+    max-width: 80%; /* Responsive logo size */
+    height: auto;
+}
+
+/* Menu Buttons */
+.sidenav .menu {
+    flex: 1;
+}
+
+.sidenav .menu button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    background: #185519;
+    color: #fff;
+    text-align: left;
+    font-size: 16px;
+    cursor: pointer;
+    border-bottom: 1px solid #ffffff;
+    transition: background-color 0.3s ease;
+}
+
+.sidenav .menu button:hover {
+    background: #00712D;
+}
+
+/* Footer Buttons */
+.sidenav .footer {
+    padding: 20px;
+    background-color: #D5ED9F;
+    text-align: center;
+}
+
+.sidenav .footer button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    background: #185519;
+    border-radius: 50px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.sidenav .footer button:hover {
+    background: #00712D;
+}
+
+/* Main Content Area */
+.main-content {
+    margin-left: 250px; /* Width of the sidebar */
+    padding: 20px;
+    flex: 1;
+    box-sizing: border-box;
+    background-color: #f4f4f4;
+    min-height: 100vh; /* Ensure the content takes up full viewport height */
+}
+
+/* Main Header */
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #185519; /* Same as sidenav */
+    padding: 15px;
+    color: white;
+    margin-bottom: 20px; /* Space below header */
+}
+
+/* Date and Time */
+.datetime {
+    font-size: 16px;
+}
+
+.content-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.date-display {
+    font-size: 18px;
+    color: #333;
+}
+
+.button-group{
+    display: flex;
+    gap: 15px;
+}
+
+.button-group a {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    color: white;
+    background-color: #185519;
+    transition: background-color 0.3s ease;
+}
+
+.button-group a:hover {
+    background-color: #00712D;
+}
+
+.camera-icon {
+    margin-right: 8px;
+}
+
+.camera-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    background-color: #185519;
+    text-align: center;
+    text-decoration: none;
+}
+
+.camera-button:hover {
+    background-color: #00712D;
+}
+
+/* Attendance Navigation */
+.attendance-navigation {
+    display: flex;
+    background-color: #D5ED9F;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    padding: 10px;
+}
+
+.nav-list {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    list-style: none; /* Remove bullets */
+}
+
+.nav-item {
+    flex: 1; /* Equally distribute space */
+    text-align: center; /* Center align text */
+    font-weight: bold;
+}
+
+/* Attendance Row Container */
+.attendance-row-container {
+    overflow-y: auto; /* Scrollable if needed */
+    max-height: 400px; /* Limit height */
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .sidenav {
+        width: 100%; /* Full width on mobile */
+        height: auto; /* Auto height */
+        position: relative; /* Change position */
+    }
+
+    .main-content {
+        margin-left: 0; /* No margin */
+        padding: 10px; /* Reduced padding */
+    }
+
+    .main-header {
+        flex-direction: column; /* Stack items */
+        align-items: flex-start; /* Left align */
+    }
+
+    .content-section {
+        flex-direction: column; /* Stack buttons */
+        align-items: flex-start; /* Left align */
+    }
+
+    .button-group {
+        flex-direction: column; /* Stack buttons */
+        width: 100%; /* Full width */
+    }
+
+    .nav-list {
+        flex-direction: column; /* Stack items vertically */
+    }
+}
+
+.employee-attendance-row { 
+    display: flex; 
+    align-items: center; 
+    padding: 10px; 
+    border-bottom: 1px solid #eee; 
+}
+.employee-image { 
+    width: 50px; 
+    height: 50px; 
+    border-radius: 50%; 
+    margin-right: 15px; 
+}
+.employee-details { 
+    display: flex; 
+    flex-grow: 1; 
+    justify-content: space-between; 
+}
+.employee-details span { 
+    flex-basis: 14%; 
+    text-align: center; 
+}
+.status-present {
+    background-color: #d4edda;
+}
+.status-late {
+    background-color: #fff3cd;
+}
+.status-absent {
+    background-color: #f8d7da;
+}

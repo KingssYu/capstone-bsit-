@@ -1,0 +1,553 @@
+/* Adjust the body to prevent content from hiding behind the fixed header */
+body {
+    padding-top: 80px; /* Adjust this value based on the height of your header */
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* General header styles */
+header {
+    background: #D5ED9F;
+    color: white;
+    padding: 20px 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: fixed; /* Fix the header at the top */
+    top: 0;
+    left: 0;
+    width: 100%; /* Ensure it stretches across the screen */
+    z-index: 1000; /* Keep it above other elements */
+}
+
+/* Container alignment and spacing */
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    transition: all 0.3s ease;
+}
+
+/* Logo section styling */
+.logo-section {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    width: 50px;
+    height: auto;
+    margin-right: 15px;
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.1); /* Slight zoom effect on hover */
+}
+
+.company-title {
+    font-size: 24px;
+    color: white;
+}
+
+.company-title span {
+    color: #FF0000; /* Highlighted color for 'Incorporated' */
+}
+
+/* Hamburger menu styles */
+.hamburger {
+    display: none;
+    cursor: pointer;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 20px;
+    width: 25px;
+}
+
+.hamburger span {
+    display: block;
+    height: 3px;
+    background-color: white;
+    margin: 4px 0;
+    transition: all 0.3s ease;
+}
+
+.hamburger:hover span {
+    background-color: #FF0000; /* Change color on hover */
+}
+
+/* Navigation styles */
+.nav-section ul {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-section li {
+    margin-left: 30px;
+}
+
+.nav-section a {
+    font-size: 18px;
+    color: white;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.nav-section a:hover {
+    color: #185519;
+}
+
+.nav-section a.active {
+    color: #185519;
+    font-weight: bold;
+    border-bottom: 2px solid #ffffff;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header-container {
+        flex-wrap: wrap;
+    }
+
+    .hamburger {
+        display: flex;
+    }
+
+    .nav-section ul {
+        flex-direction: column;
+        width: 100%;
+        display: none; /* Hidden by default */
+        background-color: #00264d;
+        padding: 10px 0;
+        text-align: center;
+        margin-top: 10px;
+        border-radius: 8px;
+    }
+
+    .nav-section ul.show {
+        display: flex; /* Show the menu when toggled */
+    }
+
+    .nav-section li {
+        margin: 10px 0;
+    }
+
+    .nav-section a {
+        padding: 10px;
+        font-size: 20px;
+    }
+}
+
+/* Home Section */
+.home-section {
+    padding: 40px 20px;
+    background-color: #f8f9fa;
+    text-align: center;
+}
+
+/* Carousel Styles */
+.carousel {
+    position: relative;
+    max-width: 100%;
+    height: 130px; /* Adjust the height to match the header */
+    margin: 0 auto 40px;
+    overflow: hidden;
+}
+
+.carousel-inner {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    height: 100%; /* Ensure it takes the full height of the carousel */
+}
+
+.carousel-item {
+    min-width: 100%;
+    height: 100%;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.carousel img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures the image fits nicely within the carousel */
+}
+
+/* Carousel Indicators */
+.carousel-indicators {
+    position: absolute;
+    bottom: 5px; /* Adjusted to be closer to the carousel */
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+}
+
+.carousel-indicators .indicator {
+    height: 8px; /* Smaller size for indicators */
+    width: 8px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    margin: 0 2px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.carousel-indicators .indicator.active {
+    background-color: #D5ED9F;
+}
+
+/* Carousel Controls */
+.carousel-control {
+    position: absolute;
+    top: 50%;
+    width: 30px; /* Adjusted size for smaller carousel */
+    height: 30px;
+    margin-top: -15px;
+    color: #ffffff;
+    font-size: 20px; /* Adjusted font size */
+    text-align: center;
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    user-select: none;
+    z-index: 100;
+}
+
+.carousel-control.prev {
+    left: 5px;
+}
+
+.carousel-control.next {
+    right: 5px;
+}
+
+/* Content Section Styles */
+.content-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 40px;
+    margin-top: 20px;
+}
+
+/* Image Box */
+.image-box {
+    flex: 1;
+    max-width: 500px;
+    text-align: center;
+}
+
+.image-box img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Portal Container */
+.portal-container {
+    flex: 1;
+    max-width: 400px;
+    padding: 20px;
+    border: 2px solid #A1DD70; /* Border for the container */
+    border-radius: 10px; /* Rounded corners */
+    background-color: #D5ED9F; /* Light background color */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    text-align: center;
+}
+
+.portal-title {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #185519;
+    font-weight: bold;
+}
+
+/* Portal Button Box */
+.portal-button-box {
+    margin-top: 20px;
+}
+
+.portal-button-box .button {
+    display: inline-block;
+    padding: 12px 30px;
+    background-color: #185519;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.portal-button-box .button:hover {
+    background-color: #00712D;
+    color: #ffffff;
+}
+
+/* About Company Section */
+.about-company-container {
+    padding: 60px 20px;
+    background-color: #f5f5f5;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Section Title */
+.section-title {
+    text-align: center;
+    font-size: 36px;
+    font-weight: bold;
+    color: #185519;
+    margin-bottom: 40px;
+    text-transform: uppercase;
+    margin-top: 50px;
+}
+
+/* About Content */
+.about-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+}
+
+/* About Text */
+.about-text {
+    flex: 1;
+    max-width: 600px;
+}
+
+.about-text h2 {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.about-text p {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #666;
+    margin-bottom: 20px;
+    text-align: justify;
+}
+
+/* About Image */
+.about-image {
+    flex: 1;
+    max-width: 500px;
+    text-align: center;
+}
+
+.about-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .about-content {
+        flex-direction: column;
+    }
+}
+
+/* Mission and Vision Container */
+.mission-vision-container {
+    padding: 60px 20px;
+    background-color: #f0f8ff; /* Light background color */
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Section Title */
+.section-title {
+    text-align: center;
+    font-size: 36px;
+    font-weight: bold;
+    color: #185519;
+    margin-bottom: 40px;
+    text-transform: uppercase;
+}
+
+/* Mission and Vision Content */
+.mission-vision-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 40px;
+}
+
+/* Individual Mission and Vision Sections */
+.mission, .vision {
+    flex: 1;
+    max-width: 45%;
+}
+
+.mission h2, .vision h2 {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.mission p, .vision p {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #666;
+    text-align: justify;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .mission, .vision {
+        max-width: 100%;
+    }
+
+    .mission-vision-content {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+/* Trade Reference Section */
+.trade-reference-container {
+    padding: 60px 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.trade-reference-container .section-title {
+    text-align: center;
+    font-size: 36px;
+    font-weight: bold;
+    color: #185519;
+    margin-bottom: 40px;
+    text-transform: uppercase;
+}
+
+.trade-images {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.trade-image {
+    flex: 1;
+    max-width: 48%;
+    text-align: center;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.trade-image img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.trade-image:hover {
+    transform: scale(1.05); /* Slight zoom on hover */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .trade-image {
+        max-width: 100%;
+    }
+}
+
+/* Footer Styles */
+.company-footer {
+    background-color: #D5ED9F;
+    color: white;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 20px;
+}
+
+.footer-contact, .footer-social {
+    flex: 1;
+    min-width: 250px;
+}
+
+.footer-contact h3, .footer-social h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #185519;
+}
+
+.footer-contact p {
+    margin: 5px 0;
+    line-height: 1.6;
+    color: #070707;
+}
+
+.social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.social-icon {
+    color: rgb(0, 0, 0);
+    font-size: 20px;
+    transition: color 0.3s ease;
+}
+
+.social-icon:hover {
+    color: #ffcc00;
+}
+
+.footer-bottom {
+    margin-top: 30px;
+    border-top: 1px solid #00000050;
+    padding-top: 20px;
+    font-size: 14px;
+    color: #000000;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .footer-contact, .footer-social {
+        text-align: center;
+        max-width: 100%;
+    }
+}
+

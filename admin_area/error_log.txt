@@ -1,0 +1,8 @@
+Failed to parse JSON output: Syntax error
+Raw output: 'python3' is not recognized as an internal or external command,
+operable program or batch file.
+
+Failed to parse JSON output: Syntax error
+Raw output: 'python3' is not recognized as an internal or external command,
+operable program or batch file.
+

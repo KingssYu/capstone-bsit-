@@ -1,0 +1,236 @@
+INFO:root:Saved 30 face samples for employee EMP-9148
+INFO:root:Saved 30 face samples for employee EMP-7445
+INFO:root:Saved 30 face samples for employee EMP-7975
+INFO:root:Saved 30 face samples for employee EMP-8715
+INFO:root:Saved 30 face samples for employee EMP-8219
+INFO:root:Saved 30 face samples for employee EMP-3199
+INFO:root:Saved 30 face samples for employee EMP-2807
+INFO:root:Saved 30 face samples for employee EMP-8250
+INFO:root:Saved 30 face samples for employee EMP-6182
+INFO:root:Saved 30 face samples for employee EMP-1144
+INFO:root:Saved 30 face samples for employee EMP-3587
+INFO:root:Saved 30 face samples for employee EMP-5781
+INFO:root:Saved 30 face samples for employee EMP-1829
+INFO:root:Saved 30 face samples for employee EMP-3664
+INFO:root:Saved 30 face samples for employee EMP-3607
+ERROR:root:Error in capture_faces: Unsupported image type, must be 8bit gray or RGB image.
+ERROR:root:Traceback (most recent call last):
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 65, in capture_faces
+    face_encoding = face_recognition.face_encodings(rgb_face)
+  File "C:\Users\jkapc\AppData\Local\Programs\Python\Python310\lib\site-packages\face_recognition\api.py", line 213, in face_encodings
+    raw_landmarks = _raw_face_landmarks(face_image, known_face_locations, model)
+  File "C:\Users\jkapc\AppData\Local\Programs\Python\Python310\lib\site-packages\face_recognition\api.py", line 156, in _raw_face_landmarks
+    face_locations = _raw_face_locations(face_image)
+  File "C:\Users\jkapc\AppData\Local\Programs\Python\Python310\lib\site-packages\face_recognition\api.py", line 105, in _raw_face_locations
+    return face_detector(img, number_of_times_to_upsample)
+RuntimeError: Unsupported image type, must be 8bit gray or RGB image.
+
+WARNING:root:Could only capture 0 samples out of 30
+ERROR:root:Error in capture_faces: Could only capture 0 samples out of 30
+ERROR:root:Traceback (most recent call last):
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 102, in capture_faces
+    raise Exception(f"Could only capture {sample_count} samples out of {num_samples}")
+Exception: Could only capture 0 samples out of 30
+
+ERROR:root:Error in capture_faces: Unsupported image type, must be 8bit gray or RGB image.
+ERROR:root:Traceback (most recent call last):
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 65, in capture_faces
+    face_encoding = face_recognition.face_encodings(rgb_face)
+  File "C:\Users\jkapc\AppData\Local\Programs\Python\Python310\lib\site-packages\face_recognition\api.py", line 213, in face_encodings
+    raw_landmarks = _raw_face_landmarks(face_image, known_face_locations, model)
+  File "C:\Users\jkapc\AppData\Local\Programs\Python\Python310\lib\site-packages\face_recognition\api.py", line 156, in _raw_face_landmarks
+    face_locations = _raw_face_locations(face_image)
+  File "C:\Users\jkapc\AppData\Local\Programs\Python\Python310\lib\site-packages\face_recognition\api.py", line 105, in _raw_face_locations
+    return face_detector(img, number_of_times_to_upsample)
+RuntimeError: Unsupported image type, must be 8bit gray or RGB image.
+
+INFO:root:Saved 30 face samples for employee EMP-2769
+INFO:root:Saved 30 face samples for employee EMP-9764
+INFO:root:Saved 30 face samples for employee EMP-3688
+INFO:root:Saved 30 face samples for employee EMP-2932
+INFO:root:Saved 30 face samples for employee EMP-9684
+INFO:root:Saved 30 face samples for employee EMP-8386
+ERROR:root:Error in capture_faces: Unable to open shape_predictor_68_face_landmarks.dat
+ERROR:root:Traceback (most recent call last):
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 55, in capture_faces
+    shape_predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+RuntimeError: Unable to open shape_predictor_68_face_landmarks.dat
+
+ERROR:root:Error in capture_faces: Unable to open shape_predictor_68_face_landmarks.dat
+ERROR:root:Traceback (most recent call last):
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 55, in capture_faces
+    shape_predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+RuntimeError: Unable to open shape_predictor_68_face_landmarks.dat
+
+INFO:root:Saved 30 face samples for employee EMP-5430
+INFO:root:Saved 30 face samples for employee EMP-7437
+INFO:root:Saved 30 face samples for employee EMP-2278
+INFO:root:Saved 30 face samples for employee EMP-5146
+INFO:root:Saved 30 face samples for employee EMP-2072
+INFO:root:Saved 30 face samples for employee EMP-6780
+INFO:root:Saved 30 face samples for employee EMP-5487
+INFO:root:Saved 30 face samples for employee EMP-4181
+INFO:root:Saved 30 face samples for employee EMP-6087
+WARNING:root:Could only capture 1 samples out of 30
+ERROR:root:Error in capture_faces: Could only capture 1 samples out of 30
+ERROR:root:Traceback (most recent call last):
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 104, in capture_faces
+    raise Exception(f"Could only capture {sample_count} samples out of {num_samples}")
+Exception: Could only capture 1 samples out of 30
+
+WARNING:root:Could only capture 2 samples out of 30
+ERROR:root:Error in capture_faces: Could only capture 2 samples out of 30
+ERROR:root:Traceback (most recent call last):
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 104, in capture_faces
+    raise Exception(f"Could only capture {sample_count} samples out of {num_samples}")
+Exception: Could only capture 2 samples out of 30
+
+ERROR:root:Failed to capture frame
+ERROR:root:Error in capture_faces: Failed to capture frame
+ERROR:root:Traceback (most recent call last):
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 54, in capture_faces
+    raise Exception("Failed to capture frame")
+Exception: Failed to capture frame
+
+WARNING:root:Could only capture 0 samples out of 30
+ERROR:root:Error in capture_faces: Could only capture 0 samples out of 30
+ERROR:root:Traceback (most recent call last):
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 104, in capture_faces
+    raise Exception(f"Could only capture {sample_count} samples out of {num_samples}")
+Exception: Could only capture 0 samples out of 30
+
+WARNING:root:Could only capture 1 samples out of 30
+ERROR:root:Error in capture_faces: Could only capture 1 samples out of 30
+ERROR:root:Traceback (most recent call last):
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 104, in capture_faces
+    raise Exception(f"Could only capture {sample_count} samples out of {num_samples}")
+Exception: Could only capture 1 samples out of 30
+
+WARNING:root:Could only capture 1 samples out of 30
+ERROR:root:Error in capture_faces: Could only capture 1 samples out of 30
+ERROR:root:Traceback (most recent call last):
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 152, in capture_faces
+    raise Exception(f"Could only capture {sample_count} samples out of {num_samples}")
+Exception: Could only capture 1 samples out of 30
+
+WARNING:root:Could only capture 1 samples out of 30
+ERROR:root:Error in capture_faces: Could only capture 1 samples out of 30
+ERROR:root:Traceback (most recent call last):
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 152, in capture_faces
+    raise Exception(f"Could only capture {sample_count} samples out of {num_samples}")
+Exception: Could only capture 1 samples out of 30
+
+WARNING:root:Could only capture 1 samples out of 30
+ERROR:root:Error in capture_faces: Could only capture 1 samples out of 30
+ERROR:root:Traceback (most recent call last):
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 152, in capture_faces
+    raise Exception(f"Could only capture {sample_count} samples out of {num_samples}")
+Exception: Could only capture 1 samples out of 30
+
+WARNING:root:Could only capture 1 samples out of 30
+ERROR:root:Error in capture_faces: Could only capture 1 samples out of 30
+ERROR:root:Traceback (most recent call last):
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 152, in capture_faces
+    raise Exception(f"Could only capture {sample_count} samples out of {num_samples}")
+Exception: Could only capture 1 samples out of 30
+
+WARNING:root:Could only capture 1 samples out of 30
+ERROR:root:Error in capture_faces: Could only capture 1 samples out of 30
+ERROR:root:Traceback (most recent call last):
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 152, in capture_faces
+    raise Exception(f"Could only capture {sample_count} samples out of {num_samples}")
+Exception: Could only capture 1 samples out of 30
+
+WARNING:root:Could only capture 0 samples out of 30
+WARNING:root:Could only capture 8 samples out of 30
+WARNING:root:Could only capture 5 samples out of 30
+INFO:root:Saved 30 face samples for employee EMP-3446
+2024-11-07 00:36:19,732 - ERROR - Error in capture_faces: too many indices for array: array is 0-dimensional, but 1 were indexed
+2024-11-07 00:36:19,735 - ERROR - Traceback (most recent call last):
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 114, in capture_faces
+    is_live, liveness_message = liveness_detection(frame, face_detector, shape_predictor)
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 77, in liveness_detection
+    blink_detected = detect_blink([left_eye, right_eye], shape)
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 58, in detect_blink
+    left_ear = eye_aspect_ratio(left_eye)
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 50, in eye_aspect_ratio
+    A = np.linalg.norm(eye[1] - eye[5])
+IndexError: too many indices for array: array is 0-dimensional, but 1 were indexed
+
+ERROR:root:Error in capture_faces: too many indices for array: array is 0-dimensional, but 1 were indexed
+ERROR:root:Traceback (most recent call last):
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 112, in capture_faces
+    is_live, liveness_message = liveness_detection(frame, face_detector, shape_predictor)
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 75, in liveness_detection
+    blink_detected = detect_blink([left_eye, right_eye], shape)
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 56, in detect_blink
+    left_ear = eye_aspect_ratio(left_eye)
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 48, in eye_aspect_ratio
+    A = np.linalg.norm(eye[1] - eye[5])
+IndexError: too many indices for array: array is 0-dimensional, but 1 were indexed
+
+INFO:root:Saved 30 face samples for employee EMP-4345
+WARNING:root:Could only capture 0 samples out of 30
+ERROR:root:Error in capture_faces: Could only capture 0 samples out of 30
+ERROR:root:Traceback (most recent call last):
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 102, in capture_faces
+    raise Exception(f"Could only capture {sample_count} samples out of {num_samples}")
+Exception: Could only capture 0 samples out of 30
+
+WARNING:root:Could only capture 0 samples out of 30
+ERROR:root:Error in capture_faces: Could only capture 0 samples out of 30
+ERROR:root:Traceback (most recent call last):
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 102, in capture_faces
+    raise Exception(f"Could only capture {sample_count} samples out of {num_samples}")
+Exception: Could only capture 0 samples out of 30
+
+INFO:root:Saved 30 face samples for employee EMP-7814
+WARNING:root:Could only capture 0 samples out of 30
+ERROR:root:Error in capture_faces: Could only capture 0 samples out of 30
+ERROR:root:Traceback (most recent call last):
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 102, in capture_faces
+    raise Exception(f"Could only capture {sample_count} samples out of {num_samples}")
+Exception: Could only capture 0 samples out of 30
+
+INFO:root:Saved 30 face samples for employee EMP-4971
+INFO:root:Saved 30 face samples for employee EMP-1397
+WARNING:root:Could only capture 0 samples out of 30
+ERROR:root:Error in capture_faces: Could only capture 0 samples out of 30
+ERROR:root:Traceback (most recent call last):
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 102, in capture_faces
+    raise Exception(f"Could only capture {sample_count} samples out of {num_samples}")
+Exception: Could only capture 0 samples out of 30
+
+ERROR:root:Failed to capture frame
+ERROR:root:Error in capture_faces: Failed to capture frame
+ERROR:root:Traceback (most recent call last):
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 50, in capture_faces
+    raise Exception("Failed to capture frame")
+Exception: Failed to capture frame
+
+WARNING:root:Could only capture 0 samples out of 30
+ERROR:root:Error in capture_faces: Could only capture 0 samples out of 30
+ERROR:root:Traceback (most recent call last):
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 102, in capture_faces
+    raise Exception(f"Could only capture {sample_count} samples out of {num_samples}")
+Exception: Could only capture 0 samples out of 30
+
+WARNING:root:Could only capture 0 samples out of 30
+ERROR:root:Error in capture_faces: Could only capture 0 samples out of 30
+ERROR:root:Traceback (most recent call last):
+  File "C:\xampp\htdocs\FinalCapstone\admin_area\face_capture.py", line 102, in capture_faces
+    raise Exception(f"Could only capture {sample_count} samples out of {num_samples}")
+Exception: Could only capture 0 samples out of 30
+
+INFO:root:Saved 30 face samples for employee EMP-7337
+INFO:root:Saved 30 face samples for employee EMP-4342
+INFO:root:Saved 30 face samples for employee EMP-6238
+INFO:root:Saved 30 face samples for employee EMP-4570
+INFO:root:Saved 30 face samples for employee EMP-2011
+INFO:root:Saved 30 face samples for employee EMP-1890
+INFO:root:Saved 30 face samples for employee EMP-6337
+INFO:root:Saved 30 face samples for employee EMP-3837
+INFO:root:Saved 30 face samples for employee EMP-2358
+INFO:root:Saved 30 face samples for employee EMP-3475
+INFO:root:Saved 30 face samples for employee EMP-8352
+INFO:root:Saved 30 face samples for employee EMP-6601
