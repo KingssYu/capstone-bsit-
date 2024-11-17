@@ -1,1 +1,17 @@
-{"employee_no": "EMP-6601", "employee_name": "King Mark Yu", "message": "Clock out successful. Worked time: 8:00:00, Overtime: 0:00:00"}
+[
+  {
+      "employee_no": "EMP-6601",
+      "employee_name": "King Mark Yu",
+      "message": "Clock out successful. Worked time: 8:00:00, Overtime: 0:00:00"
+  },
+  {
+      "employee_no": "EMP-6602",
+      "employee_name": "Jane Doe",
+      "message": "Clock out successful. Worked time: 7:45:00, Overtime: 0:15:00"
+  },
+  {
+      "employee_no": "EMP-6603",
+      "employee_name": "John Smith",
+      "message": "Clock out successful. Worked time: 8:00:00, Overtime: 0:00:00"
+  }
+]

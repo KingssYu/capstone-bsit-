@@ -14,12 +14,14 @@ $employee = $_SESSION['employee'];
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Profile</title>
     <link rel="stylesheet" href="employee_styles/my_profile.css">
 </head>
+
 <body>
     <div class="container">
         <div class="sidebar">
@@ -27,7 +29,7 @@ $employee = $_SESSION['employee'];
                 <img src="../image/logobg.png" alt="Company Logo">
             </div>
             <ul class="nav-links">
-                <li><a href="#">Home</a></li>
+                <li><a href="employee_dashboard.php">Home</a></li>
                 <li><a href="#" class="active">My Profile</a></li>
                 <li><a href="#">Directory</a></li>
                 <li><a href="#">Timesheets</a></li>
@@ -113,4 +115,5 @@ $employee = $_SESSION['employee'];
         </div>
     </div>
 </body>
+
 </html>

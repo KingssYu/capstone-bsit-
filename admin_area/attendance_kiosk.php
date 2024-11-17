@@ -1,7 +1,8 @@
 <?php
 session_start();
 if (!isset($_SESSION['admin'])) {
-    header("Location: admin_login.php");
+    header("Location: ./../employee_area/portal.php");
+
     exit;
 }
 
@@ -17,7 +18,8 @@ if ($conn->connect_error) {
 }
 
 // Function to get employee details
-function getEmployeeDetails($conn, $employeeNumber) {
+function getEmployeeDetails($conn, $employeeNumber)
+{
     $stmt = $conn->prepare("SELECT first_name, last_name, middle_name, position_title, department FROM adding_employee WHERE employee_no = ?");
     $stmt->bind_param("s", $employeeNumber);
     $stmt->execute();
@@ -28,6 +30,7 @@ function getEmployeeDetails($conn, $employeeNumber) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -155,10 +158,16 @@ function getEmployeeDetails($conn, $employeeNumber) {
             border-radius: 5px;
         }
 
-        .success { background-color: rgba(40, 167, 69, 0.7); }
-        .error { background-color: rgba(220, 53, 69, 0.7); }
+        .success {
+            background-color: rgba(40, 167, 69, 0.7);
+        }
+
+        .error {
+            background-color: rgba(220, 53, 69, 0.7);
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -198,7 +207,7 @@ function getEmployeeDetails($conn, $employeeNumber) {
 
     <script>
         let videoStream = null;
-        
+
         function updateTime() {
             const now = new Date();
             const timeOptions = {
@@ -213,10 +222,10 @@ function getEmployeeDetails($conn, $employeeNumber) {
                 month: 'long',
                 day: 'numeric'
             };
-            
+
             document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-US', timeOptions);
             document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', dateOptions);
-            
+
             const hours = now.getHours();
             let greeting = hours < 12 ? 'Good Morning!!' : hours < 17 ? 'Good Afternoon!!' : 'Good Evening!!';
             document.getElementById('greeting').textContent = greeting;
@@ -234,7 +243,7 @@ function getEmployeeDetails($conn, $employeeNumber) {
                         height: 480
                     }
                 };
-                
+
                 videoStream = await navigator.mediaDevices.getUserMedia(constraints);
                 video.srcObject = videoStream;
                 video.style.display = 'block';
@@ -267,7 +276,7 @@ function getEmployeeDetails($conn, $employeeNumber) {
             if (success) {
                 document.getElementById('message').innerHTML = 'Please look at the camera for face recognition.';
                 document.getElementById('message').className = 'info';
-                
+
                 // Start face recognition process
                 startFaceRecognition(employeeNumber, type);
             }
@@ -310,30 +319,31 @@ function getEmployeeDetails($conn, $employeeNumber) {
 
         function logAttendance(employeeNumber, type) {
             fetch('log_attendance.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    employee_no: employeeNumber,
-                    type: type
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        employee_no: employeeNumber,
+                        type: type
+                    })
                 })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById('message').innerHTML = `Attendance logged successfully: ${type.toUpperCase()}`;
-                    document.getElementById('message').className = 'success';
-                } else {
-                    throw new Error(data.message || 'Failed to log attendance');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('message').innerHTML = error.message;
-                document.getElementById('message').className = 'error';
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('message').innerHTML = `Attendance logged successfully: ${type.toUpperCase()}`;
+                        document.getElementById('message').className = 'success';
+                    } else {
+                        throw new Error(data.message || 'Failed to log attendance');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('message').innerHTML = error.message;
+                    document.getElementById('message').className = 'error';
+                });
         }
     </script>
 </body>
+
 </html>

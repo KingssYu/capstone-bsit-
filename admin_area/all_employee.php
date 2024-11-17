@@ -2,7 +2,7 @@
 
 session_start();
 if (!isset($_SESSION['admin'])) {
-    header("Location: admin_login.php");
+    header("Location: ./../employee_area/portal.php");
     exit;
 }
 // Database connection
@@ -30,19 +30,19 @@ if ($result_total->num_rows > 0) {
 
 // Fetch employee data
 // Fetch employee data with department after contact
-$sql = "SELECT employee_no, last_name, first_name, middle_name, email, position, contact, department, date_hired, address, face_samples FROM adding_employee";
+$sql = "SELECT * FROM adding_employee LEFT JOIN rate_position ON adding_employee.rate_id = rate_position.rate_id";
 $result = $conn->query($sql);
 
 if (isset($_GET['search'])) {
     $search = $conn->real_escape_string($_GET['search']);
     $sql = "SELECT employee_no, last_name, first_name, middle_name, email, position, contact, department, date_hired, address, face_samples 
-            FROM adding_employee 
+            FROM adding_employee LEFT JOIN rate_position ON adding_employee.rate_id = rate_position.rate_id
             WHERE first_name LIKE '%$search%' 
                OR last_name LIKE '%$search%' 
                OR email LIKE '%$search%' 
-               OR position LIKE '%$search%'";
+               OR rate_position LIKE '%$search%'";
     $result = $conn->query($sql);
-    
+
     $employees = [];
     while ($row = $result->fetch_assoc()) {
         $employee_no = $row['employee_no'];
@@ -53,7 +53,7 @@ if (isset($_GET['search'])) {
         $row['image_path'] = $employee_image_path;
         $employees[] = $row;
     }
-    
+
     echo json_encode($employees);
     exit;
 }
@@ -62,98 +62,74 @@ if (isset($_GET['search'])) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>Employee</title>
     <link rel="stylesheet" href="admin_styles/all_employee.css">
 </head>
+
 <body>
-    <div class="sidenav">
-                <div class="logo">
-                    <img src="../image/logobg.png" alt="Logo">
-                </div>
-                <div class="menu">
-                    <a href="dashboard.php">
-                        <button>Dashboard</button>
-                    </a>
-                    <a href="all_employee.php">
-                        <button>Employee</button>
-                    </a>
-                    <a href="emp_attendance.php">
-                        <button>Attendance</button>
-                    </a>
-                    <a href="directory.php">
-                    <button>Directory</button>
-                    </a>
-                    <a href="leave_management.php">
-                        <button>Leave Management</button>
-                    </a>
-                </div>
-                <div class="footer">
-                <a href="admin_logout.php">
-                    <button>Logout</button>
-                </a>
-                </div>
-    </div>
+    <?php include './header.php'; ?>
 
     <div class="main-content">
-                <header class="main-header">
-                    <h1>Employee</h1>
-                    <div id="datetime" class="datetime"></div>
-                </header>
+        <header class="main-header">
+            <h1>Employee</h1>
+            <div id="datetime" class="datetime"></div>
+        </header>
 
-               <!-- Employee Summary and Action Buttons -->
-                <div class="employee-summary">
-                    <div class="total-employees">
-                        <h2><span><?php echo $total_employees; ?></span> Employees</h2>
-                    </div>
-                    <div class="search-employee">
-                        <input type="text" placeholder="Search Employee..." class="search-input">
-                    </div>
-                    <div class="action-buttons">
-                        <a href="#" class="filter-button">Filter</a>
-                        <a href="employee_register.php" class="add-button">Add Employee</a>
-                    </div>
-                </div>
+        <!-- Employee Summary and Action Buttons -->
+        <div class="employee-summary">
+            <div class="total-employees">
+                <h2><span><?php echo $total_employees; ?></span> Employees</h2>
+            </div>
+            <div class="search-employee">
+                <input type="text" placeholder="Search Employee..." class="search-input">
+            </div>
+            <div class="action-buttons">
+                <a href="#" class="filter-button">Filter</a>
+                <a href="employee_register.php" class="add-button">Add Employee</a>
+            </div>
+        </div>
 
-                <!-- Main content goes here -->
+        <!-- Main content goes here -->
 
-<div class="employee-list-container">
-<div class="employee-list">
-    <?php
-    if ($result->num_rows > 0) {
-        // Loop through each employee and populate the HTML
-        while ($row = $result->fetch_assoc()) {
-            // Fetch data
-            $employee_no = $row['employee_no'];
-            $full_name = $row['first_name'] . ' ' . $row['last_name'];
-            $position = $row['position'];
-            $department = $row['department'];
-            $date_hired = date("M d, Y", strtotime($row['date_hired']));
-            $email = $row['email'];
-            $contact = $row['contact'];
-    
-            // Check if the employee's first face sample exists
-            $employee_image_path = "employee_faces/$employee_no/face_25.jpg"; // Changed from face_30.png to face_1.png
-            
-            // If the image doesn't exist, use a default placeholder image
-            if (!file_exists($employee_image_path)) {
-                $employee_image_path = "employee_profile/default.png";
-            }
-    
-            // Make sure the image file is readable
-            if (!is_readable($employee_image_path)) {
-                error_log("Cannot read image file: $employee_image_path");
-                $employee_image_path = "employee_profile/default.png";
-            }
-    
-            // Display employee box
-            echo '
+        <div class="employee-list-container">
+            <div class="employee-list">
+                <?php
+                if ($result->num_rows > 0) {
+                    // Loop through each employee and populate the HTML
+                    while ($row = $result->fetch_assoc()) {
+                        // Fetch data
+                        $employee_no = $row['employee_no'];
+                        $full_name = $row['first_name'] . ' ' . $row['last_name'];
+                        $rate_position = $row['rate_position'];
+                        $department = $row['department'];
+                        $date_hired = date("M d, Y", strtotime($row['date_hired']));
+                        $email = $row['email'];
+                        $contact = $row['contact'];
+
+                        // Check if the employee's first face sample exists
+                        $employee_image_path = "employee_faces/$employee_no/face_25.jpg"; // Changed from face_30.png to face_1.png
+
+                        // If the image doesn't exist, use a default placeholder image
+                        if (!file_exists($employee_image_path)) {
+                            $employee_image_path = "employee_profile/default.png";
+                        }
+
+                        // Make sure the image file is readable
+                        if (!is_readable($employee_image_path)) {
+                            error_log("Cannot read image file: $employee_image_path");
+                            $employee_image_path = "employee_profile/default.png";
+                        }
+
+                        // Display employee box
+                        echo '
             <a href="employee_all_details.php?employee_no=' . $row['employee_no'] . '" class="employee-box">
                 <div class="employee-header">
                     <img src="' . htmlspecialchars($employee_image_path) . '" alt="Employee Image" class="employee-image">
                     <div class="employee-info">
                         <p class="employee-name">' . htmlspecialchars($full_name) . '</p>
-                        <p class="employee-position">' . htmlspecialchars($position) . '</p>
+                        <p class="employee-position">' . htmlspecialchars($rate_position) . '</p>
                     </div>
                 </div>
                 <div class="employee-details">
@@ -177,60 +153,62 @@ if (isset($_GET['search'])) {
                     </div>
                 </div>
             </a>';
-        }
-    } else {
-        echo '<p>No employees found.</p>';
-    }
+                    }
+                } else {
+                    echo '<p>No employees found.</p>';
+                }
 
-    // Close the database connection
-    $conn->close();
-    ?>
-</div>
-   
-</div>
-    <script>
-        function updateTime() {
-            const now = new Date();
-            const options = {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-            };
-            const formattedDate = now.toLocaleDateString('en-US', options);
-            document.getElementById('datetime').textContent = formattedDate;
-        }
+                // Close the database connection
+                $conn->close();
+                ?>
+            </div>
 
-        setInterval(updateTime, 1000);
-        updateTime(); // Initial call to set date/time immediately
-    </script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-$(document).ready(function() {
-    $('.search-input').on('input', function() {
-        var searchTerm = $(this).val();
-        if (searchTerm.length > 2) {
-            $.ajax({
-                url: 'all_employee.php',
-                method: 'GET',
-                data: { search: searchTerm },
-                dataType: 'json',
-                success: function(data) {
-                    var employeeList = $('.employee-list');
-                    employeeList.empty();
-                    
-                    if (data.length > 0) {
-                        $.each(data, function(index, employee) {
-                            var employeeHtml = `
+        </div>
+        <script>
+            function updateTime() {
+                const now = new Date();
+                const options = {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                };
+                const formattedDate = now.toLocaleDateString('en-US', options);
+                document.getElementById('datetime').textContent = formattedDate;
+            }
+
+            setInterval(updateTime, 1000);
+            updateTime(); // Initial call to set date/time immediately
+        </script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                $('.search-input').on('input', function() {
+                    var searchTerm = $(this).val();
+                    if (searchTerm.length > 2) {
+                        $.ajax({
+                            url: 'all_employee.php',
+                            method: 'GET',
+                            data: {
+                                search: searchTerm
+                            },
+                            dataType: 'json',
+                            success: function(data) {
+                                var employeeList = $('.employee-list');
+                                employeeList.empty();
+
+                                if (data.length > 0) {
+                                    $.each(data, function(index, employee) {
+                                        var employeeHtml = `
                                 <a href="employee_all_details.php?employee_no=${employee.employee_no}" class="employee-box">
                                     <div class="employee-header">
                                         <img src="${employee.image_path}" alt="Employee Image" class="employee-image">
                                         <div class="employee-info">
                                             <p class="employee-name">${employee.first_name} ${employee.last_name}</p>
-                                            <p class="employee-position">${employee.position}</p>
+                                            <p class="employee-position">${employee.rate_position}</p>
                                         </div>
                                     </div>
                                     <div class="employee-details">
@@ -255,22 +233,23 @@ $(document).ready(function() {
                                     </div>
                                 </a>
                             `;
-                            employeeList.append(employeeHtml);
+                                        employeeList.append(employeeHtml);
+                                    });
+                                } else {
+                                    employeeList.html('<p>No employees found.</p>');
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                console.error("An error occurred: " + error);
+                            }
                         });
-                    } else {
-                        employeeList.html('<p>No employees found.</p>');
+                    } else if (searchTerm.length === 0) {
+                        // If search is cleared, reload the page to show all employees
+                        location.reload();
                     }
-                },
-                error: function(xhr, status, error) {
-                    console.error("An error occurred: " + error);
-                }
+                });
             });
-        } else if (searchTerm.length === 0) {
-            // If search is cleared, reload the page to show all employees
-            location.reload();
-        }
-    });
-});
-</script>
+        </script>
 </body>
+
 </html>

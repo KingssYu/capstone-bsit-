@@ -27,6 +27,7 @@ $conn->close();
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -88,7 +89,7 @@ $conn->close();
             margin-right: 20px;
         }
 
-        
+
 
         .filter-item:last-child {
             margin-right: 0;
@@ -191,16 +192,19 @@ $conn->close();
             background-color: #d4edda;
             color: #155724;
         }
+
         .status-late {
             background-color: #fff3cd;
             color: #856404;
         }
+
         .status-absent {
             background-color: #f8d7da;
             color: #721c24;
         }
     </style>
 </head>
+
 <body>
     <div class="header-container">
         <h1>Daily Attendance Reports</h1>
@@ -246,7 +250,7 @@ $conn->close();
         <tbody id="attendanceTable">
             <?php
             if ($result->num_rows > 0) {
-                while($row = $result->fetch_assoc()) {
+                while ($row = $result->fetch_assoc()) {
                     $status_class = strtolower($row["status"]);
                     echo "<tr class='status-{$status_class}'>";
                     echo "<td>" . htmlspecialchars($row["employee_no"]) . "</td>";
@@ -269,7 +273,15 @@ $conn->close();
         function updateDateTime() {
             const dateTimeElement = document.getElementById("dateTime");
             const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            const options = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
             dateTimeElement.textContent = now.toLocaleDateString('en-US', options);
         }
 
@@ -283,19 +295,19 @@ $conn->close();
             window.location.href = 'attendance_reports.php?date=' + date;
         }
 
-        document.getElementById("prevDay").addEventListener("click", function () {
+        document.getElementById("prevDay").addEventListener("click", function() {
             const currentDate = new Date(calendar.value);
             currentDate.setDate(currentDate.getDate() - 1);
             updateAttendanceTable(currentDate.toISOString().split('T')[0]);
         });
 
-        document.getElementById("nextDay").addEventListener("click", function () {
+        document.getElementById("nextDay").addEventListener("click", function() {
             const currentDate = new Date(calendar.value);
             currentDate.setDate(currentDate.getDate() + 1);
             updateAttendanceTable(currentDate.toISOString().split('T')[0]);
         });
 
-        calendar.addEventListener("change", function () {
+        calendar.addEventListener("change", function() {
             updateAttendanceTable(calendar.value);
         });
 
@@ -323,4 +335,5 @@ $conn->close();
         statusFilter.addEventListener('change', filterTable);
     </script>
 </body>
+
 </html>

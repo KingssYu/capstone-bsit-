@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,37 +10,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
-<body>
-    <header class="site-header">
-        <div class="header-container">
-            <div class="logo-section">
-                <img src="image/logobg.png" alt="MAPOLCom Incorporated Logo" class="logo">
-                <h1 class="company-title">MAPOLCom <span>Incorporated</span></h1>
-            </div>
-            
-            <button class="hamburger" aria-label="Toggle menu" onclick="toggleMenu()">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
 
-            <nav class="nav-section" aria-label="Main navigation">
-                <ul id="nav-menu">
-                    <li><a href="homepage.php#home" class="nav-link"><i class="fas fa-home"></i> Home</a></li>
-                    <li><a href="homepage.php#about" class="nav-link"><i class="fas fa-info-circle"></i> About</a></li>
-                    <li><a href="projects.php" class="nav-link active" data-section="projects"><i class="fas fa-project-diagram"></i> Projects</a></li>
-                    <li><a href="../admin_area/admin_login.php" class="admin-button">
-                        <i class="fas fa-user-shield"></i>
-                        <span>Admin Portal</span>
-                    </a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+<body>
+    <?php include './header.php'; ?>
+
 
     <main class="projects-container">
         <h1 class="projects-title">Accomplished Projects</h1>
-        
+
         <div class="projects-grid">
             <div class="project-card">
                 <div class="project-image">
@@ -209,7 +187,7 @@
                     <p>Electriacal project for bulacan plant/p>
                 </div>
             </div>
-            
+
         </div>
     </main>
 
@@ -238,4 +216,5 @@
 
     <script src="scripts/main.js"></script>
 </body>
+
 </html>

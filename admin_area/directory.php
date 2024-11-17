@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['admin'])) {
-    header("Location: admin_login.php");
+    header("Location: ./../employee_area/portal.php");
     exit;
 }
 
@@ -18,7 +18,7 @@ if ($conn->connect_error) {
 }
 
 // Fetch total number of employees
-$sql_total = "SELECT COUNT(*) AS total_employees FROM adding_employee";
+$sql_total = "SELECT COUNT(*) AS total_employees FROM adding_employee LEFT JOIN rate_position ON adding_employee.rate_id = rate_position.rate_id";
 $result_total = $conn->query($sql_total);
 $total_employees = 0;
 if ($result_total->num_rows > 0) {
@@ -33,15 +33,15 @@ $positions = [];
 $sql = "SELECT DISTINCT department FROM adding_employee";
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
+    while ($row = $result->fetch_assoc()) {
         $departments[] = $row['department'];
     }
 }
-$sql = "SELECT DISTINCT position FROM adding_employee";
+$sql = "SELECT DISTINCT * FROM adding_employee LEFT JOIN rate_position ON adding_employee.rate_id = rate_position.rate_id";
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
-        $positions[] = $row['position'];
+    while ($row = $result->fetch_assoc()) {
+        $positions[] = $row['rate_position'];
     }
 }
 
@@ -57,19 +57,19 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         $where_clause .= empty($where_clause) ? " WHERE" : " AND";
         $where_clause .= " department = '$department'";
     }
-    if (!empty($_GET['position']) && $_GET['position'] != 'all-positions') {
-        $position = $conn->real_escape_string($_GET['position']);
+    if (!empty($_GET['rate_position']) && $_GET['rate_position'] != 'all-positions') {
+        $rate_position = $conn->real_escape_string($_GET['rate_position']);
         $where_clause .= empty($where_clause) ? " WHERE" : " AND";
-        $where_clause .= " position = '$position'";
+        $where_clause .= " rate_position = '$rate_position'";
     }
 }
 
 // Fetch employees
-$sql = "SELECT * FROM adding_employee" . $where_clause;
+$sql = "SELECT * FROM adding_employee LEFT JOIN rate_position ON adding_employee.rate_id = rate_position.rate_id" . $where_clause;
 $result = $conn->query($sql);
 $employees = [];
 if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
+    while ($row = $result->fetch_assoc()) {
         $employees[] = $row;
     }
 }
@@ -79,6 +79,7 @@ $conn->close();
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -99,7 +100,7 @@ $conn->close();
             width: 250px;
             background-color: #D5ED9F;
             color: #fff;
-            position: fixed;
+            rate_position: fixed;
             top: 0;
             left: 0;
             display: flex;
@@ -167,7 +168,6 @@ $conn->close();
 
         /* Directory Container */
         .directory-container {
-            margin-left: 250px;
             padding: 20px;
             width: calc(100% - 250px);
             background-color: #f4f4f9;
@@ -237,7 +237,8 @@ $conn->close();
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .directory-table th, .directory-table td {
+        .directory-table th,
+        .directory-table td {
             padding: 15px;
             text-align: left;
             border-bottom: 1px solid #ddd;
@@ -266,36 +267,12 @@ $conn->close();
         }
     </style>
 </head>
+
 <body>
     <!-- Sidebar -->
-   <div class="sidenav">
-        <div class="logo">
-            <img src="../image/logobg.png" alt="Logo">
-        </div>
-        <div class="menu">
-            <a href="dashboard.php">
-                <button>Dashboard</button>
-            </a>
-            <a href="all_employee.php">
-                <button>Employee</button>
-            </a>
-            <a href="emp_attendance.php">
-                <button>Attendance</button>
-            </a>
-            <a href="directory.php">
-                <button>Directory</button>
-            </a>
-            <a href="leave_management.php">
-                <button>Leave Management</button>
-            </a>
-        </div>
-        <div class="footer">
-            <a href="admin_logout.php">
-                <button>Logout</button>
-            </a>
-        </div>
-    </div>
-    
+    <?php include './header.php'; ?>
+
+
     <!-- Directory Section -->
     <div class="directory-container">
         <div class="directory-header">
@@ -310,10 +287,10 @@ $conn->close();
                     <option value="<?php echo htmlspecialchars($dept); ?>" <?php echo (isset($_GET['department']) && $_GET['department'] == $dept) ? 'selected' : ''; ?>><?php echo htmlspecialchars($dept); ?></option>
                 <?php endforeach; ?>
             </select>
-            <select name="position" onchange="this.form.submit()">
+            <select name="rate_position" onchange="this.form.submit()">
                 <option value="all-positions">All Positions</option>
                 <?php foreach ($positions as $pos): ?>
-                    <option value="<?php echo htmlspecialchars($pos); ?>" <?php echo (isset($_GET['position']) && $_GET['position'] == $pos) ? 'selected' : ''; ?>><?php echo htmlspecialchars($pos); ?></option>
+                    <option value="<?php echo htmlspecialchars($pos); ?>" <?php echo (isset($_GET['rate_position']) && $_GET['rate_position'] == $pos) ? 'selected' : ''; ?>><?php echo htmlspecialchars($pos); ?></option>
                 <?php endforeach; ?>
             </select>
         </form>
@@ -331,42 +308,43 @@ $conn->close();
             </thead>
             <tbody>
                 <?php foreach ($employees as $employee): ?>
-                <tr>
-                    <td class="name-cell">
-                        <?php
-                        $employee_image_path = "employee_faces/{$employee['employee_no']}/face_25.jpg";
-                        if (!file_exists($employee_image_path) || !is_readable($employee_image_path)) {
-                            $employee_image_path = "employee_profile/default.png";
-                        }
-                        ?>
-                        <img src="<?php echo htmlspecialchars($employee_image_path); ?>" alt="Profile">
-                        <?php echo htmlspecialchars($employee['last_name'] . ', ' . $employee['first_name'] . ' ' . $employee['middle_name']); ?>
-                    </td>
-                    <td><?php echo htmlspecialchars($employee['contact']); ?></td>
-                    <td><?php echo htmlspecialchars($employee['department']); ?></td>
-                    <td><?php echo htmlspecialchars($employee['position']); ?></td>
-                    <td><?php echo htmlspecialchars($employee['address']); ?></td>
-                </tr>
+                    <tr>
+                        <td class="name-cell">
+                            <?php
+                            $employee_image_path = "employee_faces/{$employee['employee_no']}/face_25.jpg";
+                            if (!file_exists($employee_image_path) || !is_readable($employee_image_path)) {
+                                $employee_image_path = "employee_profile/default.png";
+                            }
+                            ?>
+                            <img src="<?php echo htmlspecialchars($employee_image_path); ?>" alt="Profile">
+                            <?php echo htmlspecialchars($employee['last_name'] . ', ' . $employee['first_name'] . ' ' . $employee['middle_name']); ?>
+                        </td>
+                        <td><?php echo htmlspecialchars($employee['contact']); ?></td>
+                        <td><?php echo htmlspecialchars($employee['department']); ?></td>
+                        <td><?php echo htmlspecialchars($employee['rate_position']); ?></td>
+                        <td><?php echo htmlspecialchars($employee['address']); ?></td>
+                    </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
     </div>
 
-<script>
-document.querySelector('form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    var formData = new FormData(this);
-    var searchParams = new URLSearchParams(formData);
-    var newUrl = window.location.pathname + '?' + searchParams.toString();
-    fetch(newUrl)
-        .then(response => response.text())
-        .then(html => {
-            var parser = new DOMParser();
-            var doc = parser.parseFromString(html, 'text/html');
-            document.querySelector('.directory-table').outerHTML = doc.querySelector('.directory-table').outerHTML;
-            history.pushState(null, '', newUrl);
+    <script>
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            var searchParams = new URLSearchParams(formData);
+            var newUrl = window.location.pathname + '?' + searchParams.toString();
+            fetch(newUrl)
+                .then(response => response.text())
+                .then(html => {
+                    var parser = new DOMParser();
+                    var doc = parser.parseFromString(html, 'text/html');
+                    document.querySelector('.directory-table').outerHTML = doc.querySelector('.directory-table').outerHTML;
+                    history.pushState(null, '', newUrl);
+                });
         });
-});
-</script>
+    </script>
 </body>
+
 </html>

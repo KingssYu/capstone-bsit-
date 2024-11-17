@@ -1,7 +1,8 @@
 <?php
 session_start();
 if (!isset($_SESSION['admin'])) {
-    header("Location: admin_login.php");
+    header("Location: ./../employee_area/portal.php");
+
     exit;
 }
 
@@ -28,10 +29,12 @@ if ($result_total->num_rows > 0) {
     $total_employees = $row_total['total_employees'];
 }
 
-function getRecentEmployees($conn) {
+function getRecentEmployees($conn)
+{
     $threeOaysAgo = date('Y-m-d', strtotime('-3 days'));
-    $sql = "SELECT employee_no, first_name, last_name, position, date_hired 
+    $sql = "SELECT *
             FROM adding_employee 
+            LEFT JOIN rate_position ON adding_employee.rate_id = rate_position.rate_id
             WHERE date_hired >= '$threeOaysAgo' 
             ORDER BY date_hired DESC 
             LIMIT 5";
@@ -54,6 +57,7 @@ $recentEmployees = getRecentEmployees($conn);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>Dashboard</title>
     <link rel="stylesheet" href="admin_styles/dashboard.css">
@@ -64,20 +68,24 @@ $recentEmployees = getRecentEmployees($conn);
             padding: 15px;
             border-radius: 8px;
         }
+
         .recent-employee-item {
             background-color: #ffffff;
             margin-bottom: 10px;
             padding: 10px;
             border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         .recent-employee-name {
             font-weight: bold;
         }
+
         .recent-employee-position {
             color: #666;
             font-size: 0.9em;
         }
+
         .recent-employee-date {
             font-size: 0.8em;
             color: #888;
@@ -110,7 +118,8 @@ $recentEmployees = getRecentEmployees($conn);
             border-collapse: collapse;
         }
 
-        .calendar th, .calendar td {
+        .calendar th,
+        .calendar td {
             text-align: center;
             padding: 8px;
             border: 1px solid #ddd;
@@ -130,85 +139,59 @@ $recentEmployees = getRecentEmployees($conn);
             color: white;
             font-weight: bold;
         }
-
-        
     </style>
 </head>
+
 <body>
-        <div class="sidenav">
-            <div class="logo">
-                <img src="../image/logobg.png" alt="Logo">
-            </div>
-            <div class="menu">
-                <a href="dashboard.php">
-                    <button>Dashboard</button>
-                </a>
-                <a href="all_employee.php">
-                    <button>Employee</button>
-                </a>
-                <a href="emp_attendance.php">
-                    <button>Attendance</button>
-                </a>
-                <a href="directory.php">
-                    <button>Directory</button>
-                </a>
-                <a href="leave_management.php">
-                    <button>Leave Management</button>
-                </a>
-            </div>
-            <div class="footer">
-                <a href="admin_logout.php">
-                    <button>Logout</button>
-                </a>
-            </div>
-        </div>
-        <div class="main-content">
-            <header class="main-header">
-                <h1>Welcome to the Dashboard</h1>
-                <div id="datetime" class="datetime"></div>
-            </header>
-            <!-- Main content goes here -->
+    <?php include './header.php'; ?>
 
-                <!-- Horizontal Container for Employee Statistics -->
-            <div class="stats-container">
-                <div class="stats-item total">
-                    <h3>Total Employees</h3>
-                    <p class="count"><?php echo $total_employees; ?></p>
-                </div>
-                <div class="stats-item present">
-                    <h3>Present</h3>
-                    <p class="count">250</p>
-                </div>
-                <div class="stats-item absent">
-                    <h3>Absent</h3>
-                    <p class="count">50</p>
-                </div>
+    <div class="main-content">
+        <header class="main-header">
+            <h1>Welcome to the Dashboard</h1>
+            <div id="datetime" class="datetime"></div>
+        </header>
+        <!-- Main content goes here -->
+
+        <!-- Horizontal Container for Employee Statistics -->
+        <div class="stats-container">
+            <div class="stats-item total">
+                <h3>Total Employees</h3>
+                <p class="count"><?php echo $total_employees; ?></p>
+            </div>
+            <div class="stats-item present">
+                <h3>Present</h3>
+                <p class="count">250</p>
+            </div>
+            <div class="stats-item absent">
+                <h3>Absent</h3>
+                <p class="count">50</p>
+            </div>
         </div>
 
-    <div class="info-containers">
-        <div class="recent-employees">
-            <h2>Recent Employees</h2>
-            <?php if (count($recentEmployees) > 0): ?>
-                <?php foreach ($recentEmployees as $employee): ?>
-                    <div class="recent-employee-item">
-                        <div class="recent-employee-name"><?php echo htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']); ?></div>
-                        <div class="recent-employee-position"><?php echo htmlspecialchars($employee['position']); ?></div>
-                        <div class="recent-employee-date">Hired: <?php echo date('M d, Y', strtotime($employee['date_hired'])); ?></div>
-                    </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <p>No recent employees to display.</p>
-            <?php endif; ?>
+        <div class="info-containers">
+            <div class="recent-employees">
+                <h2>Recent Employees</h2>
+                <?php if (count($recentEmployees) > 0): ?>
+                    <?php foreach ($recentEmployees as $employee): ?>
+                        <div class="recent-employee-item">
+                            <div class="recent-employee-name"><?php echo htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']); ?></div>
+                            <div class="recent-employee-position"><?php echo htmlspecialchars($employee['rate_position']); ?></div>
+                            <div class="recent-employee-date">Hired: <?php echo date('M d, Y', strtotime($employee['date_hired'])); ?></div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p>No recent employees to display.</p>
+                <?php endif; ?>
+            </div>
+            <div class="calendar-container">
+                <h2>Real-Time Calendar</h2>
+                <div id="calendar"></div>
+            </div>
+
         </div>
-        <div class="calendar-container">
-            <h2>Real-Time Calendar</h2>
-            <div id="calendar"></div>
-        </div>
-        
+
     </div>
 
-</div>
-    
 
     <script>
         function updateTime() {
@@ -230,18 +213,18 @@ $recentEmployees = getRecentEmployees($conn);
         updateTime(); // Initial call to set date/time immediately
 
         document.addEventListener('DOMContentLoaded', function() {
-    const calendarContainer = document.getElementById('calendar');
-    const date = new Date();
-    let currentMonth = date.getMonth();
-    let currentYear = date.getFullYear();
+            const calendarContainer = document.getElementById('calendar');
+            const date = new Date();
+            let currentMonth = date.getMonth();
+            let currentYear = date.getFullYear();
 
-    function createCalendar(month, year) {
-        const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        const firstDay = new Date(year, month, 1).getDay();
-        const lastDate = new Date(year, month + 1, 0).getDate();
-        const prevLastDate = new Date(year, month, 0).getDate();
+            function createCalendar(month, year) {
+                const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                const firstDay = new Date(year, month, 1).getDay();
+                const lastDate = new Date(year, month + 1, 0).getDate();
+                const prevLastDate = new Date(year, month, 0).getDate();
 
-        let calendarHTML = `
+                let calendarHTML = `
             <div class="calendar-header">
                 <button id="prevMonth" class="nav-button">Prev</button>
                 <div>${new Date(year, month).toLocaleString('default', { month: 'long' })} ${year}</div>
@@ -253,51 +236,52 @@ $recentEmployees = getRecentEmployees($conn);
                 </thead>
                 <tbody>`;
 
-        let day = 1;
-        for (let i = 0; i < 6; i++) {
-            calendarHTML += '<tr>';
-            for (let j = 0; j < 7; j++) {
-                if (i === 0 && j < firstDay) {
-                    // Previous month days
-                    calendarHTML += `<td class="inactive">${prevLastDate - firstDay + j + 1}</td>`;
-                } else if (day > lastDate) {
-                    // Next month days
-                    calendarHTML += `<td class="inactive">${day - lastDate}</td>`;
-                    day++;
-                } else {
-                    // Current month days
-                    const todayClass = day === date.getDate() && month === date.getMonth() && year === date.getFullYear() ? 'today' : '';
-                    calendarHTML += `<td class="${todayClass}">${day}</td>`;
-                    day++;
+                let day = 1;
+                for (let i = 0; i < 6; i++) {
+                    calendarHTML += '<tr>';
+                    for (let j = 0; j < 7; j++) {
+                        if (i === 0 && j < firstDay) {
+                            // Previous month days
+                            calendarHTML += `<td class="inactive">${prevLastDate - firstDay + j + 1}</td>`;
+                        } else if (day > lastDate) {
+                            // Next month days
+                            calendarHTML += `<td class="inactive">${day - lastDate}</td>`;
+                            day++;
+                        } else {
+                            // Current month days
+                            const todayClass = day === date.getDate() && month === date.getMonth() && year === date.getFullYear() ? 'today' : '';
+                            calendarHTML += `<td class="${todayClass}">${day}</td>`;
+                            day++;
+                        }
+                    }
+                    calendarHTML += '</tr>';
+                    if (day > lastDate) break;
                 }
+
+                calendarHTML += `</tbody></table>`;
+                calendarContainer.innerHTML = calendarHTML;
+
+                // Add event listeners to the new buttons
+                document.getElementById('prevMonth').addEventListener('click', () => changeMonth(-1));
+                document.getElementById('nextMonth').addEventListener('click', () => changeMonth(1));
             }
-            calendarHTML += '</tr>';
-            if (day > lastDate) break;
-        }
 
-        calendarHTML += `</tbody></table>`;
-        calendarContainer.innerHTML = calendarHTML;
+            function changeMonth(delta) {
+                currentMonth += delta;
+                if (currentMonth < 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                } else if (currentMonth > 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                }
+                createCalendar(currentMonth, currentYear);
+            }
 
-        // Add event listeners to the new buttons
-        document.getElementById('prevMonth').addEventListener('click', () => changeMonth(-1));
-        document.getElementById('nextMonth').addEventListener('click', () => changeMonth(1));
-    }
-
-    function changeMonth(delta) {
-        currentMonth += delta;
-        if (currentMonth < 0) {
-            currentMonth = 11;
-            currentYear--;
-        } else if (currentMonth > 11) {
-            currentMonth = 0;
-            currentYear++;
-        }
-        createCalendar(currentMonth, currentYear);
-    }
-
-    createCalendar(currentMonth, currentYear);
-});
+            createCalendar(currentMonth, currentYear);
+        });
     </script>
 </body>
 </body>
+
 </html>

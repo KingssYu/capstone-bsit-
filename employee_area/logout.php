@@ -6,6 +6,5 @@ session_start();
 session_destroy();
 
 // Redirect to the portal page
-header("Location: portal.php");
+header("Location: ./../index.php");
 exit();
-?>

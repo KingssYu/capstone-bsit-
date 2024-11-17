@@ -10,6 +10,16 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+$sql = "SELECT * FROM rate_position";
+$resultCategory = mysqli_query($conn, $sql);
+
+$category_names = [];
+if ($resultCategory) {
+    while ($row = mysqli_fetch_assoc($resultCategory)) {
+        $category_names[] = $row;
+    }
+}
+
 $success = false;
 $error_message = '';
 $num_samples = 0;
@@ -28,15 +38,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $first_name = $_POST['first_name'];
         $middle_name = $_POST['middle_name'];
         $email = isset($_POST['email']) ? $_POST['email'] : null;
-        $position = $_POST['position'];
+        $rate_id = $_POST['rate_id'];
         $contact = $_POST['contact_no'];
         $department = $_POST['department'];
         $date_hired = $_POST['date_hired'];
         $address = $_POST['address'];
         $camera_index = $_POST['camera_index'];
 
-        $stmt = $conn->prepare("INSERT INTO adding_employee (employee_no, last_name, first_name, middle_name, email, position, contact, department, date_hired, address, password_changed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)");
-        $stmt->bind_param("ssssssssss", $employee_no, $last_name, $first_name, $middle_name, $email, $position, $contact, $department, $date_hired, $address);
+        $stmt = $conn->prepare("INSERT INTO adding_employee (employee_no, last_name, first_name, middle_name, email,contact, department, date_hired, rate_id, address, password_changed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)");
+        $stmt->bind_param("ssssssssss", $employee_no, $last_name, $first_name, $middle_name, $email, $contact, $department, $date_hired, $rate_id, $address);
 
         if (!$stmt->execute()) {
             throw new Exception("Error inserting employee data: " . $stmt->error);
@@ -52,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($result && isset($result['num_samples']) && $result['num_samples'] > 0) {
             $num_samples = $result['num_samples'];
-            
+
             $update_stmt = $conn->prepare("UPDATE adding_employee SET face_samples = ? WHERE employee_no = ?");
             $update_stmt->bind_param("is", $num_samples, $employee_no);
             if (!$update_stmt->execute()) {
@@ -81,19 +91,68 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>Register</title>
     <link rel="stylesheet" href="admin_styles/employee_register.css">
     <style>
-        .error-message { color: #ff0000; margin-bottom: 10px; }
-        #faceCaptureModal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); }
-        .modal-content { background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 500px; text-align: center; }
-        #faceCaptureProgress { width: 100%; background-color: #ddd; }
-        #faceCaptureBar { width: 0%; height: 30px; background-color: #4CAF50; text-align: center; line-height: 30px; color: white; }
-        .retry-button { background-color: #4CAF50; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 10px; }
-        .retry-button:hover { background-color: #45a049; }
+        .error-message {
+            color: #ff0000;
+            margin-bottom: 10px;
+        }
+
+        #faceCaptureModal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        #faceCaptureProgress {
+            width: 100%;
+            background-color: #ddd;
+        }
+
+        #faceCaptureBar {
+            width: 0%;
+            height: 30px;
+            background-color: #4CAF50;
+            text-align: center;
+            line-height: 30px;
+            color: white;
+        }
+
+        .retry-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .retry-button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
+
 <body>
     <header>
         <div class="left-section">
@@ -132,14 +191,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <label for="middle-name">Middle Name</label>
                     <input type="text" id="middle_name" name="middle_name">
                 </div>
-                <div class="form-group">                                                                  
+                <div class="form-group">
                     <label for="email">Email (optional)</label>
                     <input type="email" id="email" name="email">
                 </div>
                 <div class="form-group">
-                    <label for="position">Position</label>
-                    <input type="text" id="position" name="position" required>
+                    <label for="rate_id">Position</label>
+                    <select class="form-control" id="rate_id" name="rate_id" required>
+                        <option value="">Select Position</option>
+                        <?php foreach ($category_names as $category_rows) : ?>
+                            <option value="<?php echo $category_rows['rate_id']; ?>">
+                                <?php echo $category_rows['rate_position']; ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
+
                 <div class="form-group">
                     <label for="contact-no">Contact No.</label>
                     <input type="tel" id="contact-no" name="contact_no" required>
@@ -235,38 +302,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     e.preventDefault();
                     const employeeId = document.getElementById('employee_id').value;
                     const cameraIndex = document.getElementById('camera-index').value;
-                    
+
                     fetch('capture_face.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: `employee_id=${employeeId}&camera_index=${cameraIndex}`
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            alert('Face capture successful!');
-                            location.reload();
-                        } else {
-                            alert('Face capture failed: ' + data.error);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('An error occurred during face capture.');
-                    });
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: `employee_id=${employeeId}&camera_index=${cameraIndex}`
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert('Face capture successful!');
+                                location.reload();
+                            } else {
+                                alert('Face capture failed: ' + data.error);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred during face capture.');
+                        });
                 });
             }
 
             <?php if ($success): ?>
-            const successMessage = document.getElementById('successMessage');
-            successMessage.style.display = 'block';
-            setTimeout(function() {
-                window.location.href = 'all_employee.php';
-            }, 3000);
+                const successMessage = document.getElementById('successMessage');
+                successMessage.style.display = 'block';
+                setTimeout(function() {
+                    window.location.href = 'all_employee.php';
+                }, 3000);
             <?php endif; ?>
         });
     </script>
 </body>
+
 </html>
