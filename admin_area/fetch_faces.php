@@ -1,11 +1,7 @@
 <?php
-// Database connection
-$host = "localhost";
-$username = "root";
-$password = "";
-$database = "admin_login";
+include '../connection/connections.php';
 
-$conn = new mysqli($host, $username, $password, $database);
+$conn = new mysqli($servername, $username, $password, $dbname);
 
 // Check connection
 if ($conn->connect_error) {
@@ -38,7 +34,8 @@ echo json_encode($faces);
 $conn->close();
 
 // Implement face descriptor extraction logic based on your storage format
-function extractFaceDescriptor($sample) {
+function extractFaceDescriptor($sample)
+{
     // Convert the face sample to a descriptor
     // This might involve loading the image and extracting its descriptor
 }

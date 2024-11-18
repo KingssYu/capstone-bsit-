@@ -1,4 +1,6 @@
 <?php
+include '../connection/connections.php';
+
 session_start();
 if (!isset($_SESSION['admin'])) {
     header("Location: ./../employee_area/portal.php");
@@ -6,13 +8,8 @@ if (!isset($_SESSION['admin'])) {
     exit;
 }
 
-// Database connection
-$host = "localhost"; // Change if needed
-$username = "root";  // Change if needed
-$password = "";      // Change if needed
-$database = "admin_login";  // Replace with your database name
 
-$conn = new mysqli($host, $username, $password, $database);
+$conn = new mysqli($servername, $username, $password, $dbname);
 
 // Check connection
 if ($conn->connect_error) {
@@ -174,9 +171,14 @@ $recentEmployees = getRecentEmployees($conn);
                 <?php if (count($recentEmployees) > 0): ?>
                     <?php foreach ($recentEmployees as $employee): ?>
                         <div class="recent-employee-item">
-                            <div class="recent-employee-name"><?php echo htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']); ?></div>
-                            <div class="recent-employee-position"><?php echo htmlspecialchars($employee['rate_position']); ?></div>
-                            <div class="recent-employee-date">Hired: <?php echo date('M d, Y', strtotime($employee['date_hired'])); ?></div>
+                            <div class="recent-employee-name">
+                                <?php echo htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']); ?>
+                            </div>
+                            <div class="recent-employee-position"><?php echo htmlspecialchars($employee['rate_position']); ?>
+                            </div>
+                            <div class="recent-employee-date">Hired:
+                                <?php echo date('M d, Y', strtotime($employee['date_hired'])); ?>
+                            </div>
                         </div>
                     <?php endforeach; ?>
                 <?php else: ?>
@@ -212,7 +214,7 @@ $recentEmployees = getRecentEmployees($conn);
         setInterval(updateTime, 1000);
         updateTime(); // Initial call to set date/time immediately
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const calendarContainer = document.getElementById('calendar');
             const date = new Date();
             let currentMonth = date.getMonth();

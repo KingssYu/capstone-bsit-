@@ -6,6 +6,10 @@
     <a href="dashboard.php">
       <button>Dashboard</button>
     </a>
+    <a href="admin_cash_advance.php">
+      <button>Cash Advance Requests</button>
+    </a>
+
     <a href="all_employee.php">
       <button>Employee</button>
     </a>

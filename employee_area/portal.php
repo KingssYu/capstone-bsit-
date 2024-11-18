@@ -1,14 +1,16 @@
 <?php
+include '../connection/connections.php';
+
 session_start();
 
-$host = 'localhost'; // Database host
-$db = 'admin_login'; // Database name
-$user = 'root'; // Database username
-$pass = ''; // Database password;
+if (isset($_SESSION['employee'])) {
+    header("Location: employee_dashboard.php");
+    exit();
+}
 
 try {
     // Database connection using PDO
-    $conn = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
+    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     $login_error = ""; // Initialize login error
@@ -17,46 +19,49 @@ try {
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (isset($_POST['username']) && isset($_POST['password'])) {
             $username = $_POST['username'];
-            $password = md5($_POST['password']); // Hash the password before comparison
+            $user_password = $_POST['password']; // Plain text password
 
             // Check if the user is an admin
-            $admin_stmt = $conn->prepare("SELECT * FROM admin WHERE username = :username AND password = :password");
+            $admin_stmt = $conn->prepare("SELECT * FROM admin WHERE username = :username");
             $admin_stmt->bindParam(':username', $username);
-            $admin_stmt->bindParam(':password', $password);
             $admin_stmt->execute();
 
             if ($admin = $admin_stmt->fetch(PDO::FETCH_ASSOC)) {
-                // Admin login successful
-                $_SESSION['admin'] = $admin['username'];
-                header("Location: ./../admin_area/dashboard.php"); // Redirect to admin dashboard
-                exit();
-            } else {
-                $username = $_POST['username']; // Employee No
-                $password = $_POST['password']; // Entered Password (Initially this is the Last Name)
+                // Admin login successful - Verify password
+                if (password_verify($user_password, $admin['password'])) {
+                    $_SESSION['admin'] = $admin['username'];
+                    header("Location: ./../admin_area/dashboard.php"); // Redirect to admin dashboard
+                    exit();
+                } else {
+                    $login_error = "Invalid Admin Password!";
 
-                // Prepare SQL to check employee credentials
-                $stmt = $conn->prepare("SELECT * FROM adding_employee LEFT JOIN rate_position ON adding_employee.rate_id = rate_position.rate_id WHERE employee_no = :employee_no");
-                $stmt->bindParam(':employee_no', $username);
-                $stmt->execute();
+                }
+            } else {
+                // Now checking for employee login
+                $employee_stmt = $conn->prepare("SELECT * FROM adding_employee LEFT JOIN rate_position ON adding_employee.rate_id = rate_position.rate_id WHERE employee_no = :employee_no");
+                $employee_stmt->bindParam(':employee_no', $username);
+                $employee_stmt->execute();
 
                 // If employee is found
-                if ($employee = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                if ($employee = $employee_stmt->fetch(PDO::FETCH_ASSOC)) {
                     // First-time login (using Last Name as the default password)
                     if ($employee['password_changed'] == 0) {
                         // Check if the entered password matches their last name (default password)
-                        if ($password == $employee['last_name']) {
+                        if ($user_password == $employee['last_name']) {
                             // Store employee data in session
                             $_SESSION['employee'] = $employee;
+                            $_SESSION['employee_no'] = $employee['employee_no']; // Assign employee_no to the session
 
                             // Redirect to password change page
                             header("Location: change_password.php");
                             exit();
+
                         } else {
                             $login_error = "Invalid Last Name or Password!";
                         }
                     } else {
-                        // Normal login after password has been changed
-                        if (password_verify($password, $employee['password'])) {
+                        // Normal login after password has been changed - Verify password
+                        if (password_verify($user_password, $employee['password'])) {
                             // Store employee data in session
                             $_SESSION['employee'] = $employee;
 

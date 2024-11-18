@@ -1,17 +1,14 @@
 <?php
 
+include '../connection/connections.php';
+
 session_start();
 if (!isset($_SESSION['admin'])) {
     header("Location: ./../employee_area/portal.php");
     exit;
 }
-// Database connection
-$host = "localhost"; // Change if needed
-$username = "root";  // Change if needed
-$password = "";      // Change if needed
-$database = "admin_login";  // Replace with your database name
 
-$conn = new mysqli($host, $username, $password, $database);
+$conn = new mysqli($servername, $username, $password, $dbname);
 
 // Check connection
 if ($conn->connect_error) {
@@ -35,7 +32,7 @@ $result = $conn->query($sql);
 
 if (isset($_GET['search'])) {
     $search = $conn->real_escape_string($_GET['search']);
-    $sql = "SELECT employee_no, last_name, first_name, middle_name, email, position, contact, department, date_hired, address, face_samples 
+    $sql = "SELECT * 
             FROM adding_employee LEFT JOIN rate_position ON adding_employee.rate_id = rate_position.rate_id
             WHERE first_name LIKE '%$search%' 
                OR last_name LIKE '%$search%' 
@@ -110,7 +107,7 @@ if (isset($_GET['search'])) {
 
                         // Check if the employee's first face sample exists
                         $employee_image_path = "employee_faces/$employee_no/face_25.jpg"; // Changed from face_30.png to face_1.png
-
+                
                         // If the image doesn't exist, use a default placeholder image
                         if (!file_exists($employee_image_path)) {
                             $employee_image_path = "employee_profile/default.png";
@@ -185,8 +182,8 @@ if (isset($_GET['search'])) {
         </script>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
-            $(document).ready(function() {
-                $('.search-input').on('input', function() {
+            $(document).ready(function () {
+                $('.search-input').on('input', function () {
                     var searchTerm = $(this).val();
                     if (searchTerm.length > 2) {
                         $.ajax({
@@ -196,12 +193,12 @@ if (isset($_GET['search'])) {
                                 search: searchTerm
                             },
                             dataType: 'json',
-                            success: function(data) {
+                            success: function (data) {
                                 var employeeList = $('.employee-list');
                                 employeeList.empty();
 
                                 if (data.length > 0) {
-                                    $.each(data, function(index, employee) {
+                                    $.each(data, function (index, employee) {
                                         var employeeHtml = `
                                 <a href="employee_all_details.php?employee_no=${employee.employee_no}" class="employee-box">
                                     <div class="employee-header">
@@ -239,9 +236,13 @@ if (isset($_GET['search'])) {
                                     employeeList.html('<p>No employees found.</p>');
                                 }
                             },
-                            error: function(xhr, status, error) {
+                            error: function (xhr, status, error) {
+                                console.log("XHR Object:", xhr);
+                                console.log("Status:", status);
+                                console.log("Error:", error);
                                 console.error("An error occurred: " + error);
                             }
+
                         });
                     } else if (searchTerm.length === 0) {
                         // If search is cleared, reload the page to show all employees

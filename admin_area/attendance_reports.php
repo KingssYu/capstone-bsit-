@@ -1,8 +1,7 @@
 <?php
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "admin_login";
+
+include '../connection/connections.php';
+
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -295,19 +294,19 @@ $conn->close();
             window.location.href = 'attendance_reports.php?date=' + date;
         }
 
-        document.getElementById("prevDay").addEventListener("click", function() {
+        document.getElementById("prevDay").addEventListener("click", function () {
             const currentDate = new Date(calendar.value);
             currentDate.setDate(currentDate.getDate() - 1);
             updateAttendanceTable(currentDate.toISOString().split('T')[0]);
         });
 
-        document.getElementById("nextDay").addEventListener("click", function() {
+        document.getElementById("nextDay").addEventListener("click", function () {
             const currentDate = new Date(calendar.value);
             currentDate.setDate(currentDate.getDate() + 1);
             updateAttendanceTable(currentDate.toISOString().split('T')[0]);
         });
 
-        calendar.addEventListener("change", function() {
+        calendar.addEventListener("change", function () {
             updateAttendanceTable(calendar.value);
         });
 

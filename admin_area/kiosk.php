@@ -1,11 +1,8 @@
 <?php
-session_start();
-$host = "localhost";
-$username = "root";
-$password = "";
-$database = "admin_login";
+include '../connection/connections.php';
 
-$conn = new mysqli($host, $username, $password, $database);
+session_start();
+$conn = new mysqli($servername, $username, $password, $dbname);
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
@@ -28,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($result->num_rows > 0) {
         $employee_data = $result->fetch_assoc();
-        
+
         // Call the face recognition script
         $command = "python face_recognition_attendance.py " . escapeshellarg($employee_no) . " " . escapeshellarg($attendance_type) . " " . escapeshellarg($camera_type);
         $output = shell_exec($command);
@@ -69,6 +66,7 @@ $conn->close();
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -138,19 +136,22 @@ $conn->close();
             color: #555;
         }
 
-        .employee-number, .camera-type {
+        .employee-number,
+        .camera-type {
             margin-top: 20px;
             color: #333;
         }
 
-        .employee-number label, .camera-type label {
+        .employee-number label,
+        .camera-type label {
             font-weight: bold;
             display: block;
             margin-bottom: 5px;
             color: #333;
         }
 
-        .employee-number input, .camera-type select {
+        .employee-number input,
+        .camera-type select {
             width: 80%;
             padding: 12px;
             border: 2px solid #ccc;
@@ -160,7 +161,8 @@ $conn->close();
             transition: all 0.3s ease;
         }
 
-        .employee-number input:focus, .camera-type select:focus {
+        .employee-number input:focus,
+        .camera-type select:focus {
             border-color: #004085;
             outline: none;
         }
@@ -252,11 +254,17 @@ $conn->close();
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>Employee Face Recognition Attendance</h1>
@@ -272,7 +280,8 @@ $conn->close();
                 <form id="attendance-form" method="POST">
                     <div class="employee-number">
                         <label for="emp-number">Employee number:</label>
-                        <input type="text" id="emp-number" name="employee_no" placeholder="Enter employee number" required>
+                        <input type="text" id="emp-number" name="employee_no" placeholder="Enter employee number"
+                            required>
                     </div>
                     <div class="camera-type">
                         <label for="camera-type">Camera Type:</label>
@@ -292,7 +301,8 @@ $conn->close();
                 <p><strong>Last name:</strong> <span id="last-name"></span></p>
                 <p><strong>Middle name:</strong> <span id="middle-name"></span></p>
                 <p><strong>First name:</strong> <span id="first-name"></span></p>
-                <p><strong>Exact attendance time:</strong> <span id="exact-time"><?php echo $attendance_time; ?></span></p>
+                <p><strong>Exact attendance time:</strong> <span id="exact-time"><?php echo $attendance_time; ?></span>
+                </p>
             </div>
         </div>
 
@@ -329,7 +339,7 @@ $conn->close();
         setInterval(updateDateTime, 1000);
         updateDateTime();
 
-        document.getElementById('emp-number').addEventListener('blur', function() {
+        document.getElementById('emp-number').addEventListener('blur', function () {
             const employeeNo = this.value;
             if (employeeNo) {
                 fetch(`kiosk.php?get_employee_info=${employeeNo}`)
@@ -347,7 +357,7 @@ $conn->close();
             }
         });
 
-        document.getElementById('attendance-form').addEventListener('submit', function(e) {
+        document.getElementById('attendance-form').addEventListener('submit', function (e) {
             e.preventDefault();
             document.getElementById('loading-modal').style.display = 'block';
             const formData = new FormData(this);
@@ -355,18 +365,19 @@ $conn->close();
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.text())
-            .then(html => {
-                document.body.innerHTML = html;
-                updateDateTime();
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            })
-            .finally(() => {
-                document.getElementById('loading-modal').style.display = 'none';
-            });
+                .then(response => response.text())
+                .then(html => {
+                    document.body.innerHTML = html;
+                    updateDateTime();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                })
+                .finally(() => {
+                    document.getElementById('loading-modal').style.display = 'none';
+                });
         });
     </script>
 </body>
+
 </html>

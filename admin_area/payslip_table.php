@@ -1,44 +1,58 @@
 <?php
 
 // Define table and primary key
-$table = 'rate_position';
-$primaryKey = 'rate_id';
+$table = 'payroll';
+$primaryKey = 'id';
 // Define columns for DataTables
 $columns = array(
   array(
-    'db' => 'rate_id',
+    'db' => 'employee_no',
     'dt' => 0,
-    'field' => 'rate_id',
+    'field' => 'employee_no',
     'formatter' => function ($lab1, $row) {
-      return $row['rate_id'];
+      return $row['employee_no'];
     }
   ),
 
   array(
-    'db' => 'rate_position',
+    'db' => 'number_of_days',
     'dt' => 1,
-    'field' => 'rate_position',
+    'field' => 'number_of_days',
     'formatter' => function ($lab1, $row) {
-      return $row['rate_position'];
+      return $row['number_of_days'];
     }
   ),
 
 
   array(
-    'db' => 'rate_position',
+    'db' => 'total_hours',
     'dt' => 2,
-    'field' => 'rate_position',
+    'field' => 'total_hours',
     'formatter' => function ($lab4, $row) {
-      return $row['rate_position'];
+      // Check if total_hours is an integer
+      $total_hours = $row['total_hours'];
+
+      // If it's a float but ends with .00, remove the decimal part
+      return (intval($total_hours) == $total_hours) ? (int) $total_hours : $total_hours;
+    }
+  ),
+
+
+  array(
+    'db' => 'total_deductions',
+    'dt' => 3,
+    'field' => 'total_deductions',
+    'formatter' => function ($lab4, $row) {
+      return $row['total_deductions'];
     }
   ),
 
   array(
-    'db' => 'rate_position',
-    'dt' => 3,
-    'field' => 'rate_position',
+    'db' => 'net_pay',
+    'dt' => 4,
+    'field' => 'net_pay',
     'formatter' => function ($lab4, $row) {
-      return $row['rate_position'];
+      return $row['net_pay'];
     }
   ),
 );
@@ -47,7 +61,7 @@ $columns = array(
 $sql_details = array(
   'user' => 'root',
   'pass' => '',
-  'db' => 'admin_login',
+  'db' => 'bsu_payroll',
   'host' => 'localhost',
 );
 
@@ -56,7 +70,7 @@ require('../datatables/ssp.class_with_where.php');
 
 
 // Build the where condition
-$where = "rate_id";
+$where = "id";
 
 // Fetch and encode ONLY WHERE
 echo json_encode(SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $where));

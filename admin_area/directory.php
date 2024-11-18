@@ -1,17 +1,13 @@
 <?php
+include '../connection/connections.php';
+
 session_start();
 if (!isset($_SESSION['admin'])) {
     header("Location: ./../employee_area/portal.php");
     exit;
 }
 
-// Database connection
-$host = "localhost";
-$username = "root";
-$password = "";
-$database = "admin_login";
-
-$conn = new mysqli($host, $username, $password, $database);
+$conn = new mysqli($servername, $username, $password, $dbname);
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
@@ -280,7 +276,9 @@ $conn->close();
         </div>
         <form method="GET" action="" class="search-container">
             <span style="padding: 10px; font-size: 14px; color: #333;"><?php echo $total_employees; ?> People</span>
-            <input type="text" name="search" id="searchInput" placeholder="Search Directory" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>" oninput="this.form.submit()">
+            <input type="text" name="search" id="searchInput" placeholder="Search Directory"
+                value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>"
+                oninput="this.form.submit()">
             <select name="department" onchange="this.form.submit()">
                 <option value="all-departments">All Departments</option>
                 <?php foreach ($departments as $dept): ?>
@@ -330,7 +328,7 @@ $conn->close();
     </div>
 
     <script>
-        document.querySelector('form').addEventListener('submit', function(e) {
+        document.querySelector('form').addEventListener('submit', function (e) {
             e.preventDefault();
             var formData = new FormData(this);
             var searchParams = new URLSearchParams(formData);

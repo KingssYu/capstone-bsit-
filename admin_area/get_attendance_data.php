@@ -1,18 +1,15 @@
 <?php
-// Database connection
-$host = "localhost";
-$username = "root";
-$password = "";
-$database = "admin_login";
+include '../connection/connections.php';
 
-$conn = new mysqli($host, $username, $password, $database);
+$conn = new mysqli($servername, $username, $password, $dbname);
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
 // Function to get attendance data for a specific date
-function getAttendanceData($date) {
+function getAttendanceData($date)
+{
     global $conn;
     $sql = "SELECT * FROM attendance_reports WHERE DATE(date) = ? ORDER BY employee_name";
     $stmt = $conn->prepare($sql);

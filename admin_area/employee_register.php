@@ -1,10 +1,8 @@
 <?php
-$host = "localhost";
-$username = "root";
-$password = "";
-$database = "admin_login";
+include '../connection/connections.php';
 
-$conn = new mysqli($host, $username, $password, $database);
+
+$conn = new mysqli($servername, $username, $password, $dbname);
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
@@ -199,7 +197,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <label for="rate_id">Position</label>
                     <select class="form-control" id="rate_id" name="rate_id" required>
                         <option value="">Select Position</option>
-                        <?php foreach ($category_names as $category_rows) : ?>
+                        <?php foreach ($category_names as $category_rows): ?>
                             <option value="<?php echo $category_rows['rate_id']; ?>">
                                 <?php echo $category_rows['rate_position']; ?>
                             </option>
@@ -273,18 +271,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         setInterval(updateTime, 1000);
         updateTime();
 
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             document.getElementById('employee_id').value = 'EMP-' + Math.floor(1000 + Math.random() * 9000);
 
             const form = document.getElementById('employee-form');
             const modal = document.getElementById('faceCaptureModal');
             const progressBar = document.getElementById('faceCaptureBar');
 
-            form.addEventListener('submit', function(e) {
+            form.addEventListener('submit', function (e) {
                 e.preventDefault();
                 modal.style.display = 'block';
                 let progress = 0;
-                const interval = setInterval(function() {
+                const interval = setInterval(function () {
                     if (progress >= 100) {
                         clearInterval(interval);
                         form.submit();
@@ -298,18 +296,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             const retryButton = document.getElementById('retryFaceCapture');
             if (retryButton) {
-                retryButton.addEventListener('click', function(e) {
+                retryButton.addEventListener('click', function (e) {
                     e.preventDefault();
                     const employeeId = document.getElementById('employee_id').value;
                     const cameraIndex = document.getElementById('camera-index').value;
 
                     fetch('capture_face.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded',
-                            },
-                            body: `employee_id=${employeeId}&camera_index=${cameraIndex}`
-                        })
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `employee_id=${employeeId}&camera_index=${cameraIndex}`
+                    })
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
@@ -329,7 +327,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <?php if ($success): ?>
                 const successMessage = document.getElementById('successMessage');
                 successMessage.style.display = 'block';
-                setTimeout(function() {
+                setTimeout(function () {
                     window.location.href = 'all_employee.php';
                 }, 3000);
             <?php endif; ?>

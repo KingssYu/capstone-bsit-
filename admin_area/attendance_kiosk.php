@@ -6,12 +6,10 @@ if (!isset($_SESSION['admin'])) {
     exit;
 }
 
-$host = "localhost";
-$username = "root";
-$password = "";
-$database = "admin_login";
+include '../connection/connections.php';
 
-$conn = new mysqli($host, $username, $password, $database);
+
+$conn = new mysqli($servername, $username, $password, $dbname);
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
@@ -319,15 +317,15 @@ function getEmployeeDetails($conn, $employeeNumber)
 
         function logAttendance(employeeNumber, type) {
             fetch('log_attendance.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        employee_no: employeeNumber,
-                        type: type
-                    })
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    employee_no: employeeNumber,
+                    type: type
                 })
+            })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {

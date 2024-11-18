@@ -2,10 +2,9 @@
 include '../connection/connections.php';
 
 session_start();
-if (!isset($_SESSION['admin'])) {
-  header("Location: ./../employee_area/portal.php");
-
-  exit;
+if (!isset($_SESSION['employee'])) {
+  header("Location: portal.php");
+  exit();
 }
 
 ?>
@@ -17,7 +16,9 @@ if (!isset($_SESSION['admin'])) {
   <meta charset="UTF-8">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Payslip</title>
+  <title>Directory</title>
+  <link rel="stylesheet" href="employee_styles/my_profile.css">
+
   <style>
     /* General Styles */
     body {
@@ -34,7 +35,6 @@ if (!isset($_SESSION['admin'])) {
       width: 250px;
       background-color: #D5ED9F;
       color: #fff;
-      rate_position: fixed;
       top: 0;
       left: 0;
       display: flex;
@@ -204,44 +204,59 @@ if (!isset($_SESSION['admin'])) {
 
 <body>
   <!-- Sidebar -->
-  <?php include './header.php'; ?>
+  <?php include './employee_navigation.php'; ?>
+  <?php include '../modals/add_cash_request_modal.php'; ?>
+
+
 
   <!-- Directory Section -->
   <div class="directory-container">
     <div class="directory-header">
-      <h1>Admin View Payslip</h1>
-    </div>
+      <h1>Cash Advance</h1>
+      <!-- Button to trigger modal -->
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cashRequestModal">
+        Request Cash Advance
+      </button>
 
+    </div>
     <!-- Table with Employee Data -->
-    <table class="directory-table" name="payslip_table" id="payslip_table">
+    <table class="directory-table" name="cash_advance_table" id="cash_advance_table">
       <thead>
         <tr>
           <th>Employee #</th>
-          <th># of Days</th>
-
-          <th># of Hours</th>
-          <th>Total Deduction</th>
-          <th>Total Net Pay</th>
+          <th>Requested Amount</th>
+          <th># of Months</th>
+          <th>Remaining Balance</th>
+          <th>Status</th>
         </tr>
       </thead>
     </table>
   </div>
 
+  <!-- Add Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Add Bootstrap JS and Popper.js for Modal functionality -->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
   <link rel="stylesheet" type="text/css" href="../datatables/datatables.min.css" />
   <script type="text/javascript" src="../datatables/datatables.min.js"></script>
   <script>
-    var payslip_table = $('#payslip_table').DataTable({
+    var cash_advance_table = $('#cash_advance_table').DataTable({
       "pagingType": "numbers",
       "processing": true,
       "serverSide": true,
       "ajax": {
-        "url": "./payslip_table.php",
+        "url": "./cash_advance_table.php",
         "data": function (d) {
           d.date_from = $('#dateFrom').val();
           d.date_to = $('#dateTo').val();
         }
       },
     });
+
+
   </script>
 
 </body>

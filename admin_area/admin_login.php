@@ -1,13 +1,10 @@
 <?php
 session_start();
 
-$host = 'localhost'; // Database host
-$db = 'admin_login'; // Database name
-$user = 'root'; // Database username
-$pass = ''; // Database password
+include '../connection/connections.php';
 
 try {
-    $conn = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
+    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {

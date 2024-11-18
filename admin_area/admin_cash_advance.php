@@ -17,7 +17,7 @@ if (!isset($_SESSION['admin'])) {
   <meta charset="UTF-8">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Payslip</title>
+  <title>Admin Cash Advance</title>
   <style>
     /* General Styles */
     body {
@@ -209,38 +209,86 @@ if (!isset($_SESSION['admin'])) {
   <!-- Directory Section -->
   <div class="directory-container">
     <div class="directory-header">
-      <h1>Admin View Payslip</h1>
+      <h1>Cash Advance Requests</h1>
     </div>
 
+    <div id="modalContainerCashAdvance"></div>
     <!-- Table with Employee Data -->
-    <table class="directory-table" name="payslip_table" id="payslip_table">
+    <table class="directory-table" name="admin_cash_advance_table" id="admin_cash_advance_table">
       <thead>
         <tr>
           <th>Employee #</th>
-          <th># of Days</th>
-
-          <th># of Hours</th>
-          <th>Total Deduction</th>
-          <th>Total Net Pay</th>
+          <th>Requested Amount</th>
+          <th># of Months</th>
+          <th>Remaining Balance</th>
+          <th>Status</th>
+          <th>Manage</th>
         </tr>
       </thead>
     </table>
   </div>
+  <!-- Add Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 
+  <!-- Add Bootstrap JS and Popper.js for Modal functionality -->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
   <link rel="stylesheet" type="text/css" href="../datatables/datatables.min.css" />
   <script type="text/javascript" src="../datatables/datatables.min.js"></script>
   <script>
-    var payslip_table = $('#payslip_table').DataTable({
+    var admin_cash_advance_table = $('#admin_cash_advance_table').DataTable({
       "pagingType": "numbers",
       "processing": true,
       "serverSide": true,
       "ajax": {
-        "url": "./payslip_table.php",
+        "url": "./admin_cash_advance_table.php",
         "data": function (d) {
           d.date_from = $('#dateFrom').val();
           d.date_to = $('#dateTo').val();
         }
       },
+    });
+
+    $(document).ready(function () {
+      // Function to handle click event on datatable rows
+      $('#admin_cash_advance_table').on('click', 'tr td:nth-child(6) .fetchDataCashAdvance', function () {
+        var employee_no = $(this).closest('tr').find('td').first().text(); // Get the user_id from the clicked row
+
+        $.ajax({
+          url: '../modals/approve_cash_advance_modal.php', // Path to PHP script to fetch modal content
+          method: 'POST',
+          data: { employee_no: employee_no },
+          success: function (response) {
+            $('#modalContainerCashAdvance').html(response);
+            $('#updateCashAdvance').modal('show');
+            console.log("#updateCashAdvance" + employee_no);
+          },
+          error: function (xhr, status, error) {
+            console.error(xhr.responseText);
+          }
+        });
+      });
+    });
+
+    $(document).ready(function () {
+      // Function to handle click event on datatable rows
+      $('#admin_cash_advance_table').on('click', 'tr td:nth-child(6) .fetchDataCashAdvanceDecline', function () {
+        var employee_no = $(this).closest('tr').find('td').first().text(); // Get the user_id from the clicked row
+
+        $.ajax({
+          url: '../modals/decline_cash_advance_modal.php', // Path to PHP script to fetch modal content
+          method: 'POST',
+          data: { employee_no: employee_no },
+          success: function (response) {
+            $('#modalContainerCashAdvance').html(response);
+            $('#updateCashAdvance').modal('show');
+            console.log("#updateCashAdvance" + employee_no);
+          },
+          error: function (xhr, status, error) {
+            console.error(xhr.responseText);
+          }
+        });
+      });
     });
   </script>
 

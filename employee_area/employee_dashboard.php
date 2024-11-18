@@ -21,20 +21,8 @@ $employee = $_SESSION['employee'];
 </head>
 
 <body>
-    <div class="sidebar">
-        <div class="logo">
-            <img src="../image/logobg.png" alt="Company Logo">
-        </div>
-        <ul class="nav-links">
-            <li><a href="#">Home</a></li>
-            <li><a href="my_profile.php">My Profile</a></li>
-            <li><a href="#">Timesheets</a></li>
-            <li><a href="#">Leave Request</a></li>
-        </ul>
-        <div class="logout">
-            <a href="logout.php" class="logout-button">Logout</a>
-        </div>
-    </div>
+
+    <?php include 'employee_navigation.php' ?>
 
     <div class="employee-greeting">
         <h1>Hello, <?php echo $employee['first_name']; ?></h1>

@@ -1,10 +1,8 @@
 <?php
 session_start();
-$host = "localhost";
-$username = "root";
-$password = "";
-$database = "admin_login";
-$conn = new mysqli($host, $username, $password, $database);
+include '../connection/connections.php';
+
+$conn = new mysqli($servername, $username, $password, $dbname);
 
 // Check if the employee is logged in
 if (!isset($_SESSION['employee'])) {
@@ -41,6 +39,7 @@ $conn->close();
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -133,10 +132,11 @@ $conn->close();
     </style>
 
     <!-- Add a script to redirect after showing the success message -->
-    <?php if ($success) : ?>
+    <?php if ($success): ?>
         <meta http-equiv="refresh" content="3;url=portal.php">
     <?php endif; ?>
 </head>
+
 <body>
     <div class="form-container">
         <h2>Change Your Password</h2>
@@ -149,9 +149,12 @@ $conn->close();
                     <input type="password" id="new_password" name="new_password" required>
                 </div>
                 <button type="submit" class="login-button">Change Password</button>
-                <?php if (!empty($update_error)) { echo "<p style='color:red;'>$update_error</p>"; } ?>
+                <?php if (!empty($update_error)) {
+                    echo "<p style='color:red;'>$update_error</p>";
+                } ?>
             </form>
         <?php endif; ?>
     </div>
 </body>
+
 </html>

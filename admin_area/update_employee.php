@@ -1,10 +1,7 @@
 <?php
-$host = "localhost";
-$username = "root";
-$password = "";
-$database = "admin_login";
+include '../connection/connections.php';
 
-$conn = new mysqli($host, $username, $password, $database);
+$conn = new mysqli($servername, $username, $password, $dbname);
 
 if ($conn->connect_error) {
     die(json_encode(['success' => false, 'error' => "Connection failed: " . $conn->connect_error]));
@@ -13,7 +10,7 @@ if ($conn->connect_error) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_employee') {
     $employee_no = $_POST['employee_no'];
     $fields = ['last_name', 'first_name', 'middle_name', 'birthdate', 'gender', 'nationality', 'address', 'contact', 'email', 'emergency_contact_name', 'emergency_contact_number'];
-    
+
     $updates = [];
     $types = '';
     $values = [];

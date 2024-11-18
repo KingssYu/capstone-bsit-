@@ -1,4 +1,6 @@
 <?php
+include '../connection/connections.php';
+
 session_start();
 if (!isset($_SESSION['admin'])) {
     header("Location: ./../employee_area/portal.php");
@@ -6,12 +8,7 @@ if (!isset($_SESSION['admin'])) {
     exit;
 }
 
-$host = "localhost";
-$username = "root";
-$password = "";
-$database = "admin_login";
-
-$conn = new mysqli($host, $username, $password, $database);
+$conn = new mysqli($servername, $username, $password, $dbname);
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
@@ -182,11 +179,11 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQU
 
         function updateAttendanceData() {
             fetch('emp_attendance.php', {
-                    method: 'GET',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
                 .then(response => response.json())
                 .then(data => {
                     const container = document.getElementById('attendance-row-container');
@@ -216,7 +213,7 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQU
                 });
         }
 
-        document.getElementById('logAttendanceBtn').addEventListener('click', function() {
+        document.getElementById('logAttendanceBtn').addEventListener('click', function () {
             const messageElement = document.getElementById('message');
             messageElement.style.display = 'block';
             messageElement.textContent = 'Initializing camera...';
@@ -226,16 +223,16 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQU
             const attendanceType = document.getElementById('attendanceType').value;
 
             fetch('attendance_log.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        action: 'start_camera',
-                        cameraType: cameraType,
-                        attendanceType: attendanceType
-                    })
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'start_camera',
+                    cameraType: cameraType,
+                    attendanceType: attendanceType
                 })
+            })
                 .then(response => response.json())
                 .then(data => {
                     console.log('Response from server:', data);
@@ -260,14 +257,14 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQU
             const messageElement = document.getElementById('message');
             const pollInterval = setInterval(() => {
                 fetch('attendance_log.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            action: 'check_result'
-                        })
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'check_result'
                     })
+                })
                     .then(response => response.json())
                     .then(data => {
                         console.log('Poll response:', data);

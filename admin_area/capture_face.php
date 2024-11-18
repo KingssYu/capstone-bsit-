@@ -15,12 +15,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result = json_decode($output, true);
 
     if ($result && isset($result['num_samples']) && $result['num_samples'] > 0) {
-        $host = "localhost";
-        $username = "root";
-        $password = "";
-        $database = "admin_login";
+        include '../connection/connections.php';
 
-        $conn = new mysqli($host, $username, $password, $database);
+        $conn = new mysqli($servername, $username, $password, $dbname);
 
         if ($conn->connect_error) {
             echo json_encode(['success' => false, 'error' => 'Database connection failed']);

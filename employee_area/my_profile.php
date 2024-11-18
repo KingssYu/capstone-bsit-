@@ -23,23 +23,8 @@ $employee = $_SESSION['employee'];
 </head>
 
 <body>
+    <?php include 'employee_navigation.php' ?>
     <div class="container">
-        <div class="sidebar">
-            <div class="logo">
-                <img src="../image/logobg.png" alt="Company Logo">
-            </div>
-            <ul class="nav-links">
-                <li><a href="employee_dashboard.php">Home</a></li>
-                <li><a href="#" class="active">My Profile</a></li>
-                <li><a href="#">Directory</a></li>
-                <li><a href="#">Timesheets</a></li>
-                <li><a href="#">Payroll</a></li>
-                <li><a href="#">Leave Request</a></li>
-            </ul>
-            <div class="logout">
-                <button class="logout-button">Logout</button>
-            </div>
-        </div>
 
         <div class="main-content">
             <div class="header">
