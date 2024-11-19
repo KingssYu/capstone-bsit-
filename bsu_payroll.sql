@@ -11,7 +11,7 @@
  Target Server Version : 100432
  File Encoding         : 65001
 
- Date: 18/11/2024 18:28:59
+ Date: 19/11/2024 15:25:43
 */
 
 SET NAMES utf8mb4;
@@ -50,7 +50,7 @@ CREATE TABLE `adding_employee`  (
 -- Records of adding_employee
 -- ----------------------------
 INSERT INTO `adding_employee` VALUES (39, 'EMP-3475', 'Mariano', 'Janine Kaye', 'Binatero', 'janinekaye@gmail.com', 3, '09420542776', 'Sales', '2024-11-13', 'upper bigte', 0x3330, '', 1, '$2y$10$rXoj3dmEGa36bUH0uQld6ugI/DA83.Uy1jsexMONHPGFR4sBsXBH.', '0000-00-00', '', '', '', '');
-INSERT INTO `adding_employee` VALUES (41, 'EMP-6601', 'Yu', 'King Mark', 'rodriguez', 'kingking2931@gmail.com', 4, '09420542776', 'IT', '2024-11-15', 'blk 16', 0x3330, '', 0, '$2y$10$vEC2xRXTHtQ6cOd/7cMaLuFVskFsY9rZ.85QBsuIW1..Q5xTTp/5i', '0000-00-00', '', '', '', '');
+INSERT INTO `adding_employee` VALUES (41, 'EMP-6601', 'Yu', 'King Mark', 'rodriguez', 'kingking2931@gmail.com', 4, '09420542776', 'IT', '2024-11-15', 'blk 16', 0x3330, '', 1, '$2y$10$oz1ZZr/loobrcKmANSZxTOdCgEr7FmEk4dqMPafZzakLJpip5.nO6', '0000-00-00', '', '', '', '');
 INSERT INTO `adding_employee` VALUES (45, 'EMP-9237', 'Gajultos', 'Garry', 'Dela Torre', 'test1@gmail.com', 5, '23', 'Sales', '2024-12-12', 'ee', '', '', 0, '', '0000-00-00', '', '', '', '');
 
 -- ----------------------------
@@ -111,21 +111,24 @@ CREATE TABLE `attendance_report`  (
   `actual_time` time(0) NULL DEFAULT NULL,
   `worked_time` time(0) NOT NULL,
   `overtime` time(0) NOT NULL,
-  `is_paid` int(11) NULL DEFAULT NULL,
+  `is_paid` int(11) NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `employee_no`(`employee_no`, `date`) USING BTREE,
   CONSTRAINT `attendance_report_ibfk_1` FOREIGN KEY (`employee_no`) REFERENCES `adding_employee` (`employee_no`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 15 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of attendance_report
 -- ----------------------------
-INSERT INTO `attendance_report` VALUES (3, 'EMP-6601', 'King Mark Yu', 'Present', '2024-11-15', '08:00:00', '17:53:26', '08:00:00', '00:00:00', '00:00:00', NULL);
-INSERT INTO `attendance_report` VALUES (4, 'EMP-6601', 'King Mark Yu', 'Present', '2024-11-16', '08:00:00', '17:53:26', '08:00:00', '00:00:00', '00:00:00', NULL);
-INSERT INTO `attendance_report` VALUES (5, 'EMP-6601', 'King Mark Yu', 'Late', '2024-11-17', '08:00:00', '17:53:26', '08:00:00', '00:00:00', '00:00:00', NULL);
-INSERT INTO `attendance_report` VALUES (6, 'EMP-6601', 'King Mark Yu', 'Late', '2024-11-18', '08:00:00', '17:53:26', '08:00:00', '00:00:00', '00:00:00', NULL);
-INSERT INTO `attendance_report` VALUES (7, 'EMP-3475', 'King Mark Yu', 'Late', '2024-11-15', '08:00:00', '17:53:26', '08:00:00', '00:00:00', '00:00:00', NULL);
-INSERT INTO `attendance_report` VALUES (8, 'EMP-3475', 'King Mark Yu', 'Late', '2024-11-16', '08:00:00', '17:53:26', '08:00:00', '00:00:00', '00:00:00', NULL);
+INSERT INTO `attendance_report` VALUES (3, 'EMP-6601', 'King Mark Yu', 'Present', '2024-11-15', '08:00:00', '17:53:26', '08:00:00', '00:00:00', '00:00:00', 0);
+INSERT INTO `attendance_report` VALUES (4, 'EMP-6601', 'King Mark Yu', 'Present', '2024-11-16', '08:00:00', '17:53:26', '08:00:00', '00:00:00', '00:00:00', 0);
+INSERT INTO `attendance_report` VALUES (5, 'EMP-6601', 'King Mark Yu', 'Late', '2024-11-17', '08:00:00', '17:53:26', '08:00:00', '00:00:00', '00:00:00', 0);
+INSERT INTO `attendance_report` VALUES (6, 'EMP-6601', 'King Mark Yu', 'Late', '2024-11-18', '08:00:00', '17:53:26', '08:00:00', '00:00:00', '00:00:00', 0);
+INSERT INTO `attendance_report` VALUES (7, 'EMP-3475', 'Janine Mariano', 'Late', '2024-11-15', '08:00:00', '17:53:26', '08:00:00', '00:00:00', '00:00:00', 1);
+INSERT INTO `attendance_report` VALUES (8, 'EMP-3475', 'Janine Mariano', 'Late', '2024-11-16', '08:00:00', '17:53:26', '08:00:00', '00:00:00', '00:00:00', 1);
+INSERT INTO `attendance_report` VALUES (9, 'EMP-3475', 'Janine Mariano', 'Present', '2024-11-17', '08:00:00', '17:53:26', '08:00:00', '00:00:00', '00:00:00', 1);
+INSERT INTO `attendance_report` VALUES (10, 'EMP-3475', 'Janine Mariano', 'Present', '2024-11-18', '08:00:00', '20:53:26', '08:00:00', '00:00:00', '00:00:00', 1);
+INSERT INTO `attendance_report` VALUES (11, 'EMP-3475', 'Janine Mariano', 'Present', '2024-11-19', '08:00:00', '18:00:00', '08:00:00', '00:00:00', '00:00:00', 0);
 
 -- ----------------------------
 -- Table structure for cash_advance
@@ -135,20 +138,21 @@ CREATE TABLE `cash_advance`  (
   `cash_advance_id` int(11) NOT NULL AUTO_INCREMENT,
   `employee_no` varchar(11) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `requested_amount` decimal(10, 2) NOT NULL,
-  `paid_amount` decimal(10, 2) NULL DEFAULT 0,
-  `remaining_balance` decimal(10, 2) GENERATED ALWAYS AS (`requested_amount` - `paid_amount`) STORED NULL,
+  `paid_amount` decimal(11, 2) NULL DEFAULT NULL,
+  `remaining_balance` decimal(11, 2) NULL DEFAULT NULL,
   `status` enum('Pending','Approved','Partially Paid','Paid','Declined') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT 'Pending',
   `request_date` timestamp(0) NOT NULL DEFAULT current_timestamp(0),
   `payment_date` timestamp(0) NULL DEFAULT NULL,
   `months` int(11) NULL DEFAULT NULL,
   `id` int(11) NULL DEFAULT NULL,
+  `monthly_payment` decimal(11, 2) NULL DEFAULT NULL,
   PRIMARY KEY (`cash_advance_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of cash_advance
 -- ----------------------------
-INSERT INTO `cash_advance` VALUES (2, 'EMP-3475', 5000.00, 0.00, DEFAULT, 'Approved', '2024-11-18 16:49:21', NULL, 4, 39);
+INSERT INTO `cash_advance` VALUES (10, 'EMP-3475', 4000.00, NULL, 0.01, 'Paid', '2024-11-19 13:36:34', NULL, 3, 39, 1333.33);
 
 -- ----------------------------
 -- Table structure for payroll
@@ -170,15 +174,38 @@ CREATE TABLE `payroll`  (
   `cash_advance_pay` decimal(10, 2) NULL DEFAULT NULL,
   `net_pay` decimal(10, 2) NULL DEFAULT NULL,
   `payment_date` date NULL DEFAULT NULL,
+  `total_overtime_hours` int(11) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 33 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 84 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of payroll
 -- ----------------------------
-INSERT INTO `payroll` VALUES (30, 'EMP-6601', 89.00, 712.00, 4, 32.00, 2.00, 500.00, 200.00, 250.00, 950.00, 0.00, 0.00, 1698.00, '2024-11-18');
-INSERT INTO `payroll` VALUES (31, 'EMP-6601', 89.00, 712.00, 4, 32.00, 2.00, 500.00, 200.00, 250.00, 950.00, 300.00, 30.00, 1868.00, '2024-11-18');
-INSERT INTO `payroll` VALUES (32, 'EMP-3475', 99.00, 792.00, 2, 16.00, 1.00, 500.00, 200.00, 250.00, 950.00, 5000.00, 1250.00, -616.00, '2024-11-18');
+INSERT INTO `payroll` VALUES (59, 'EMP-3475', 99.00, 792.00, 4, 32.00, 3.00, 500.00, 200.00, 250.00, 950.00, 4000.00, 1333.00, 885.00, '2024-11-19', NULL);
+INSERT INTO `payroll` VALUES (60, 'EMP-3475', 99.00, 792.00, 4, 32.00, 3.00, 500.00, 200.00, 250.00, 950.00, 4000.00, 1333.00, 885.00, '2024-11-19', NULL);
+INSERT INTO `payroll` VALUES (61, 'EMP-3475', 99.00, 792.00, 4, 32.00, 3.00, 500.00, 200.00, 250.00, 950.00, 4000.00, 1333.33, 884.67, '2024-11-19', NULL);
+INSERT INTO `payroll` VALUES (62, 'EMP-3475', 99.00, 792.00, 4, 32.00, 3.00, 500.00, 200.00, 250.00, 950.00, 4000.00, 1333.33, 884.67, '2024-11-19', NULL);
+INSERT INTO `payroll` VALUES (63, 'EMP-3475', 99.00, 792.00, 4, 32.00, 3.00, 500.00, 200.00, 250.00, 950.00, 4000.00, 1333.00, 885.00, '2024-11-19', NULL);
+INSERT INTO `payroll` VALUES (64, 'EMP-3475', 99.00, 792.00, 4, 32.00, 3.00, 500.00, 200.00, 250.00, 950.00, 4000.00, 1333.00, 885.00, '2024-11-19', NULL);
+INSERT INTO `payroll` VALUES (65, 'EMP-3475', 99.00, 792.00, 0, 0.00, 0.00, 500.00, 200.00, 250.00, 950.00, 4000.00, 1333.00, -2283.00, '2024-11-19', NULL);
+INSERT INTO `payroll` VALUES (66, 'EMP-3475', 99.00, 792.00, 4, 32.00, 3.00, 500.00, 200.00, 250.00, 950.00, 4000.00, 1333.33, 884.67, '2024-11-19', NULL);
+INSERT INTO `payroll` VALUES (67, 'EMP-3475', 99.00, 792.00, 0, 0.00, 0.00, 500.00, 200.00, 250.00, 950.00, 4000.00, 1333.33, -2283.33, '2024-11-19', NULL);
+INSERT INTO `payroll` VALUES (68, 'EMP-3475', 99.00, 792.00, 0, 0.00, 0.00, 500.00, 200.00, 250.00, 950.00, 4000.00, 1333.33, -2283.33, '2024-11-19', NULL);
+INSERT INTO `payroll` VALUES (69, 'EMP-3475', 99.00, 792.00, 0, 0.00, 0.00, 500.00, 200.00, 250.00, 950.00, 4000.00, 1333.33, -2283.33, '2024-11-19', NULL);
+INSERT INTO `payroll` VALUES (70, 'EMP-3475', 99.00, 792.00, 0, 0.00, 0.00, 500.00, 200.00, 250.00, 950.00, 4000.00, 1333.33, -2283.33, '2024-11-19', NULL);
+INSERT INTO `payroll` VALUES (71, 'EMP-3475', 99.00, 792.00, 0, 0.00, 0.00, 500.00, 200.00, 250.00, 950.00, 4000.00, 1333.33, -2283.33, '2024-11-19', NULL);
+INSERT INTO `payroll` VALUES (72, 'EMP-3475', 99.00, 792.00, 0, 0.00, 0.00, 500.00, 200.00, 250.00, 950.00, 4000.00, 1333.33, -2283.33, '2024-11-19', NULL);
+INSERT INTO `payroll` VALUES (73, 'EMP-3475', 99.00, 792.00, 0, 0.00, 0.00, 500.00, 200.00, 250.00, 950.00, 4000.00, 1333.33, -2283.33, '2024-11-19', NULL);
+INSERT INTO `payroll` VALUES (74, 'EMP-3475', 99.00, 792.00, 0, 0.00, 0.00, 500.00, 200.00, 250.00, 950.00, 4000.00, 1333.33, -2283.33, '2024-11-19', NULL);
+INSERT INTO `payroll` VALUES (75, 'EMP-3475', 99.00, 792.00, 0, 0.00, 0.00, 500.00, 200.00, 250.00, 950.00, 4000.00, 1333.33, -2283.33, '2024-11-19', NULL);
+INSERT INTO `payroll` VALUES (76, 'EMP-3475', 99.00, 792.00, 0, 0.00, 0.00, 500.00, 200.00, 250.00, 950.00, 4000.00, 1333.33, -2283.33, '2024-11-19', NULL);
+INSERT INTO `payroll` VALUES (77, 'EMP-3475', 99.00, 792.00, 0, 0.00, 0.00, 500.00, 200.00, 250.00, 950.00, 4000.00, 1333.33, -2283.33, '2024-11-19', NULL);
+INSERT INTO `payroll` VALUES (78, 'EMP-3475', 99.00, 792.00, 0, 0.00, 0.00, 500.00, 200.00, 250.00, 950.00, 4000.00, 1333.33, -2283.33, '2024-11-19', NULL);
+INSERT INTO `payroll` VALUES (79, 'EMP-3475', 99.00, 792.00, 0, 0.00, 0.00, 500.00, 200.00, 250.00, 950.00, 4000.00, 1333.33, -2283.33, '2024-11-19', NULL);
+INSERT INTO `payroll` VALUES (80, 'EMP-3475', 99.00, 792.00, 4, 32.00, 3.00, 500.00, 200.00, 250.00, 950.00, 0.00, 0.00, 2504.11, '2024-11-19', NULL);
+INSERT INTO `payroll` VALUES (81, 'EMP-3475', 99.00, 792.00, 0, 0.00, 0.00, 500.00, 200.00, 250.00, 950.00, 4000.00, 1333.33, -2283.33, '2024-11-19', NULL);
+INSERT INTO `payroll` VALUES (82, 'EMP-3475', 99.00, 792.00, 0, 0.00, 0.00, 500.00, 200.00, 250.00, 950.00, 4000.00, 1333.33, -2283.33, '2024-11-19', NULL);
+INSERT INTO `payroll` VALUES (83, 'EMP-3475', 99.00, 792.00, 0, 0.00, 0.00, 500.00, 200.00, 250.00, 950.00, 4000.00, 1333.33, -2283.33, '2024-11-19', NULL);
 
 -- ----------------------------
 -- Table structure for rate_position
