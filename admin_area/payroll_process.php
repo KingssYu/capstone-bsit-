@@ -71,7 +71,7 @@ if (isset($_POST['submit_payroll'])) {
           remaining_balance = remaining_balance - $cash_advance_pay,
           paid_amount = paid_amount + $cash_advance_pay,
           status = CASE 
-            WHEN remaining_balance - $cash_advance_pay = 0 THEN 'Paid'
+            WHEN remaining_balance - $cash_advance_pay <= 0 THEN 'Paid'
             ELSE status
           END
         WHERE 
@@ -84,13 +84,24 @@ if (isset($_POST['submit_payroll'])) {
       }
     }
 
+    // Update the attendance_report table
+    $attendanceUpdateQuery = "
+        UPDATE attendance_report
+        SET is_paid = 1
+        WHERE employee_no = '$employee_no'
+        AND date < '$paymentDate'
+        AND is_paid = 0";
+
+    if (!mysqli_query($conn, $attendanceUpdateQuery)) {
+      throw new Exception("Error updating attendance_report: " . mysqli_error($conn));
+    }
 
     // Commit the transaction
     mysqli_commit($conn);
 
     // Success message and redirect
     echo "<script>
-            alert('Payroll record added and cash advance updated successfully.');
+            alert('Payroll record added, cash advance updated, and attendance marked as paid successfully.');
             window.location.href = document.referrer; // Redirects to the previous page
           </script>";
 

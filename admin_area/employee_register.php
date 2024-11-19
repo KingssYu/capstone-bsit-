@@ -154,8 +154,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <header>
         <div class="left-section">
-            <img src="../image/logobg.png" alt="Company Logo" class="logo">
-            <span class="title">New Employee</span>
+            <a href="./dashboard.php"
+                style="text-decoration: none; display: flex; align-items: center; color:#f0f0f0 !important;">
+                <img src="../image/logobg.png" alt="Company Logo" class="logo">
+                <span class="title">Employee Registration</span>
+            </a>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.2/html2canvas.min.js"></script>
         </div>
         <div class="right-section" id="datetime"></div>
     </header>

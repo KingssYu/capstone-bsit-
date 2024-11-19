@@ -23,11 +23,18 @@
 
         <label>Total No. Hours:</label>
         <input type="text" id="totalHours" name="totalHours" readonly
-          value="<?php echo number_format($attendance_data['summary']['total_hours']); ?>">
+          value="<?php echo number_format($attendance_data['summary']['total_hours'], 2); ?>">
+
+        <label>Overtime Total No. Hours:</label>
+        <input type="text" id="totalOverTime" name="totalOverTime" readonly
+          value="<?php echo number_format($attendance_data['summary']['total_overtime'], 2); ?>">
 
         <label>Gross Pay:</label>
-        <input type="text" id="grossPay" name="grossPay" readonly
-          value="<?php echo number_format($attendance_data['summary']['total_hours'] * $employee['rate_per_hour']); ?>">
+        <input type="text" id="grossPay" name="grossPay" readonly value="<?php
+        $totalWorkHours = $attendance_data['summary']['total_hours'] + $attendance_data['summary']['total_overtime'];
+        echo number_format($totalWorkHours * $employee['rate_per_hour'], 2);
+        ?>">
+
       </div>
 
       <!-- Other Deductions/Government Section -->
@@ -54,9 +61,16 @@
         <h4>LOAN/ADVANCES</h4>
         <?php
         $status = $employee['status'];  // Assuming you have a status field in your employee data
-        $remaining_balance = $employee['remaining_balance'];  // Assuming you have a status field in your employee data
+        $months = $employee['months'];
+
+        $remaining_balance = $employee['remaining_balance'];  // Round the remaining balance
         $requestedAmount = $status !== 'Approved' ? 0 : $employee['requested_amount'];
-        $monthlyPayment = $status !== 'Approved' ? 0 : $employee['monthly_payment'];
+
+        $monthlyPayment = $status !== 'Approved' ? 0 : $employee['monthly_payment'];  // Round the monthly payment
+        
+        // Check if $months is greater than 0 to avoid division by zero
+        $existing_balance = ($months > 0) ? $requestedAmount / $months : 0;
+
         $updatedRequestedAmount = $requestedAmount - $monthlyPayment; // Calculate the remaining amount after deduction
         ?>
 
@@ -65,14 +79,13 @@
           value="<?php echo $requestedAmount; ?>" onchange="calculateBalance()" readonly>
 
         <label>Balance:</label>
-        <input type="text" id="remaining_balance" name="remaining_balance" value="<?php echo $remaining_balance; ?>"
-          readonly>
+        <input type="text" id="remaining_balance" name="remaining_balance"
+          value="<?php echo number_format($existing_balance, 2); ?>" readonly>
 
         <label>Cash Advance Pay:</label>
         <input type="number" id="cashAdvancePay" name="cashAdvancePay" placeholder="Enter amount"
           value="<?php echo $monthlyPayment; ?>" onchange="calculateBalance()" readonly>
       </div>
-
 
 
     </div>
@@ -139,6 +152,8 @@
 
   function calculateNetPay() {
     // const grossPay = parseFloat(document.getElementById('grossPay').value);
+    const totalOvertimeHours = parseFloat(document.getElementById('totalDeductions').value) || 0;
+
     const grossPay = parseFloat(document.getElementById('grossPay').value.replace(/,/g, ''));
 
 

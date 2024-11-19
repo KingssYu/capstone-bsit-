@@ -90,10 +90,11 @@ if (isset($_POST['delete_employee'])) {
 // Modify the get_monthly_attendance function to accept JSON requests
 function get_monthly_attendance($conn, $employee_no, $year, $month)
 {
+
     $query = "
     SELECT DATE(date) as date, status, TIME(time_in) as time_in, TIME(time_out) as time_out, actual_time
     FROM attendance_report
-    WHERE employee_no = ? AND YEAR(date) = ? AND MONTH(date) = ?
+    WHERE employee_no = ? AND YEAR(date) = ? AND MONTH(date) = ? AND is_paid = 0 AND date < CURDATE()
     ORDER BY date
     ";
     $stmt = $conn->prepare($query);
@@ -110,8 +111,10 @@ function get_monthly_attendance($conn, $employee_no, $year, $month)
     $total_absent = 0;
     $total_late = 0;
     $total_hours = 0;
+    $total_overtime = 0; // Initialize total overtime
 
     foreach ($records as $record) {
+        // Count attendance status
         if ($record['status'] == 'Present')
             $total_present++;
         elseif ($record['status'] == 'Absent')
@@ -119,31 +122,33 @@ function get_monthly_attendance($conn, $employee_no, $year, $month)
         elseif ($record['status'] == 'Late')
             $total_late++;
 
+        // Calculate regular hours
         if ($record['actual_time']) {
-            // Log the actual time to check if it's correct
-            error_log('Actual Time: ' . $record['actual_time']);
-
-            // Split the actual time into hours, minutes, and seconds
             list($hours, $minutes, $seconds) = explode(':', $record['actual_time']);
-
-            // Ensure the values are valid numbers
             $hours = (int) $hours;
             $minutes = (int) $minutes;
             $seconds = (int) $seconds;
-
-            // Log the values of hours, minutes, and seconds
-            error_log("Adding Hours: $hours, Minutes: $minutes, Seconds: $seconds");
-
-            // Add the time in hours
             $total_hours += $hours + ($minutes / 60) + ($seconds / 3600);
+        }
+
+        // Calculate overtime (OT)
+        if (isset($record['time_out']) && $record['time_out'] > '18:00:00') {
+            // Convert time_out and 18:00:00 into DateTime objects
+            $timeOut = new DateTime($record['time_out']);
+            $endOfRegularShift = new DateTime('18:00:00');
+
+            // Calculate the difference in hours
+            $overtimeInterval = $timeOut->diff($endOfRegularShift);
+            $overtimeHours = $overtimeInterval->h + ($overtimeInterval->i / 60) + ($overtimeInterval->s / 3600);
+
+            // Add to total overtime
+            $total_overtime += $overtimeHours;
         }
     }
 
-    // Round the total hours for more precision if needed
+    // Round the total hours and overtime
     $total_hours = round($total_hours, 2);
-
-    // Log the final total hours
-    error_log("Total Hours: $total_hours");
+    $total_overtime = round($total_overtime, 2);
 
     return [
         'records' => $records,
@@ -151,11 +156,11 @@ function get_monthly_attendance($conn, $employee_no, $year, $month)
             'total_present' => $total_present,
             'total_absent' => $total_absent,
             'total_late' => $total_late,
-            'total_hours' => $total_hours
+            'total_hours' => $total_hours,
+            'total_overtime' => $total_overtime // Add OT to the summary
         ],
         'current_date' => date('Y-m-d')
     ];
-
 }
 
 // Handle AJAX requests
