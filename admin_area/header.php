@@ -22,6 +22,10 @@
     <a href="payslip.php">
       <button>Record of Payslip</button>
     </a>
+
+    <a href="position.php">
+      <button>Positions</button>
+    </a>
     <!-- <a href="leave_management.php">
       <button>Leave Management</button>
     </a> -->

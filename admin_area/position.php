@@ -17,7 +17,7 @@ if (!isset($_SESSION['admin'])) {
   <meta charset="UTF-8">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Payslip</title>
+  <title>Admin Positions</title>
   <style>
     /* General Styles */
     body {
@@ -209,19 +209,19 @@ if (!isset($_SESSION['admin'])) {
   <!-- Directory Section -->
   <div class="directory-container">
     <div class="directory-header">
-      <h1>Admin View Payslip</h1>
+      <h1>Admin View Positions</h1>
     </div>
 
     <!-- Table with Employee Data -->
-    <table class="directory-table" name="payslip_table" id="payslip_table">
+    <table class="directory-table" name="position_table" id="position_table">
       <thead>
         <tr>
-          <th>Employee #</th>
-          <th># of Days</th>
+          <th>Rate ID</th>
+          <th>Position</th>
 
-          <th># of Hours</th>
-          <th>Total Deduction</th>
-          <th>Total Net Pay</th>
+          <th>Rate Per Hour</th>
+          <th>Rate Per Day</th>
+          <th>OT Per Hour</th>
         </tr>
       </thead>
     </table>
@@ -235,12 +235,12 @@ if (!isset($_SESSION['admin'])) {
   <link rel="stylesheet" type="text/css" href="../datatables/datatables.min.css" />
   <script type="text/javascript" src="../datatables/datatables.min.js"></script>
   <script>
-    var payslip_table = $('#payslip_table').DataTable({
+    var position_table = $('#position_table').DataTable({
       "pagingType": "numbers",
       "processing": true,
       "serverSide": true,
       "ajax": {
-        "url": "./payslip_table.php",
+        "url": "./position_table.php",
         "data": function (d) {
           d.date_from = $('#dateFrom').val();
           d.date_to = $('#dateTo').val();

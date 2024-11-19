@@ -9,7 +9,9 @@ if (isset($_POST['submit_cash_advance'])) {
   $employee_no = isset($_POST['employee_no']) ? $_POST['employee_no'] : null;
   $requested_amount = isset($_POST['requested_amount']) ? $_POST['requested_amount'] : null;
   $months = isset($_POST['months']) ? $_POST['months'] : null;
-  $remaining_balance = isset($_POST['remaining_balance']) ? $_POST['remaining_balance'] : null;
+  $remaining_balance = isset($_POST['requested_amount']) ? $_POST['requested_amount'] : null;
+  $monthly_payment = isset($_POST['monthly_payment']) ? $_POST['monthly_payment'] : null;
+
 
   // Get today's date dynamically
   $paymentDate = date('Y-m-d'); // This will return the current date in 'YYYY-MM-DD' format
@@ -20,13 +22,15 @@ if (isset($_POST['submit_cash_advance'])) {
                 employee_no,
                 requested_amount,
                 months,
-                remaining_balance
+                remaining_balance,
+                monthly_payment
             ) VALUES (
                 '$id',
                 '$employee_no',
                 '$requested_amount',
                 '$months',
-                '$remaining_balance'
+                '$remaining_balance',
+                '$monthly_payment'
             )";
 
   // Execute the query

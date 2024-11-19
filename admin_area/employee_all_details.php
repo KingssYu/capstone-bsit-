@@ -20,6 +20,7 @@ if ($employee_no) {
                 cash_advance.id AS cash_advance_id, 
                 cash_advance.requested_amount,
                 cash_advance.months,
+                cash_advance.monthly_payment,
                 cash_advance.remaining_balance,
                 cash_advance.paid_amount,
                 cash_advance.status,

@@ -4,7 +4,6 @@ include '../connection/connections.php';
 
 if (isset($_POST['submit_payroll'])) {
   // Retrieve values from the form
-  // $date_from = isset($_POST['date_from']) ? $_POST['date_from'] : null;
   $employee_no = isset($_POST['employee_no']) ? $_POST['employee_no'] : null;
   $rate_per_hour = isset($_POST['ratePerHour']) ? $_POST['ratePerHour'] : null;
   $basic_per_day = isset($_POST['basicPerDay']) ? $_POST['basicPerDay'] : null;
@@ -18,13 +17,16 @@ if (isset($_POST['submit_payroll'])) {
   $cash_advance = isset($_POST['cashAdvance']) ? $_POST['cashAdvance'] : null;
   $cash_advance_pay = isset($_POST['cashAdvancePay']) ? $_POST['cashAdvancePay'] : null;
   $net_pay = isset($_POST['netPay']) ? $_POST['netPay'] : null;
-  $payment_date = isset($_POST['payment_date']) ? $_POST['payment_date'] : null;
 
   // Get today's date dynamically
-  $paymentDate = date('Y-m-d'); // This will return the current date in 'YYYY-MM-DD' format
+  $paymentDate = date('Y-m-d');
 
-  // Create the SQL query to insert the data into the database
-  $sql = "INSERT INTO payroll (
+  // Start a transaction
+  mysqli_begin_transaction($conn);
+
+  try {
+    // Create the SQL query to insert the data into the payroll table
+    $sql = "INSERT INTO payroll (
                 employee_no,
                 rate_per_hour,
                 basic_per_day,
@@ -53,19 +55,49 @@ if (isset($_POST['submit_payroll'])) {
                 '$cash_advance',
                 '$cash_advance_pay',
                 '$net_pay',
-                '$paymentDate'  -- Dynamic payment date
+                '$paymentDate'
             )";
 
-  // Execute the query
-  if (mysqli_query($conn, $sql)) {
-    // If the insert was successful, show an alert and redirect
+    // Execute the payroll query
+    if (!mysqli_query($conn, $sql)) {
+      throw new Exception("Error inserting payroll record: " . mysqli_error($conn));
+    }
+
+    // Update the cash_advance table
+    if ($cash_advance_pay > 0) {
+      $updateQuery = "
+        UPDATE cash_advance 
+        SET 
+          remaining_balance = remaining_balance - $cash_advance_pay,
+          paid_amount = paid_amount + $cash_advance_pay,
+          status = CASE 
+            WHEN remaining_balance - $cash_advance_pay = 0 THEN 'Paid'
+            ELSE status
+          END
+        WHERE 
+          employee_no = '$employee_no'
+          AND remaining_balance >= $cash_advance_pay
+          AND status = 'Approved'";
+
+      if (!mysqli_query($conn, $updateQuery)) {
+        throw new Exception("Error updating cash_advance record: " . mysqli_error($conn));
+      }
+    }
+
+
+    // Commit the transaction
+    mysqli_commit($conn);
+
+    // Success message and redirect
     echo "<script>
-            alert('Payroll record added successfully.');
+            alert('Payroll record added and cash advance updated successfully.');
             window.location.href = document.referrer; // Redirects to the previous page
           </script>";
 
-  } else {
-    echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+  } catch (Exception $e) {
+    // Rollback the transaction on error
+    mysqli_rollback($conn);
+    echo "Transaction failed: " . $e->getMessage();
   }
 }
 ?>

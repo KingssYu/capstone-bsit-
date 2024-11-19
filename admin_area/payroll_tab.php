@@ -6,7 +6,7 @@
 
       <!-- Earnings Section -->
       <div class="payroll-box earnings">
-        <input type="text" id="employee_no" name="employee_no" readonly
+        <input type="hidden" id="employee_no" name="employee_no" readonly
           value="<?php echo htmlspecialchars($employee['employee_no']); ?>">
         <h4>EARNINGS</h4>
         <label>Rate per Hour/Overtime:</label>
@@ -54,8 +54,10 @@
         <h4>LOAN/ADVANCES</h4>
         <?php
         $status = $employee['status'];  // Assuming you have a status field in your employee data
-        $requestedAmount = $status === 'Pending' ? 0 : $employee['requested_amount'];
-        $amountPerMonth = $status === 'Pending' ? 0 : round($employee['requested_amount'] / $employee['months']);
+        $remaining_balance = $employee['remaining_balance'];  // Assuming you have a status field in your employee data
+        $requestedAmount = $status !== 'Approved' ? 0 : $employee['requested_amount'];
+        $monthlyPayment = $status !== 'Approved' ? 0 : $employee['monthly_payment'];
+        $updatedRequestedAmount = $requestedAmount - $monthlyPayment; // Calculate the remaining amount after deduction
         ?>
 
         <label>Cash Advance:</label>
@@ -63,16 +65,16 @@
           value="<?php echo $requestedAmount; ?>" onchange="calculateBalance()" readonly>
 
         <label>Balance:</label>
-        <input type="text" id="balance" name="balance" readonly>
+        <input type="text" id="remaining_balance" name="remaining_balance" value="<?php echo $remaining_balance; ?>"
+          readonly>
 
         <label>Cash Advance Pay:</label>
         <input type="number" id="cashAdvancePay" name="cashAdvancePay" placeholder="Enter amount"
-          value="<?php echo $amountPerMonth; ?>" onchange="calculateBalance()" readonly>
-
-
-
-
+          value="<?php echo $monthlyPayment; ?>" onchange="calculateBalance()" readonly>
       </div>
+
+
+
     </div>
 
     <!-- Net Pay Section -->
@@ -132,14 +134,6 @@
     const pagibig = parseFloat(document.getElementById('pagibig').value) || 0;
     const total = sss + philhealth + pagibig;
     document.getElementById('totalDeductions').value = total.toFixed(2);
-    calculateNetPay();
-  }
-
-  function calculateBalance() {
-    const cashAdvance = parseFloat(document.getElementById('cashAdvance').value) || 0;
-    const cashAdvancePay = parseFloat(document.getElementById('cashAdvancePay').value) || 0;
-    const balance = cashAdvance - cashAdvancePay;
-    document.getElementById('balance').value = balance.toFixed(2);
     calculateNetPay();
   }
 

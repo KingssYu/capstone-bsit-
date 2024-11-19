@@ -68,8 +68,8 @@ if (!$employeeData) {
 
           <!-- Computed Monthly Payment -->
           <div class="mb-3">
-            <label for="remaining_balance" class="form-label">Monthly Payment</label>
-            <input type="text" class="form-control" id="remaining_balance" name="remaining_balance"
+            <label for="monthly_payment" class="form-label">Monthly Payment</label>
+            <input type="text" class="form-control" id="monthly_payment" name="monthly_payment"
               placeholder="Computation here" readonly>
           </div>
 
@@ -93,7 +93,7 @@ if (!$employeeData) {
   document.addEventListener("DOMContentLoaded", function () {
     const amountInput = document.getElementById("requested_amount");
     const monthsInput = document.getElementById("months");
-    const monthlyPaymentInput = document.getElementById("remaining_balance");
+    const monthlyPaymentInput = document.getElementById("monthly_payment");
 
     function calculateMonthlyPayment() {
       const amount = parseFloat(amountInput.value) || 0;
