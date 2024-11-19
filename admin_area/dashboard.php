@@ -26,6 +26,22 @@ if ($result_total->num_rows > 0) {
     $total_employees = $row_total['total_employees'];
 }
 
+$sql = "SELECT COUNT(DISTINCT adding_employee.employee_no) AS total_employees_absent
+            FROM adding_employee
+            LEFT JOIN attendance_report
+            ON adding_employee.employee_no = attendance_report.employee_no
+            WHERE attendance_report.date IS NULL
+            OR attendance_report.time_out < '17:00'
+        ";
+$result_total = $conn->query($sql);
+$total_employees_absent = 0;
+
+if ($result_total->num_rows > 0) {
+    $row_total = $result_total->fetch_assoc();
+    $total_employees_absent = $row_total['total_employees_absent'];
+}
+
+
 function getRecentEmployees($conn)
 {
     $threeOaysAgo = date('Y-m-d', strtotime('-3 days'));
@@ -45,10 +61,7 @@ function getRecentEmployees($conn)
     return $recentEmployees;
 }
 
-// Fetch recent employees
 $recentEmployees = getRecentEmployees($conn);
-
-// ... (rest of the existing PHP code)
 
 ?>
 
@@ -157,7 +170,7 @@ $recentEmployees = getRecentEmployees($conn);
             </div>
             <div class="stats-item present">
                 <h3>Present</h3>
-                <p class="count">250</p>
+                <p class="count"><?php echo $total_employees_absent; ?></p>
             </div>
             <div class="stats-item absent">
                 <h3>Absent</h3>
@@ -214,7 +227,7 @@ $recentEmployees = getRecentEmployees($conn);
         setInterval(updateTime, 1000);
         updateTime(); // Initial call to set date/time immediately
 
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const calendarContainer = document.getElementById('calendar');
             const date = new Date();
             let currentMonth = date.getMonth();
