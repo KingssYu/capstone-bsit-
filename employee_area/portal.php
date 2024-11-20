@@ -34,7 +34,6 @@ try {
                     exit();
                 } else {
                     $login_error = "Invalid Admin Password!";
-
                 }
             } else {
                 // Now checking for employee login
@@ -55,7 +54,6 @@ try {
                             // Redirect to password change page
                             header("Location: change_password.php");
                             exit();
-
                         } else {
                             $login_error = "Invalid Last Name or Password!";
                         }

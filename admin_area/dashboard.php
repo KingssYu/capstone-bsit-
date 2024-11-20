@@ -26,14 +26,29 @@ if ($result_total->num_rows > 0) {
     $total_employees = $row_total['total_employees'];
 }
 
-$sql = "SELECT COUNT(DISTINCT adding_employee.employee_no) AS total_employees_absent
-            FROM adding_employee
-            LEFT JOIN attendance_report
-            ON adding_employee.employee_no = attendance_report.employee_no
-            WHERE attendance_report.date IS NULL
-            OR attendance_report.time_out < '17:00'
+$sql_present = "SELECT COUNT(DISTINCT adding_employee.employee_no) AS total_employees_present
+                FROM adding_employee
+                INNER JOIN attendance_report
+                ON adding_employee.employee_no = attendance_report.employee_no
+                WHERE attendance_report.date = CURDATE()";
+
+$result_present = $conn->query($sql_present);
+$total_employees_present = 0;
+
+if ($result_present->num_rows > 0) {
+    $row_present = $result_present->fetch_assoc();
+    $total_employees_present = $row_present['total_employees_present'];
+}
+
+
+$sql_absent = "SELECT COUNT(DISTINCT adding_employee.employee_no) AS total_employees_absent
+        FROM adding_employee
+        LEFT JOIN attendance_report
+        ON adding_employee.employee_no = attendance_report.employee_no
+        AND (attendance_report.date = CURDATE() OR attendance_report.date IS NULL)
+
         ";
-$result_total = $conn->query($sql);
+$result_total = $conn->query($sql_absent);
 $total_employees_absent = 0;
 
 if ($result_total->num_rows > 0) {
@@ -170,11 +185,11 @@ $recentEmployees = getRecentEmployees($conn);
             </div>
             <div class="stats-item present">
                 <h3>Present</h3>
-                <p class="count"><?php echo $total_employees_absent; ?></p>
+                <p class="count"><?php echo $total_employees_present; ?></p>
             </div>
             <div class="stats-item absent">
                 <h3>Absent</h3>
-                <p class="count">50</p>
+                <p class="count"><?php echo $total_employees_absent; ?></p>
             </div>
         </div>
 

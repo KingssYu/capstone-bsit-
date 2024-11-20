@@ -18,19 +18,24 @@ $employee = $_SESSION['employee'];
 <head>
     <title><?php echo $employee['first_name'] . ' ' . $employee['last_name']; ?>'s Dashboard</title>
     <link rel="stylesheet" href="employee_styles/employee_dashboard.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
 </head>
 
 
-<body style="font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 0;">
+<body>
 
     <?php include 'employee_navigation.php' ?>
-
+    <?php include '../modals/update_profile_modal.php'; ?>
     <div>
         <div class="employee-greeting" style="text-align: center; margin-bottom: 20px;">
             <h1 style="color: #333;">Hello, <?php echo $employee['first_name']; ?></h1>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateProfile">
+                Update Profile
+            </button>
         </div>
 
-        <div class="employee-details-container" style="display: flex; flex-direction: column; gap: 30px;">
+        <div class="employee-details-container">
             <div class="main-content">
                 <div class="header" style="display: flex; align-items: center; gap: 20px;">
                     <div class="profile-circle"

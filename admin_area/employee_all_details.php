@@ -712,7 +712,7 @@ $conn->close();
         }
 
         // Add event listener to close the modal when clicking outside of it
-        window.onclick = function (event) {
+        window.onclick = function(event) {
             const modal = document.getElementById('editModal');
             if (event.target == modal) {
                 closeEditModal();
@@ -727,9 +727,9 @@ $conn->close();
             formData.append('action', 'update_employee');
 
             fetch('update_employee.php', {
-                method: 'POST',
-                body: formData
-            })
+                    method: 'POST',
+                    body: formData
+                })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -824,7 +824,7 @@ $conn->close();
             const content = document.getElementById('timeRecordContent');
 
             doc.html(content, {
-                callback: function (doc) {
+                callback: function(doc) {
                     doc.save('daily-time-record.pdf');
                 },
                 x: 10,
@@ -835,7 +835,7 @@ $conn->close();
         }
 
         // Close modal when clicking outside
-        window.onclick = function (event) {
+        window.onclick = function(event) {
             const modal = document.getElementById('timeRecordModal');
             if (event.target == modal) {
                 closeTimeRecordModal();
@@ -911,7 +911,7 @@ $conn->close();
         </div>
     </div>
 
-    <?php include './modals/daily_time_record_modal.php' ?>
+    <?php include '../modals/daily_time_record_modal.php' ?>
 
 </body>
 

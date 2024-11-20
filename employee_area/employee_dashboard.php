@@ -1,15 +1,50 @@
 <?php
 // Start the session
 session_start();
+include '../connection/connections.php';
 
 // Check if employee is logged in
 if (!isset($_SESSION['employee'])) {
-    header("Location: login.php");
+    header("Location: portal.php");
     exit();
 }
 
 // Get employee data from session
 $employee = $_SESSION['employee'];
+$employee_no = $_SESSION['employee']['employee_no'];
+
+
+$sql_present = "SELECT COUNT(DISTINCT adding_employee.employee_no) AS total_employees_present
+                FROM adding_employee
+                INNER JOIN attendance_report
+                ON adding_employee.employee_no = attendance_report.employee_no
+                WHERE attendance_report.date = CURDATE() AND adding_employee.employee_no = '$employee_no'";
+
+$result_present = $conn->query($sql_present);
+$total_employees_present = 0;
+
+if ($result_present->num_rows > 0) {
+    $row_present = $result_present->fetch_assoc();
+    $total_employees_present = $row_present['total_employees_present'];
+}
+
+
+$sql_absent = "SELECT COUNT(DISTINCT adding_employee.employee_no) AS total_employees_absent
+        FROM adding_employee
+        LEFT JOIN attendance_report
+        ON adding_employee.employee_no = attendance_report.employee_no
+        AND (attendance_report.date = CURDATE() OR attendance_report.date IS NULL) WHERE adding_employee.employee_no = '$employee_no'
+
+        ";
+
+$result_total = $conn->query($sql_absent);
+$total_employees_absent = 0;
+
+if ($result_total->num_rows > 0) {
+    $row_total = $result_total->fetch_assoc();
+    $total_employees_absent = $row_total['total_employees_absent'];
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -53,11 +88,11 @@ $employee = $_SESSION['employee'];
 
     <div class="attendance-calendar-container">
         <div class="attendance-container">
-            <h3>Attendance <a href="#" class="view-stats">View Stats</a></h3>
+            <h3>Attendance for today <a href="timesheet.php" class="view-stats">View Stats</a></h3>
             <div class="attendance-status">
-                <p><span class="dot green"></span> 1000 Present</p>
-                <p><span class="dot yellow"></span> 100 Late</p>
-                <p><span class="dot red"></span> 50 Absent</p>
+                <p><span class="dot green"></span> <?php echo $total_employees_present . ' Present';  ?></p>
+                <p><span class="dot yellow"></span> <?php echo $total_employees_present . ' Late';  ?></p>
+                <p><span class="dot red"></span> <?php echo $total_employees_absent . ' Absent';  ?></p>
             </div>
         </div>
 
@@ -71,7 +106,6 @@ $employee = $_SESSION['employee'];
     <div class="members-events-container">
         <div class="department-members-container">
             <h3>Department Members
-                <a href="#" class="view-directory">View Directory</a>
             </h3>
             <div class="member-list">
                 <!-- Dynamically list members -->
