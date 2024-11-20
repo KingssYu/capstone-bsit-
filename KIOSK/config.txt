@@ -1,0 +1,6 @@
+localhost
+root
+1234
+3306
+admin_area
+C:/xampp/htdocs/capstone-bsit-/admin_area/employee_faces
