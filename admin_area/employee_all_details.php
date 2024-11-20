@@ -90,13 +90,21 @@ if (isset($_POST['delete_employee'])) {
 // Modify the get_monthly_attendance function to accept JSON requests
 function get_monthly_attendance($conn, $employee_no, $year, $month)
 {
+    // Set the time zone to Philippines Time (PHT)
+    date_default_timezone_set('Asia/Manila');
 
+    // Ensure the MySQL session time zone matches the PHP timezone
+    $conn->query("SET time_zone = '+08:00'");
+
+    // Query to retrieve attendance data
     $query = "
     SELECT DATE(date) as date, status, TIME(time_in) as time_in, TIME(time_out) as time_out, actual_time
     FROM attendance_report
     WHERE employee_no = ? AND YEAR(date) = ? AND MONTH(date) = ? AND is_paid = 0 AND date < CURDATE()
     ORDER BY date
     ";
+
+    // Prepare and execute the query
     $stmt = $conn->prepare($query);
     $stmt->bind_param("sii", $employee_no, $year, $month);
     $stmt->execute();
@@ -107,6 +115,7 @@ function get_monthly_attendance($conn, $employee_no, $year, $month)
         $records[] = $row;
     }
 
+    // Initialize summary variables
     $total_present = 0;
     $total_absent = 0;
     $total_late = 0;
@@ -131,7 +140,7 @@ function get_monthly_attendance($conn, $employee_no, $year, $month)
             $total_hours += $hours + ($minutes / 60) + ($seconds / 3600);
         }
 
-        // Calculate overtime (OT)
+        // Calculate overtime (OT) if time_out is after 18:00
         if (isset($record['time_out']) && $record['time_out'] > '18:00:00') {
             // Convert time_out and 18:00:00 into DateTime objects
             $timeOut = new DateTime($record['time_out']);
@@ -150,6 +159,7 @@ function get_monthly_attendance($conn, $employee_no, $year, $month)
     $total_hours = round($total_hours, 2);
     $total_overtime = round($total_overtime, 2);
 
+    // Return the records and summary along with current date in PHT
     return [
         'records' => $records,
         'summary' => [
@@ -159,7 +169,7 @@ function get_monthly_attendance($conn, $employee_no, $year, $month)
             'total_hours' => $total_hours,
             'total_overtime' => $total_overtime // Add OT to the summary
         ],
-        'current_date' => date('Y-m-d')
+        'current_date' => date('Y-m-d') // Current date in PHT
     ];
 }
 
@@ -760,6 +770,12 @@ $conn->close();
             // Clear existing rows
             tbody.innerHTML = '';
 
+            // Get the current day of the month
+            const today = new Date();
+            const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+            const startDay = today.getDate() <= 15 ? 1 : 16;
+            const endDay = today.getDate() <= 15 ? 15 : lastDayOfMonth;
+
             // Fetch attendance data for the current month
             fetch(`get_attendance_details.php?employee_no=${employeeNo}&year=${currentYear}&month=${currentMonth}`)
                 .then(response => response.json())
@@ -767,8 +783,8 @@ $conn->close();
                     // Sort the records by date
                     const sortedRecords = data.records.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-                    // Create rows for the first 15 days
-                    for (let i = 1; i <= 15; i++) {
+                    // Create rows for the selected range of days
+                    for (let i = startDay; i <= endDay; i++) {
                         const date = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
                         const record = sortedRecords.find(r => r.date === date);
 
@@ -785,6 +801,7 @@ $conn->close();
 
             modal.style.display = 'block';
         }
+
 
         function formatTime(time) {
             if (!time) return '';
@@ -893,6 +910,8 @@ $conn->close();
             </div>
         </div>
     </div>
+
+    <?php include './modals/daily_time_record_modal.php' ?>
 
 </body>
 

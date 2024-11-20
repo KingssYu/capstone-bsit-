@@ -27,22 +27,23 @@ $employee = $_SESSION['employee'];
   <?php include '../modals/add_cash_request_modal.php'; ?>
 
   <div class="employee-greeting">
-    <h1>Cash Advance</h1>
+    <h1>Timesheet</h1>
 
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cashRequestModal">
-      Request Cash Advance
-    </button>
+    <a type="button" class="btn btn-info" href="./timesheet_export_process.php">
+      Export to Excel
+    </a>
   </div>
   </div>
 
   <div class="employee-details-container">
-    <table class="directory-table" name="cash_advance_table" id="cash_advance_table">
+    <table class="directory-table" name="timesheet_table" id="timesheet_table">
       <thead>
         <tr>
           <th>Employee #</th>
-          <th>Requested Amount</th>
-          <th># of Months</th>
-          <th>Remaining Balance</th>
+          <th>Date</th>
+          <th>Time-in</th>
+          <th>Time-out</th>
+          <th>Break</th>
           <th>Status</th>
         </tr>
       </thead>
@@ -64,12 +65,12 @@ $employee = $_SESSION['employee'];
 <link rel="stylesheet" type="text/css" href="../datatables/datatables.min.css" />
 <script type="text/javascript" src="../datatables/datatables.min.js"></script>
 <script>
-  var cash_advance_table = $('#cash_advance_table').DataTable({
+  var timesheet_table = $('#timesheet_table').DataTable({
     "pagingType": "numbers",
     "processing": true,
     "serverSide": true,
     "ajax": {
-      "url": "./cash_advance_table.php",
+      "url": "./timesheet_table.php",
       "data": function (d) {
         d.date_from = $('#dateFrom').val();
         d.date_to = $('#dateTo').val();

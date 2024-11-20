@@ -16,89 +16,106 @@ $employee = $_SESSION['employee'];
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile</title>
-    <link rel="stylesheet" href="employee_styles/my_profile.css">
+    <title><?php echo $employee['first_name'] . ' ' . $employee['last_name']; ?>'s Dashboard</title>
+    <link rel="stylesheet" href="employee_styles/employee_dashboard.css">
 </head>
 
-<body>
+
+<body style="font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 0;">
+
     <?php include 'employee_navigation.php' ?>
-    <div class="container">
 
-        <div class="main-content">
-            <div class="header">
-                <div class="profile-circle">
-                    <span>MA</span>
+    <div>
+        <div class="employee-greeting" style="text-align: center; margin-bottom: 20px;">
+            <h1 style="color: #333;">Hello, <?php echo $employee['first_name']; ?></h1>
+        </div>
+
+        <div class="employee-details-container" style="display: flex; flex-direction: column; gap: 30px;">
+            <div class="main-content">
+                <div class="header" style="display: flex; align-items: center; gap: 20px;">
+                    <div class="profile-circle"
+                        style="width: 80px; height: 80px; border-radius: 50%; background-color: #007bff; color: white; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold;">
+                        <span><?php echo strtoupper(substr($employee['first_name'], 0, 1)) . strtoupper(substr($employee['last_name'], 0, 1)); ?></span>
+                    </div>
+                    <h1 style="color: #007bff; margin: 0;">My Profile</h1>
                 </div>
-                <h1>My Profile</h1>
-            </div>
 
-            <div class="content-section">
-                <div class="section-header">
-                    <span class="badge">Personal and Contact Data</span>
-                </div>
-
-                <div class="info-grid">
-                    <div class="personal-info">
-                        <h2>Personal Info</h2>
-                        <div class="info-group">
-                            <label>Fullname</label>
-                            <span>Kristine Grace Castillo</span>
-                        </div>
-                        <div class="info-group">
-                            <label>Employee No.</label>
-                            <span>EMP-0316</span>
-                        </div>
-                        <div class="info-group">
-                            <label>Birth Date</label>
-                            <span>03/16/2002</span>
-                        </div>
-                        <div class="info-group">
-                            <label>Marital Status</label>
-                            <span>Single</span>
-                        </div>
+                <div class="content-section" style="margin-top: 20px;">
+                    <div class="section-header" style="margin-bottom: 10px;">
+                        <span class="badge"
+                            style="background-color: #007bff; color: white; padding: 5px 10px; border-radius: 5px;">Personal
+                            and Contact Data</span>
                     </div>
 
-                    <div class="contact-info">
-                        <h2>Contact Info</h2>
-                        <div class="info-group">
-                            <label>Phone</label>
-                            <span>09604699786</span>
+                    <div class="info-grid" style="display: flex; gap: 20px;">
+                        <div class="personal-info" style="flex: 1;">
+                            <h2 style="color: #333;">Personal Info</h2>
+                            <div class="info-group" style="margin-bottom: 10px;">
+                                <label style="font-weight: bold; color: #666;">Fullname:</label>
+                                <span
+                                    style="display: block; color: #333;"><?php echo $employee['first_name'] . ' ' . $employee['last_name']; ?></span>
+                            </div>
+                            <div class="info-group" style="margin-bottom: 10px;">
+                                <label style="font-weight: bold; color: #666;">Employee No.:</label>
+                                <span
+                                    style="display: block; color: #333;"><?php echo $employee['employee_no']; ?></span>
+                            </div>
+                            <div class="info-group" style="margin-bottom: 10px;">
+                                <label style="font-weight: bold; color: #666;">Birth Date:</label>
+                                <span style="display: block; color: #333;"><?php echo $employee['birthdate']; ?></span>
+                            </div>
                         </div>
-                        <div class="info-group">
-                            <label>Email</label>
-                            <span>kgbcastillo@gmail.com</span>
-                        </div>
-                        <div class="info-group">
-                            <label>Address</label>
-                            <span>B19 L13 Miramonte Park Subdivision Brgy 180 Malaria, Caloocan City</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <div class="content-section">
-                <div class="section-header">
-                    <span class="badge">Emergency Contact</span>
+                        <div class="contact-info" style="flex: 1;">
+                            <h2 style="color: #333;">Contact Info</h2>
+                            <div class="info-group" style="margin-bottom: 10px;">
+                                <label style="font-weight: bold; color: #666;">Phone:</label>
+                                <span style="display: block; color: #333;"><?php echo $employee['contact']; ?></span>
+                            </div>
+                            <div class="info-group" style="margin-bottom: 10px;">
+                                <label style="font-weight: bold; color: #666;">Email:</label>
+                                <span style="display: block; color: #333;"><?php echo $employee['email']; ?></span>
+                            </div>
+                            <div class="info-group" style="margin-bottom: 10px;">
+                                <label style="font-weight: bold; color: #666;">Address:</label>
+                                <span style="display: block; color: #333;"><?php echo $employee['address']; ?></span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="emergency-info">
-                    <div class="info-group">
-                        <label>Name</label>
-                        <span>Teresita Castillo</span>
+
+                <div class="content-section" style="margin-top: 20px;">
+                    <div class="section-header" style="margin-bottom: 10px;">
+                        <span class="badge"
+                            style="background-color: #28a745; color: white; padding: 5px 10px; border-radius: 5px;">Emergency
+                            Contact</span>
                     </div>
-                    <div class="info-group">
-                        <label>Relationship</label>
-                        <span>Mother</span>
-                    </div>
-                    <div class="info-group">
-                        <label>Phone</label>
-                        <span>09604699786</span>
+                    <div class="emergency-info">
+                        <div class="info-group" style="margin-bottom: 10px;">
+                            <label style="font-weight: bold; color: #666;">Name:</label>
+                            <span
+                                style="display: block; color: #333;"><?php echo $employee['emergency_contact_name']; ?></span>
+                        </div>
+                        <div class="info-group" style="margin-bottom: 10px;">
+                            <label style="font-weight: bold; color: #666;">Phone:</label>
+                            <span
+                                style="display: block; color: #333;"><?php echo $employee['emergency_contact_number']; ?>
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
 </body>
 
+
 </html>
+
+<!-- Add Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Add Bootstrap JS and Popper.js for Modal functionality -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>

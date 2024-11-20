@@ -1,10 +1,11 @@
 <?php
 
 // Define table and primary key
-$table = 'cash_advance';
-$primaryKey = 'cash_advance_id';
+$table = 'attendance_report';
+$primaryKey = 'id';
 // Define columns for DataTables
 $columns = array(
+
   array(
     'db' => 'employee_no',
     'dt' => 0,
@@ -15,53 +16,61 @@ $columns = array(
   ),
 
   array(
-    'db' => 'requested_amount',
+    'db' => 'date',
     'dt' => 1,
-    'field' => 'requested_amount',
+    'field' => 'date',
     'formatter' => function ($lab1, $row) {
-      return $row['requested_amount'];
+      return $row['date'];
     }
   ),
 
-
   array(
-    'db' => 'months',
+    'db' => 'time_in',
     'dt' => 2,
-    'field' => 'months',
-    'formatter' => function ($lab4, $row) {
-      return $row['months'];
-
+    'field' => 'time_in',
+    'formatter' => function ($lab1, $row) {
+      return $row['time_in'];
     }
   ),
-
 
   array(
-    'db' => 'remaining_balance',
+    'db' => 'time_out',
     'dt' => 3,
-    'field' => 'remaining_balance',
+    'field' => 'time_out',
     'formatter' => function ($lab4, $row) {
-      return $row['remaining_balance'];
+      return $row['time_out'];
     }
   ),
+
+  array(
+    'db' => 'id',
+    'dt' => 4,
+    'field' => 'id',
+    'formatter' => function ($id, $row) {
+
+      $break_duration = 3600;
+
+      return gmdate("H:i", $break_duration);
+    }
+  ),
+
 
   array(
     'db' => 'status',
-    'dt' => 4,
+    'dt' => 5,
     'field' => 'status',
     'formatter' => function ($lab4, $row) {
       $status = $row['status'];
 
       // Define styles for different statuses
       $style = '';
-      if ($status === 'Pending') {
+      if ($status === 'Late') {
         $style = 'background-color: lightyellow; border-radius: 5px; padding: 5px;';
-      } elseif ($status === 'Approved') {
+      } elseif ($status === 'Present') {
         $style = 'background-color: lightgreen; border-radius: 5px; padding: 5px;';
       } elseif ($status === 'Partially Paid') {
         $style = 'background-color: lightgreen; border-radius: 5px; padding: 5px;';
-      } elseif ($status === 'Paid') {
-        $style = 'background-color: lightgreen; border-radius: 5px; padding: 5px;';
-      } elseif ($status === 'Declined') {
+      } elseif ($status === 'Absent') {
         $style = 'background-color: #FF474C; border-radius: 5px; padding: 5px;';
       }
 

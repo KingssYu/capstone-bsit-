@@ -54,12 +54,7 @@ $columns = array(
 );
 
 // Database connection details
-$sql_details = array(
-  'user' => 'root',
-  'pass' => '',
-  'db' => 'bsu_payroll',
-  'host' => 'localhost',
-);
+include '../connection/ssp_connection.php';
 
 // Include the SSP class
 require('../datatables/ssp.class_with_where.php');

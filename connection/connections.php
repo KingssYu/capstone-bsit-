@@ -5,6 +5,13 @@ $username = "root";
 $password = "";
 $dbname = "bsu_payroll";
 
+// FOR LIVE BLUEHOST
+
+// $servername = "localhost";
+// $username = "vssphcom_bsupayroll";
+// $password = "Mybossrocks081677";
+// $dbname = "vssphcom_bsupayroll";
+
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
 

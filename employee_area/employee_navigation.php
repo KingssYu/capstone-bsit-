@@ -6,6 +6,8 @@
     <li><a href="employee_dashboard.php">Home</a></li>
     <li><a href="my_profile.php">My Profile</a></li>
     <li><a href="cash_advance_request.php">Cash Advance Request</a></li>
+    <li><a href="timesheet.php">Timesheet</a></li>
+
     <!-- <li><a href="#">Leave Request</a></li> -->
   </ul>
   <div class="logout">
