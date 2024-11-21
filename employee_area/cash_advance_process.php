@@ -2,6 +2,18 @@
 // Include database connection
 include '../connection/connections.php';
 
+//Change the servername IP ADDRESS base on your IP ADDRESS used
+// $servername = "162.241.218.154";
+// $username = "vssphcom_bsupayroll";
+// $password = "Mybossrocks081677";
+// $dbname = "vssphcom_bsupayroll";
+
+// $conn = mysqli_connect($servername, $username, $password, $dbname);
+
+// if (!$conn) {
+//   die("Database connection failed: " . mysqli_connect_error());
+// }
+
 if (isset($_POST['submit_cash_advance'])) {
   // Retrieve values from the form
   // $date_from = isset($_POST['date_from']) ? $_POST['date_from'] : null;
