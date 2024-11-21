@@ -1,13 +1,15 @@
 import tkinter
 from PIL import Image, ImageTk
 import customtkinter as ctk
-from datetime import datetime
+from datetime import datetime, timedelta
 import cv2
 import os
-import face_recognition
+# import face_recognition
 import logging
 import numpy as np
+from database_queries import Database_queries
 
+Dq = Database_queries()
 
 ctk.set_appearance_mode("Light")
 ctk.set_default_color_theme("blue")
@@ -15,6 +17,8 @@ ctk.set_default_color_theme("blue")
 
 config_file_name = "config.txt"
 config_file_exist = os.path.exists(config_file_name)
+
+global_data = False
 
 
 def load_employee_faces(base_path):
@@ -46,11 +50,31 @@ def load_employee_faces(base_path):
     return known_face_encodings, known_face_names
 
 
-# base_path = os.path.dirname(os.path.abspath(__file__))
-#C:\Users\DY\Downloads\Compressed\capstone-bsit--main_2\capstone-bsit--main\admin_area
-base_path = r"D:\KIOSK\caps\capstone-bsit--main\admin_area"
-known_face_encodings, known_face_names = load_employee_faces(base_path)
+def load_global_data():
+    if config_file_exist:
+        global known_face_encodings, known_face_names, face_cooldowns, cooldown_duration, global_data
+        with open(config_file_name) as file:
 
+            base_path = file.read().split("\n")[-2].replace("/", "\\").replace("\\")
+            known_face_encodings, known_face_names = load_employee_faces(base_path)
+
+            face_cooldowns = {face_: datetime.min for face_ in known_face_names}
+            cooldown_duration = timedelta(seconds=10)
+
+            global_data = True
+
+    
+
+load_global_data()
+
+def handle_new_face_detected(new_face):
+    for face_ in face_cooldowns:
+        face_cooldowns[face_] = datetime.min 
+
+    face_cooldowns[new_face] = datetime.now() + cooldown_duration
+
+def can_process_face(face_):
+    return datetime.now() >= face_cooldowns.get(face_, datetime.min)
 
 
 class App(ctk.CTk):
@@ -107,7 +131,7 @@ class App(ctk.CTk):
         self.image_label = ctk.CTkLabel(self.cam_inner_frame, text="")
         self.image_label.pack(expand=True, fill="both")
 
-        self.cap = cv2.VideoCapture(0)
+        self.cap = cv2.VideoCapture(1)
         self.update_video_frame()
 
         self.emp_logs_frame = ctk.CTkFrame(self.body_frame, fg_color="#FFFBE6")
@@ -145,27 +169,52 @@ class App(ctk.CTk):
             self.image_label.configure(image=ctk_image)
             self.image_label.image = ctk_image
 
-            face_locations = face_recognition.face_locations(frame_rgb, model="hog")
-            face_encodings = face_recognition.face_encodings(frame_rgb, face_locations)
+            if config_file_exist:
+                if not global_data:
+                    load_global_data
+                face_locations = face_recognition.face_locations(frame_rgb, model="hog")
+                face_encodings = face_recognition.face_encodings(frame_rgb, face_locations)
 
-            
-
-            if not known_face_encodings:
-                logging.warning("No employee faces loaded. Exiting.")
-                return
-
-            for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
-                face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
-                best_match_index = np.argmin(face_distances)
                 
-                if face_distances[best_match_index] < 0.6: 
-                    employee_no = known_face_names[best_match_index]
-                    print(employee_no)
-                    #update gui id, name, status here
+
+                if not known_face_encodings:
+                    logging.warning("No employee faces loaded. Exiting.")
+                    return
+
+                for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
+                    face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
+                    best_match_index = np.argmin(face_distances)
+                    
+                    if face_distances[best_match_index] < 0.6: 
+                        employee_no = known_face_names[best_match_index]
+                        current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        print(f"emp: {employee_no} - {current_datetime}")
+
+                        if can_process_face(employee_no):
+                            emp_name = Dq.get_emp_name(employee_no)
+                            attendance_stat = Dq.attendance_insert(employee_no,
+                                                current_datetime.split(" ")[0],
+                                                current_datetime
+                                                )
+                            
+                            self.emp_id_disp.configure(text = f"ID: {employee_no}")
+                            self.emp_name_disp.configure(text = f"Name: {emp_name}")
+                            self.emp_status_disp.configure(text = f"Status: {attendance_stat}")
+
+                            handle_new_face_detected(employee_no)
+                    # emp_name = Dq.get_emp_name(employee_no)
+                    # attendance_stat = Dq.attendance_insert(employee_no,
+                    #                     current_datetime.split(" ")[0],
+                    #                     current_datetime
+                    #                     )
+                    
+                    # self.emp_id_disp.configure(text = f"ID: {employee_no}")
+                    # self.emp_name_disp.configure(text = f"Name: {emp_name}")
+                    # self.emp_status_disp.configure(text = f"Status: {attendance_stat}")
+
                 else:
-                    #clear the gui info here
                     pass
-        
+    
 
         self.after(10, self.update_video_frame) 
 
@@ -214,6 +263,7 @@ class App(ctk.CTk):
 
             with open(config_file_name, "w") as config_file:
                 config_file.write(config)
+                load_global_data()
         
         def get_img_path():
             print("img path")

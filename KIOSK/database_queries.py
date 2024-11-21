@@ -121,23 +121,43 @@ class Database_queries:
     
 
     def get_emp_name(self, emp_no):
-        return self.__get_qry('first_name, last_name',
+        return self.__get_qry("CONCAT(first_name, ' ' , last_name) fullname",
                                 "adding_employee",
-                                f"employee_no = '{emp_no}'")
+                                f"employee_no = '{emp_no}'")[0][0]
+    
+    def get_attendance_status(self, emp_no, date_now):
+        print(date_now)
+        result = self.__get_qry("clock_in", "attendance", f'''
+                                            `employee_no` = '{emp_no}'
+                                            AND `date` = '{date_now}'
+                                           ''')
+        try:
+            condition_ = len(result) == 0
+        except Exception:
+            condition_ = result == False
+        return "In" if condition_ else "Out"
+    
 
-    def attendance_insert(self, emp_no, date_now, clock_in_date_time, status):
+    def attendance_insert(self, emp_no, date_now, clock_in_date_time):
+        status = self.get_attendance_status(emp_no, date_now)
         col = "clock_in" if status == "In" else "clock_out"
-
         now = datetime.now()
 
-        if now.hour < 8 and status != "Out":
-            new_status = "Late"
+        if status == "In":
+            new_status = "Late" if now.hour > 8 else "Present"
+            self.__insert_qry("attendance",
+                            f"employee_no, date, {col}, status",
+                            f"'{emp_no}', '{date_now}', '{clock_in_date_time}', '{new_status}'")
         else:
-            new_status = "Present"
+            self.__update_qry("attendance",
+                              f"clock_out = '{clock_in_date_time}'",
+                              f'''
+                                employee_no = '{emp_no}'
+                                AND `date` = '{date_now}'
+                               ''')
+        return status
 
-        self.__insert_qry("attendance",
-                          f"employee_no, date, {col}, status",
-                          f"'{emp_no}', '{date_now}', '{clock_in_date_time}', '{new_status}'")
+
     
     def attendance_report(self, emp_no, status, current_date, time_):
         try:
@@ -233,82 +253,12 @@ class Database_queries:
             return False
     
 
-    def log_attendance(self, employee_no):
-        try:
-            db, cursor = self.__create_connection()
-
-            current_time = datetime.now()
-            current_date = current_time.date()
-
-            start_time = datetime.combine(current_date, time(8, 0))
-            end_time = datetime.combine(current_date, time(17, 0)) 
-            lunch_start = datetime.combine(current_date, time(12, 0))
-            lunch_end = datetime.combine(current_date, time(13, 0))
-
-            cursor.execute("SELECT * FROM attendance WHERE employee_no = %s AND DATE(date) = CURDATE()", (employee_no,))
-            existing_record = cursor.fetchall()
-            print(existing_record)
-
-            attendance_type = 'in' if len(existing_record) % 2 == 0 else 'out'
-
-            cursor.execute("SELECT * FROM attendance WHERE employee_no = %s AND DATE(date) = CURDATE()", (employee_no,))
-            existing_record = cursor.fetchone()
-            print(existing_record)
-            
-            #if attendance_type == 'in':
-            if attendance_type == 'in':
-                if existing_record is None:
-                    if current_time.time() < time(5, 0):
-                        message = "Attendance not allowed before 5:00 AM"
-                    else:
-                        status = 'Present' if current_time <= start_time else 'Late'
-                        cursor.execute("INSERT INTO attendance (employee_no, date, clock_in, status) VALUES (%s, %s, %s, %s)",
-                                    (employee_no, current_date, start_time, status))
-                        
-                        cursor.execute("""
-                            INSERT INTO attendance_report (employee_no, employee_name, status, date, time_in)
-                            VALUES (%s, (SELECT CONCAT(first_name, ' ', last_name) FROM adding_employee WHERE employee_no = %s), %s, %s, %s)
-                            ON DUPLICATE KEY UPDATE
-                                status = VALUES(status),
-                                time_in = VALUES(time_in)
-                        """, (employee_no, employee_no, status, current_date, start_time.time()))
-                        
-                        message = f"Clock in successful. Status: {status}"
-                else:
-                    message = "Already clocked in"
-            else:  # attendance_type == 'out'
-                if existing_record is None:
-                    message = "No clock-in record found"
-                else:
-                    clock_in_time = existing_record[3]
-                    worked_time = calculate_worked_time(clock_in_time, current_time)
-                    overtime = calculate_overtime(worked_time)
-                    
-                    cursor.execute("UPDATE attendance SET clock_out = %s, worked_time = %s, overtime = %s WHERE employee_no = %s AND DATE(date) = CURDATE()",
-                                (current_time, worked_time, overtime, employee_no))
-                    
-                    cursor.execute("""
-                        UPDATE attendance_report 
-                        SET time_out = %s, actual_time = %s, overtime = %s
-                        WHERE employee_no = %s AND DATE(date) = CURDATE()
-                    """, (current_time.time(), worked_time, overtime, employee_no))
-                    
-                    message = f"Clock out successful. Worked time: {worked_time}, Overtime: {overtime}"
-
-            db.commit()
-            self.__closeConnection(cursor, db)
-
-            return message
-        except mysql.connector.Error as err:
-            pass
-            
-
 if __name__ == "__main__":
     Db = Database_queries()
-    print(Db.get_emp_name("EMP-6601"))
-    # Db.attendance_insert("EMP-6601", "2024-11-20", "2024-11-20 08:15:00", "In") # Needs to indicate if late
-    Db.attendance_insert("EMP-6601", "2024-11-20", "2024-11-20 17:00:00", "Out")
+    print(Db.get_emp_name("EMP-00029"))
+    #print(Db.attendance_insert("EMP-6601", "2024-11-21", "2024-11-21 18:00:00")) # working, auto detect if in or out
+    # Db.attendance_insert("EMP-6601", "2024-11-20", "2024-11-20 17:00:00") #working
     # Db.attendance_report("EMP-6601", "Late", "2024-11-20", "08:15") 
-    #Db.log_attendance("EEMP-6601") #updates the attendance - not working yet
     # Db.mark_absent_employees() #working
     # Db.transfer_attendance_to_report() #working
+    #print(Db.get_attendance_status("EMP-6601", "2024-11-21"))

@@ -1,9 +1,71 @@
 import tkinter
 from PIL import Image, ImageTk
 import customtkinter as ctk
-from datetime import datetime
+from datetime import datetime, timedelta
 import cv2
 import os
+import face_recognition
+import logging
+import numpy as np
+from database_queries import Database_queries
+
+Dq = Database_queries()
+
+ctk.set_appearance_mode("Light")
+ctk.set_default_color_theme("blue")
+
+
+config_file_name = "config.txt"
+config_file_exist = os.path.exists(config_file_name)
+
+
+def load_employee_faces(base_path):
+    known_face_encodings = []
+    known_face_names = []
+    employee_faces_path = os.path.join(base_path, 'employee_faces')
+
+    for employee_no in os.listdir(employee_faces_path):
+        employee_folder = os.path.join(employee_faces_path, employee_no)
+        if os.path.isdir(employee_folder):
+            employee_encodings = []
+            for face_image in os.listdir(employee_folder):
+                image_path = os.path.join(employee_folder, face_image)
+                face_image = face_recognition.load_image_file(image_path)
+                face_encoding = face_recognition.face_encodings(face_image)
+                
+                if len(face_encoding) > 0:
+                    employee_encodings.append(face_encoding[0])
+                else:
+                    logging.warning(f"No face found in {image_path}")
+            
+            if employee_encodings:
+                known_face_encodings.append(np.mean(employee_encodings, axis=0))
+                known_face_names.append(employee_no)
+            else:
+                logging.warning(f"No valid face encodings found for employee {employee_no}")
+
+    logging.info(f"Loaded {len(known_face_encodings)} employee faces")
+    return known_face_encodings, known_face_names
+
+
+# base_path = os.path.dirname(os.path.abspath(__file__))
+#C:\Users\DY\Downloads\Compressed\capstone-bsit--main_2\capstone-bsit--main\admin_area
+# base_path = r"D:\KIOSK\caps\capstone-bsit--main\admin_area"
+base_path = r"C:\Users\DY\Downloads\Compressed\capstone-bsit--main_2\capstone-bsit--main\admin_area"
+known_face_encodings, known_face_names = load_employee_faces(base_path)
+
+face_cooldowns = {face_: datetime.min for face_ in known_face_names}
+cooldown_duration = timedelta(seconds=10)
+
+def handle_new_face_detected(new_face):
+    for face_ in face_cooldowns:
+        face_cooldowns[face_] = datetime.min 
+
+    face_cooldowns[new_face] = datetime.now() + cooldown_duration
+
+def can_process_face(face_):
+    return datetime.now() >= face_cooldowns.get(face_, datetime.min)
+
 
 class App(ctk.CTk):
     def __init__(self):
@@ -45,7 +107,7 @@ class App(ctk.CTk):
         self.body_frame = ctk.CTkFrame(self, fg_color="#FFFBE6") 
         self.body_frame.grid(row=1, column=0, sticky="nsew", padx=20, pady=(0, 50))
         self.body_frame.grid_columnconfigure(0, weight=100)
-        self.body_frame.grid_columnconfigure(1, weight=50)
+        self.body_frame.grid_columnconfigure(1, weight=40)
         self.body_frame.grid_rowconfigure(0, weight=1)
 
         self.cam_outer_frame = ctk.CTkFrame(self.body_frame, fg_color="#347928")
@@ -56,11 +118,8 @@ class App(ctk.CTk):
         self.cam_inner_frame = ctk.CTkFrame(self.cam_outer_frame, fg_color="#FFFBE6")
         self.cam_inner_frame.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
 
-        # self.video_label = ctk.CTkLabel(self.cam_inner_frame)
-        # self.video_label.grid(row=0, column=0, sticky="nsew")
-
-        self.video_label = ctk.CTkLabel(self.cam_inner_frame, text="")
-        self.video_label.pack(expand=True, fill="both")
+        self.image_label = ctk.CTkLabel(self.cam_inner_frame, text="")
+        self.image_label.pack(expand=True, fill="both")
 
         self.cap = cv2.VideoCapture(0)
         self.update_video_frame()
@@ -89,6 +148,7 @@ class App(ctk.CTk):
         self.update_date_time()
 
     def update_video_frame(self):
+        global known_face_encodings, known_face_names, base_path
         ret, frame = self.cap.read()
         if ret:
             frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -96,10 +156,54 @@ class App(ctk.CTk):
             
             ctk_image = ctk.CTkImage(light_image=pil_image, size=(640, 480))
             
-            self.video_label.configure(image=ctk_image)
-            self.video_label.image = ctk_image
+            self.image_label.configure(image=ctk_image)
+            self.image_label.image = ctk_image
 
-        self.after(10, self.update_video_frame)
+            face_locations = face_recognition.face_locations(frame_rgb, model="hog")
+            face_encodings = face_recognition.face_encodings(frame_rgb, face_locations)
+
+            
+
+            if not known_face_encodings:
+                logging.warning("No employee faces loaded. Exiting.")
+                return
+
+            for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
+                face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
+                best_match_index = np.argmin(face_distances)
+                
+                if face_distances[best_match_index] < 0.6: 
+                    employee_no = known_face_names[best_match_index]
+                    current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    print(f"emp: {employee_no} - {current_datetime}")
+
+                    if can_process_face(employee_no):
+                        emp_name = Dq.get_emp_name(employee_no)
+                        attendance_stat = Dq.attendance_insert(employee_no,
+                                            current_datetime.split(" ")[0],
+                                            current_datetime
+                                            )
+                        
+                        self.emp_id_disp.configure(text = f"ID: {employee_no}")
+                        self.emp_name_disp.configure(text = f"Name: {emp_name}")
+                        self.emp_status_disp.configure(text = f"Status: {attendance_stat}")
+
+                        handle_new_face_detected(employee_no)
+                    # emp_name = Dq.get_emp_name(employee_no)
+                    # attendance_stat = Dq.attendance_insert(employee_no,
+                    #                     current_datetime.split(" ")[0],
+                    #                     current_datetime
+                    #                     )
+                    
+                    # self.emp_id_disp.configure(text = f"ID: {employee_no}")
+                    # self.emp_name_disp.configure(text = f"Name: {emp_name}")
+                    # self.emp_status_disp.configure(text = f"Status: {attendance_stat}")
+
+                else:
+                    pass
+    
+
+        self.after(10, self.update_video_frame) 
 
     def update_date_time(self):
         now = datetime.now()
@@ -109,8 +213,8 @@ class App(ctk.CTk):
 
     def open_config(self):
         if hasattr(self, "config_window") and self.config_window.winfo_exists():
-                self.config_window.focus_set() 
-                return
+            self.config_window.focus_set() 
+            return
 
         config_window = ctk.CTkToplevel(self)
         config_window.iconbitmap("logo.ico")
@@ -144,7 +248,7 @@ class App(ctk.CTk):
             for input_ in config_input:
                 config += f"{config_input[input_].get()}\n"
 
-            with open("config.txt", "w") as config_file:
+            with open(config_file_name, "w") as config_file:
                 config_file.write(config)
         
         def get_img_path():
@@ -160,15 +264,10 @@ class App(ctk.CTk):
         save_btn = ctk.CTkButton(config_window, text="Save", fg_color="#FCCD2A", text_color="black" , font=("Inter", 15, "bold"), command=save_config)
         save_btn.grid(row=1, column=0, sticky="nsew", padx=70, pady=20)
 
-        if os.path.exists("config.txt"):
-            with open("config.txt", "r") as config_file:
+        if os.path.exists(config_file_name):
+            with open(config_file_name, "r") as config_file:
                 configuration = config_file.read()
                 print(configuration)
-
-                # for pos, conf in enumerate(config_param):
-                #     config_label[f"{conf}_label"] = ctk.CTkLabel(label_input_cont, text=conf)
-                #     config_label[f"{conf}_label"].grid(row=pos, column=0, padx=10, pady=5, sticky="w")
-
 
 if __name__ == "__main__":
     app = App()
