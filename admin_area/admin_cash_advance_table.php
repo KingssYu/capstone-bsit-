@@ -6,17 +6,26 @@ $primaryKey = 'cash_advance_id';
 // Define columns for DataTables
 $columns = array(
   array(
-    'db' => 'employee_no',
+    'db' => 'cash_advance_id',
     'dt' => 0,
-    'field' => 'employee_no',
+    'field' => 'cash_advance_id',
     'formatter' => function ($lab1, $row) {
-      return $row['employee_no'];
+      return $row['cash_advance_id'];
+    }
+  ),
+
+  array(
+    'db' => 'first_name',
+    'dt' => 1,
+    'field' => 'first_name',
+    'formatter' => function ($lab1, $row) {
+      return $row['first_name'] . ' ' . $row['last_name'];
     }
   ),
 
   array(
     'db' => 'requested_amount',
-    'dt' => 1,
+    'dt' => 2,
     'field' => 'requested_amount',
     'formatter' => function ($lab1, $row) {
       return $row['requested_amount'];
@@ -26,7 +35,7 @@ $columns = array(
 
   array(
     'db' => 'months',
-    'dt' => 2,
+    'dt' => 3,
     'field' => 'months',
     'formatter' => function ($lab4, $row) {
       return $row['months'];
@@ -37,16 +46,17 @@ $columns = array(
 
   array(
     'db' => 'remaining_balance',
-    'dt' => 3,
+    'dt' => 4,
     'field' => 'remaining_balance',
     'formatter' => function ($lab4, $row) {
-      return $row['remaining_balance'];
+      return intval($row['remaining_balance']);
+
     }
   ),
 
   array(
     'db' => 'status',
-    'dt' => 4,
+    'dt' => 5,
     'field' => 'status',
     'formatter' => function ($lab4, $row) {
       $status = $row['status'];
@@ -71,7 +81,7 @@ $columns = array(
 
   array(
     'db' => 'cash_advance_id',
-    'dt' => 5,
+    'dt' => 6,
     'field' => 'cash_advance_id',
     'formatter' => function ($lab4, $row) {
       // Check if status is 'Approved', 'Declined', 'Paid' or 'Partially Paid'
@@ -97,15 +107,12 @@ $columns = array(
   ),
 
 
-
-
-
   array(
-    'db' => 'cash_advance_id',
-    'dt' => 6,
-    'field' => 'cash_advance_id',
+    'db' => 'last_name',
+    'dt' => 7,
+    'field' => 'last_name',
     'formatter' => function ($lab4, $row) {
-      return $row['cash_advance_id'];
+      return $row['last_name'];
     }
   ),
 
@@ -117,7 +124,7 @@ $columns = array(
 include '../connection/ssp_connection.php';
 
 // Include the SSP class
-require('../datatables/ssp.class_with_where.php');
+require('../datatables/ssp.class.php');
 
 
 // Build the where condition
@@ -125,9 +132,9 @@ $where = "cash_advance_id";
 
 
 // Fetch and encode ONLY WHERE
-echo json_encode(SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $where));
+// echo json_encode(SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $where));
 
-// $joinQuery = "FROM $table LEFT JOIN users ON $table.user_cash_advance_id = users.user_cash_advance_id";
+$joinQuery = "FROM $table LEFT JOIN adding_employee ON $table.employee_no = adding_employee.employee_no";
 
 // Fetch and encode JOIN AND WHERE
-// echo json_encode(SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $joinQuery, $where));
+echo json_encode(SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $joinQuery, $where));

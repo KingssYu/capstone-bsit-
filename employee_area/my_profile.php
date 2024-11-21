@@ -67,7 +67,8 @@ $employee = $_SESSION['employee'];
                             </div>
                             <div class="info-group" style="margin-bottom: 10px;">
                                 <label style="font-weight: bold; color: #666;">Birth Date:</label>
-                                <span style="display: block; color: #333;"><?php echo $employee['birthdate']; ?></span>
+                                <span
+                                    style="display: block; color: #333;"><?php echo date('F d, Y', strtotime($employee['birthdate'])); ?></span>
                             </div>
                         </div>
 

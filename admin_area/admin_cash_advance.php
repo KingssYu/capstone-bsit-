@@ -217,7 +217,8 @@ if (!isset($_SESSION['admin'])) {
     <table class="directory-table" name="admin_cash_advance_table" id="admin_cash_advance_table">
       <thead>
         <tr>
-          <th>Employee #</th>
+          <th>Cash Advance ID</th>
+          <th>Employee Name</th>
           <th>Requested Amount</th>
           <th># of Months</th>
           <th>Remaining Balance</th>
@@ -242,26 +243,22 @@ if (!isset($_SESSION['admin'])) {
       "serverSide": true,
       "ajax": {
         "url": "./admin_cash_advance_table.php",
-        "data": function (d) {
-          d.date_from = $('#dateFrom').val();
-          d.date_to = $('#dateTo').val();
-        }
       },
     });
 
     $(document).ready(function () {
       // Function to handle click event on datatable rows
-      $('#admin_cash_advance_table').on('click', 'tr td:nth-child(6) .fetchDataCashAdvance', function () {
-        var employee_no = $(this).closest('tr').find('td').first().text(); // Get the user_id from the clicked row
+      $('#admin_cash_advance_table').on('click', 'tr td:nth-child(7) .fetchDataCashAdvance', function () {
+        var cash_advance_id = $(this).closest('tr').find('td').first().text(); // Get the user_id from the clicked row
 
         $.ajax({
           url: '../modals/approve_cash_advance_modal.php', // Path to PHP script to fetch modal content
           method: 'POST',
-          data: { employee_no: employee_no },
+          data: { cash_advance_id: cash_advance_id },
           success: function (response) {
             $('#modalContainerCashAdvance').html(response);
             $('#updateCashAdvance').modal('show');
-            console.log("#updateCashAdvance" + employee_no);
+            console.log("#updateCashAdvance" + cash_advance_id);
           },
           error: function (xhr, status, error) {
             console.error(xhr.responseText);
@@ -272,17 +269,17 @@ if (!isset($_SESSION['admin'])) {
 
     $(document).ready(function () {
       // Function to handle click event on datatable rows
-      $('#admin_cash_advance_table').on('click', 'tr td:nth-child(6) .fetchDataCashAdvanceDecline', function () {
-        var employee_no = $(this).closest('tr').find('td').first().text(); // Get the user_id from the clicked row
+      $('#admin_cash_advance_table').on('click', 'tr td:nth-child(7) .fetchDataCashAdvanceDecline', function () {
+        var cash_advance_id = $(this).closest('tr').find('td').first().text(); // Get the user_id from the clicked row
 
         $.ajax({
           url: '../modals/decline_cash_advance_modal.php', // Path to PHP script to fetch modal content
           method: 'POST',
-          data: { employee_no: employee_no },
+          data: { cash_advance_id: cash_advance_id },
           success: function (response) {
             $('#modalContainerCashAdvance').html(response);
             $('#updateCashAdvance').modal('show');
-            console.log("#updateCashAdvance" + employee_no);
+            console.log("#updateCashAdvance" + cash_advance_id);
           },
           error: function (xhr, status, error) {
             console.error(xhr.responseText);

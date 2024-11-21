@@ -10,9 +10,9 @@
 <?php
 include './../connection/connections.php';
 
-if (isset($_POST['employee_no'])) {
-  $employee_no = $_POST['employee_no'];
-  $sql = "SELECT * FROM cash_advance WHERE employee_no = '$employee_no'";
+if (isset($_POST['cash_advance_id'])) {
+  $cash_advance_id = $_POST['cash_advance_id'];
+  $sql = "SELECT * FROM cash_advance WHERE cash_advance_id = '$cash_advance_id'";
   $result = mysqli_query($conn, $sql);
 
   if ($result) {
@@ -23,7 +23,7 @@ if (isset($_POST['employee_no'])) {
         <div class="modal-dialog modal-l" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">Update Cash Advance Employee ID: <?php echo $row['employee_no']; ?></h5>
+              <h5 class="modal-title">Update Cash Advance Employee ID: <?php echo $row['cash_advance_id']; ?></h5>
               <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -31,7 +31,8 @@ if (isset($_POST['employee_no'])) {
 
             <div class="modal-body">
               <form method="post" enctype="multipart/form-data" action="approve_cash_advance_process.php">
-                <input type="hidden" name="employee_no" value="<?php echo $row['employee_no']; ?>">
+                <input type="hidden" name="cash_advance_id" value="<?php echo $row['cash_advance_id']; ?>">
+
                 <h1>Approve Cash Advance?</h1>
                 <!-- Add a hidden input field to submit the form with the button click -->
                 <input type="hidden" name="edit_cash_advance" value="1">
