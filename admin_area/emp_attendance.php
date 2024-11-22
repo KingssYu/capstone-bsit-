@@ -141,8 +141,8 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQU
                 <ul class="nav-list">
                     <li class="nav-item">Name</li>
                     <li class="nav-item">Status</li>
-                    <li class="nav-item">Clock In</li>
-                    <li class="nav-item">Clock Out</li>
+                    <li class="nav-item">Time In</li>
+                    <li class="nav-item">Time Out</li>
                     <li class="nav-item">Actual Time</li>
                 </ul>
             </div>
