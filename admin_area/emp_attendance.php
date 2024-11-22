@@ -120,11 +120,6 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQU
             <div class="button-group">
                 <a href="attendance_reports.php" class="report-button" target="_blank">Reports</a>
                 <div id="cameraOptions">
-                    <label for="cameraType">Camera Type:</label>
-                    <select id="cameraType">
-                        <option value="web">Web Camera</option>
-                        <option value="usb">USB Camera</option>
-                    </select>
                 </div>
                 <div id="attendanceTypeOptions">
                     <label for="attendanceType">Attendance Type:</label>

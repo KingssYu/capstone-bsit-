@@ -40,7 +40,8 @@ $columns = array(
     'dt' => 3,
     'field' => 'remaining_balance',
     'formatter' => function ($lab4, $row) {
-      return $row['remaining_balance'];
+      return intval($row['remaining_balance']);
+
     }
   ),
 

@@ -76,7 +76,7 @@ if (isset($_POST['submit_payroll'])) {
           END
         WHERE 
           employee_no = '$employee_no'
-          AND remaining_balance >= $cash_advance_pay
+          AND remaining_balance > $cash_advance_pay
           AND status = 'Approved'";
 
       if (!mysqli_query($conn, $updateQuery)) {

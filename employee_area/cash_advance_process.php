@@ -1,6 +1,7 @@
 <?php
 // Include database connection
 include '../connection/connections.php';
+session_start();
 
 //Change the servername IP ADDRESS base on your IP ADDRESS used
 // $servername = "162.241.218.154";
@@ -28,33 +29,47 @@ if (isset($_POST['submit_cash_advance'])) {
   // Get today's date dynamically
   $paymentDate = date('Y-m-d'); // This will return the current date in 'YYYY-MM-DD' format
 
-  // Create the SQL query to insert the data into the database
-  $sql = "INSERT INTO cash_advance (
-                id,
-                employee_no,
-                requested_amount,
-                months,
-                remaining_balance,
-                monthly_payment
-            ) VALUES (
-                '$id',
-                '$employee_no',
-                '$requested_amount',
-                '$months',
-                '$remaining_balance',
-                '$monthly_payment'
-            )";
+  $employee_no = $_SESSION['employee']['employee_no'];
+  // Validation: Check if there's an existing "Pending" or "Approved" record for this employee
+  $check_sql = "SELECT * FROM cash_advance 
+                  WHERE employee_no = '$employee_no' AND 
+                  (status = 'Pending' OR status = 'Approved')";
+  $result = mysqli_query($conn, $check_sql);
 
-  // Execute the query
-  if (mysqli_query($conn, $sql)) {
-    // If the insert was successful, show an alert and redirect
+  if (mysqli_num_rows($result) > 0) {
+    // If a record exists, show an alert and stop further execution
     echo "<script>
-            alert('Cash Advance submitted successfully.');
-            window.location.href = document.referrer; // Redirects to the previous page
-          </script>";
-
+                alert('You cannot request another cash advance as you have a pending or approved request.');
+                window.history.back(); // Redirects back to the previous page
+              </script>";
   } else {
-    echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+    // Create the SQL query to insert the data into the database
+    $sql = "INSERT INTO cash_advance (
+                    id,
+                    employee_no,
+                    requested_amount,
+                    months,
+                    remaining_balance,
+                    monthly_payment
+                ) VALUES (
+                    '$id',
+                    '$employee_no',
+                    '$requested_amount',
+                    '$months',
+                    '$remaining_balance',
+                    '$monthly_payment'
+                )";
+
+    // Execute the query
+    if (mysqli_query($conn, $sql)) {
+      // If the insert was successful, show an alert and redirect
+      echo "<script>
+                    alert('Cash Advance submitted successfully.');
+                    window.location.href = document.referrer; // Redirects to the previous page
+                  </script>";
+    } else {
+      echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+    }
   }
 }
 ?>
