@@ -2,6 +2,20 @@
 // Include database connection
 include '../connection/connections.php';
 
+// Get today's date dynamically
+$paymentDate = date('Y-m-d');
+$todayDay = date('j'); // Get the day of the month (1-31)
+$lastDayOfMonth = date('t'); // Get the last day of the current month
+
+// Check if today is the 15th or the last day of the month
+if ($todayDay != 15 && $todayDay != $lastDayOfMonth) {
+  echo "<script>
+          alert('Payroll can only be processed on the 15th and the last day of the month.');
+          window.location.href = document.referrer; // Redirect to the previous page
+        </script>";
+  exit(); // Stop further execution
+}
+
 if (isset($_POST['submit_payroll'])) {
   // Retrieve values from the form
   $employee_no = isset($_POST['employee_no']) ? $_POST['employee_no'] : null;
@@ -17,9 +31,6 @@ if (isset($_POST['submit_payroll'])) {
   $cash_advance = isset($_POST['cashAdvance']) ? $_POST['cashAdvance'] : null;
   $cash_advance_pay = isset($_POST['cashAdvancePay']) ? $_POST['cashAdvancePay'] : null;
   $net_pay = isset($_POST['netPay']) ? $_POST['netPay'] : null;
-
-  // Get today's date dynamically
-  $paymentDate = date('Y-m-d');
 
   // Start a transaction
   mysqli_begin_transaction($conn);
@@ -104,11 +115,9 @@ if (isset($_POST['submit_payroll'])) {
             alert('Payroll record added, cash advance updated, and attendance marked as paid successfully.');
             window.location.href = document.referrer; // Redirects to the previous page
           </script>";
-
   } catch (Exception $e) {
     // Rollback the transaction on error
     mysqli_rollback($conn);
     echo "Transaction failed: " . $e->getMessage();
   }
 }
-?>

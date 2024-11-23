@@ -20,6 +20,7 @@ if (isset($_SESSION['employee'])) {
 
   if ($result) {
     while ($row = mysqli_fetch_assoc($result)) {
+      $profile_picture = basename($row['profile_picture']);
 ?>
       <div class="modal fade" id="updateProfile" tabindex="-1" role="dialog" aria-labelledby="requestModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-l" role="document">
@@ -32,10 +33,23 @@ if (isset($_SESSION['employee'])) {
             </div>
 
             <div class="modal-body">
-              <form method="post" action="update_employee_process.php">
+              <form method="post" action="update_employee_process.php" enctype="multipart/form-data">
+
                 <input type="hidden" name="employee_no" value="<?php echo $row['employee_no']; ?>">
 
                 <div class="form-row">
+                  <div class="form-group col-md-12">
+                    <label for="profile_picture">Upload Profile Picture:</label>
+                    <input type="file" class="form-control" id="profile_picture" name="fileToUpload">
+                    <div class="file-info">
+                      <?php if (!empty($profile_picture) && file_exists('../uploads/' . $profile_picture)): ?>
+                        <p><strong>Current Image:</strong> <img src="../uploads/<?php echo $profile_picture; ?>" alt="Profile Picture" style="max-width: 100px;"></p>
+                      <?php else: ?>
+                        <p>No image available.</p>
+                      <?php endif; ?>
+                    </div>
+                  </div>
+
                   <div class="form-group col-md-12">
                     <label for="category_name">First Name:</label>
                     <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Enter your First Name" value="<?php echo $row['first_name']; ?>" required>

@@ -39,9 +39,17 @@ $employee = $_SESSION['employee'];
             <div class="main-content">
                 <div class="header" style="display: flex; align-items: center; gap: 20px;">
                     <div class="profile-circle"
-                        style="width: 80px; height: 80px; border-radius: 50%; background-color: #007bff; color: white; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold;">
-                        <span><?php echo strtoupper(substr($employee['first_name'], 0, 1)) . strtoupper(substr($employee['last_name'], 0, 1)); ?></span>
+                        style="width: 80px; height: 80px; border-radius: 50%; background-color: #007bff; color: white; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; overflow: hidden;">
+                        <?php if (!empty($employee['profile_picture']) && file_exists($employee['profile_picture'])): ?>
+                            <!-- Display profile picture -->
+                            <img src="<?php echo $employee['profile_picture']; ?>" alt="Profile Picture"
+                                style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        <?php else: ?>
+                            <!-- Display initials -->
+                            <span><?php echo strtoupper(substr($employee['first_name'], 0, 1)) . strtoupper(substr($employee['last_name'], 0, 1)); ?></span>
+                        <?php endif; ?>
                     </div>
+
                     <h1 style="color: #007bff; margin: 0;">My Profile</h1>
                 </div>
 

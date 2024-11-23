@@ -5,9 +5,9 @@ $username = "root";
 $password = "";
 $dbname = "bsu_payroll";
 
-// FOR LIVE BLUEHOST
+// FOR LIVE BLUEHOST-
 
-// $servername = "localhost";
+// $servername = "162.241.218.154";
 // $username = "vssphcom_bsupayroll";
 // $password = "Mybossrocks081677";
 // $dbname = "vssphcom_bsupayroll";
@@ -38,5 +38,3 @@ if ($conn->connect_error) {
 // } else {
 //     // echo "SUCCESS";
 // }
-
-?>

@@ -31,9 +31,9 @@
 
         <label>Gross Pay:</label>
         <input type="text" id="grossPay" name="grossPay" readonly value="<?php
-        $totalWorkHours = $attendance_data['summary']['total_hours'] + $attendance_data['summary']['total_overtime'];
-        echo number_format($totalWorkHours * $employee['rate_per_hour'], 2);
-        ?>">
+                                                                          $totalWorkHours = $attendance_data['summary']['total_hours'] + $attendance_data['summary']['total_overtime'];
+                                                                          echo number_format($totalWorkHours * $employee['rate_per_hour'], 2);
+                                                                          ?>">
 
       </div>
 
@@ -41,20 +41,50 @@
       <div class="payroll-box deductions">
         <h4>OTHER DEDUCTION/GOVERNMENT</h4>
         <label>SSS:</label>
-        <input type="number" id="sss" name="sss" value="500" placeholder="Enter amount"
-          onchange="calculateTotalDeductions()" readonly>
+        <input type="number" id="sss" name="sss" value="500" placeholder="Enter amount" readonly>
 
         <label>PhilHealth:</label>
-        <input type="number" id="philhealth" name="philhealth" value="200" placeholder="Enter amount"
-          onchange="calculateTotalDeductions()" readonly>
+        <input type="number" id="philhealth" name="philhealth" value="200" placeholder="Enter amount" readonly>
 
         <label>PAGIBIG:</label>
-        <input type="number" id="pagibig" name="pagibig" value="250" placeholder="Enter amount"
-          onchange="calculateTotalDeductions()" readonly>
+        <input type="number" id="pagibig" name="pagibig" value="250" placeholder="Enter amount" readonly>
 
         <label>Total:</label>
         <input type="text" id="totalDeductions" name="totalDeductions" readonly>
       </div>
+
+      <script>
+        // Function to calculate and update values
+        function updateDeductions() {
+          const sssInput = document.getElementById('sss');
+          const philhealthInput = document.getElementById('philhealth');
+          const pagibigInput = document.getElementById('pagibig');
+          const totalInput = document.getElementById('totalDeductions');
+
+          const today = new Date();
+          const day = today.getDate(); // Get the current day of the month
+          const isPayday = day === 15 || day === new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate(); // 15th or end of month
+
+          // Update deductions
+          if (isPayday) {
+            sssInput.value = 500;
+            philhealthInput.value = 200;
+            pagibigInput.value = 250;
+          } else {
+            sssInput.value = 0;
+            philhealthInput.value = 0;
+            pagibigInput.value = 0;
+          }
+
+          // Calculate and set total deductions
+          const total = parseFloat(sssInput.value) + parseFloat(philhealthInput.value) + parseFloat(pagibigInput.value);
+          totalInput.value = total;
+        }
+
+        // Call the function on page load
+        updateDeductions();
+      </script>
+
 
       <!-- Loan/Advances Section -->
       <div class="payroll-box loans">
@@ -67,7 +97,7 @@
         $requestedAmount = $status !== 'Approved' ? 0 : $employee['requested_amount'];
 
         $monthlyPayment = $status !== 'Approved' ? 0 : $employee['monthly_payment'];  // Round the monthly payment
-        
+
         // Check if $months is greater than 0 to avoid division by zero
         $existing_balance = ($months > 0) ? $requestedAmount / $months : 0;
 
@@ -109,7 +139,7 @@
   <script>
     function submitPayroll() {
       // Select the specific form by its id (e.g., 'payrollForm')
-      var form = document.getElementById('payrollForm');  // Make sure the form has this id
+      var form = document.getElementById('payrollForm'); // Make sure the form has this id
 
       if (form) {
         form.submit(); // This will submit the selected form to payroll_process.php
@@ -140,7 +170,6 @@
 </div>
 
 <script>
-
   function calculateTotalDeductions() {
     const sss = parseFloat(document.getElementById('sss').value) || 0;
     const philhealth = parseFloat(document.getElementById('philhealth').value) || 0;
@@ -253,7 +282,7 @@
     const content = document.getElementById('payslipContent');
 
     doc.html(content, {
-      callback: function (doc) {
+      callback: function(doc) {
         doc.save('payslip.pdf');
       },
       x: 10,

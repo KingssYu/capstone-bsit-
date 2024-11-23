@@ -8,37 +8,6 @@ if (!isset($_SESSION['admin'])) {
     exit;
 }
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-function fetchAttendanceData($conn)
-{
-    $query = "SELECT e.employee_no, e.first_name, e.last_name, a.clock_in, a.clock_out, a.status,
-              TIMEDIFF(IFNULL(a.clock_out, NOW()), a.clock_in) as actual_time
-              FROM attendance a
-              INNER JOIN adding_employee e ON a.employee_no = e.employee_no
-              WHERE DATE(a.date) = CURDATE()
-              ORDER BY e.last_name, e.first_name";
-    $result = $conn->query($query);
-
-    $attendance_data = [];
-    while ($row = $result->fetch_assoc()) {
-        $attendance_data[] = $row;
-    }
-    return $attendance_data;
-}
-
-$attendance_data = fetchAttendanceData($conn);
-
-$conn->close();
-
-if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
-    echo json_encode($attendance_data);
-    exit;
-}
 ?>
 
 <!DOCTYPE html>
@@ -46,267 +15,290 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQU
 
 <head>
     <meta charset="UTF-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Attendance</title>
-    <link rel="stylesheet" href="admin_styles/emp_attendance.css">
+    <title>Admin Attenfdace Today</title>
     <style>
-        .message {
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-
-        .success {
-            background-color: #d4edda;
-            color: #155724;
-        }
-
-        .error {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-
-        .info {
-            background-color: #e2e3e5;
-            color: #383d41;
-        }
-
-        .employee-attendance-row {
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
             display: flex;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid #eee;
+            min-height: 100vh;
         }
 
-        .employee-image {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            margin-right: 15px;
-        }
-
-        .employee-details {
+        /* Sidebar Navigation */
+        .sidenav {
+            height: 100vh;
+            width: 250px;
+            background-color: #D5ED9F;
+            color: #fff;
+            rate_position: fixed;
+            top: 0;
+            left: 0;
             display: flex;
-            flex-grow: 1;
-            justify-content: space-between;
+            flex-direction: column;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
         }
 
-        .employee-details span {
-            flex-basis: 14%;
+        /* Logo Section */
+        .sidenav .logo {
+            padding: 20px;
+            text-align: center;
+            background-color: #D5ED9F;
+            border-bottom: 1px solid #D5ED9F;
+        }
+
+        .sidenav .logo img {
+            max-width: 80%;
+            height: auto;
+        }
+
+        /* Menu Buttons */
+        .sidenav .menu {
+            flex: 1;
+        }
+
+        .sidenav .menu button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            background: #185519;
+            color: #fff;
+            text-align: left;
+            font-size: 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #ffffff;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidenav .menu button:hover {
+            background: #00712D;
+        }
+
+        /* Footer Buttons */
+        .sidenav .footer {
+            padding: 20px;
+            background-color: #D5ED9F;
             text-align: center;
         }
 
-        #cameraOptions,
-        #attendanceTypeOptions {
-            margin-bottom: 10px;
+        .sidenav .footer button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background: #185519;
+            border-radius: 50px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidenav .footer button:hover {
+            background: #00712D;
+        }
+
+        /* Directory Container */
+        .directory-container {
+            padding: 20px;
+            width: calc(100% - 250px);
+            background-color: #f4f4f9;
+            height: 100vh;
+            overflow: auto;
+        }
+
+        .directory-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .directory-header h1 {
+            font-size: 24px;
+            color: #333;
+        }
+
+        /* Search Bar Section */
+        .search-container {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        /* Dropdowns */
+        .search-container select {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            color: #333;
+        }
+
+        /* Search input */
+        .search-container input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 25px;
+            width: 100%;
+            max-width: 500px;
+            font-size: 14px;
+            color: #333;
+            margin: 0 10px;
+        }
+
+        /* Search Button */
+        .search-container button {
+            padding: 10px 20px;
+            background-color: #185519;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+
+        /* Directory Table */
+        .directory-table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .directory-table th,
+        .directory-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .directory-table th {
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        .directory-table td {
+            background-color: #fff;
+        }
+
+        /* Profile image */
+        .directory-table img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .directory-table .name-cell {
+            display: flex;
+            align-items: center;
         }
     </style>
 </head>
 
 <body>
+    <!-- Sidebar -->
     <?php include './header.php'; ?>
 
-
-    <div class="main-content">
-        <header class="main-header">
-            <h1>Attendance</h1>
-            <div id="datetime" class="datetime"></div>
-        </header>
-        <div class="content-section">
-            <div class="date-display">
-                <span id="current-date-display"></span>
-            </div>
-            <div class="button-group">
-                <a href="attendance_reports.php" class="report-button" target="_blank">Reports</a>
-                <div id="cameraOptions">
-                </div>
-                <div id="attendanceTypeOptions">
-                    <label for="attendanceType">Attendance Type:</label>
-                    <select id="attendanceType">
-                        <option value="in">Time In</option>
-                        <option value="out">Time Out</option>
-                    </select>
-                </div>
-                <button id="logAttendanceBtn" class="camera-button">
-                    <i class="camera-icon">📸</i> Log Attendance
-                </button>
-            </div>
+    <!-- Directory Section -->
+    <div class="directory-container">
+        <div class="directory-header">
+            <h1>Attendance Today</h1>
         </div>
+        <br>
 
-        <div id="message" class="message" style="display: none;"></div>
+        <a type="button" class="btn btn-primary" href="attendance_reports.php" target="_blank">
+            View Reports
+        </a>
+        <hr>
 
-        <div class="attendance-container">
-            <div class="attendance-navigation">
-                <ul class="nav-list">
-                    <li class="nav-item">Name</li>
-                    <li class="nav-item">Status</li>
-                    <li class="nav-item">Time In</li>
-                    <li class="nav-item">Time Out</li>
-                    <li class="nav-item">Actual Time</li>
-                </ul>
-            </div>
-            <div id="attendance-row-container" class="attendance-row-container">
-                <!-- Attendance rows will be dynamically inserted here -->
-            </div>
-        </div>
+
+        <div id="modalContainerCashAdvance"></div>
+        <!-- Table with Employee Data -->
+        <table class="directory-table" name="admin_attendance_report_table" id="admin_attendance_report_table">
+            <thead>
+                <tr>
+                    <th>Employee No.</th>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Time-in</th>
+                    <th>Time-out</th>
+                    <th>Actual Time</th>
+                </tr>
+            </thead>
+        </table>
     </div>
+    <!-- Add Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 
+    <!-- Add Bootstrap JS and Popper.js for Modal functionality -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../datatables/datatables.min.css" />
+    <script type="text/javascript" src="../datatables/datatables.min.js"></script>
     <script>
-        function updateTime() {
-            const now = new Date();
-            const options = {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-            };
-            const formattedDate = now.toLocaleDateString('en-US', options);
-            document.getElementById('datetime').textContent = formattedDate;
-            document.getElementById('current-date-display').textContent = `Today, ${formattedDate}`;
-        }
-
-        setInterval(updateTime, 1000);
-        updateTime();
-
-        function updateAttendanceData() {
-            fetch('emp_attendance.php', {
-                method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    const container = document.getElementById('attendance-row-container');
-                    container.innerHTML = '';
-                    if (data.length === 0) {
-                        container.innerHTML = '<p>No attendance records for today.</p>';
-                    } else {
-                        data.forEach(employee => {
-                            const row = document.createElement('div');
-                            row.className = `employee-attendance-row status-${employee.status.toLowerCase()}`;
-                            row.innerHTML = `
-                            <img src="employee_profile/profiles.jpg" alt="Employee Image" class="employee-image">
-                            <div class="employee-details">
-                                <span class="employee-name">${employee.first_name} ${employee.last_name}</span>
-                                <span class="employee-status">${employee.status || 'Present'}</span>
-                                <span class="employee-clock-in">${employee.clock_in || '-'}</span>
-                                <span class="employee-clock-out">${employee.clock_out || '-'}</span>
-                                <span class="employee-actual-time">${employee.actual_time || '-'}</span>
-                            </div>
-                        `;
-                            container.appendChild(row);
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-        }
-
-        document.getElementById('logAttendanceBtn').addEventListener('click', function () {
-            const messageElement = document.getElementById('message');
-            messageElement.style.display = 'block';
-            messageElement.textContent = 'Initializing camera...';
-            messageElement.className = 'message info';
-
-            const cameraType = document.getElementById('cameraType').value;
-            const attendanceType = document.getElementById('attendanceType').value;
-
-            fetch('attendance_log.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    action: 'start_camera',
-                    cameraType: cameraType,
-                    attendanceType: attendanceType
-                })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Response from server:', data);
-                    if (data.success) {
-                        messageElement.textContent = 'Camera initialized. Please look at the camera for face recognition.';
-                        messageElement.className = 'message success';
-                        pollAttendanceResult();
-                    } else {
-                        messageElement.textContent = 'Error: ' + data.message;
-                        messageElement.className = 'message error';
-                        console.error('Server error:', data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Fetch error:', error);
-                    messageElement.textContent = 'An error occurred while initializing the camera. Please try again.';
-                    messageElement.className = 'message error';
-                });
+        var admin_attendance_report_table = $('#admin_attendance_report_table').DataTable({
+            "pagingType": "numbers",
+            "processing": true,
+            "serverSide": true,
+            "ajax": {
+                "url": "./admin_attendance_report_table.php",
+            },
         });
 
-        function pollAttendanceResult() {
-            const messageElement = document.getElementById('message');
-            const pollInterval = setInterval(() => {
-                fetch('attendance_log.php', {
+        $(document).ready(function() {
+            // Function to handle click event on datatable rows
+            $('#admin_attendance_report_table').on('click', 'tr td:nth-child(7) .fetchDataCashAdvance', function() {
+                var cash_advance_id = $(this).closest('tr').find('td').first().text(); // Get the user_id from the clicked row
+
+                $.ajax({
+                    url: '../modals/approve_cash_advance_modal.php', // Path to PHP script to fetch modal content
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
+                    data: {
+                        cash_advance_id: cash_advance_id
                     },
-                    body: JSON.stringify({
-                        action: 'check_result'
-                    })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Poll response:', data);
-                        if (data.success) {
-                            clearInterval(pollInterval);
-                            messageElement.textContent = `${data.message} - Employee: ${data.employee_name} (${data.employee_no})`;
-                            messageElement.className = 'message success';
-                            updateAttendanceData();
-                        } else if (data.error) {
-                            if (data.error === 'Face recognition in progress') {
-                                messageElement.textContent = 'Face recognition in progress. Please keep looking at the camera.';
-                                messageElement.className = 'message info';
-                            } else {
-                                clearInterval(pollInterval);
-                                messageElement.textContent = 'Error: ' + data.error;
-                                messageElement.className = 'message error';
-                                console.error('Face recognition error:', data.error);
-                            }
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Poll error:', error);
-                        clearInterval(pollInterval);
-                        messageElement.textContent = 'An error occurred while checking attendance result. Please try again.';
-                        messageElement.className = 'message error';
-                    });
-            }, 2000);
+                    success: function(response) {
+                        $('#modalContainerCashAdvance').html(response);
+                        $('#updateCashAdvance').modal('show');
+                        console.log("#updateCashAdvance" + cash_advance_id);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
+                    }
+                });
+            });
+        });
 
-            setTimeout(() => {
-                clearInterval(pollInterval);
-                if (messageElement.className === 'message info') {
-                    messageElement.textContent = 'Face recognition timed out. Please try again.';
-                    messageElement.className = 'message error';
-                }
-            }, 35000);
-        }
+        $(document).ready(function() {
+            // Function to handle click event on datatable rows
+            $('#admin_attendance_report_table').on('click', 'tr td:nth-child(7) .fetchDataCashAdvanceDecline', function() {
+                var cash_advance_id = $(this).closest('tr').find('td').first().text(); // Get the user_id from the clicked row
 
-        updateAttendanceData();
-        setInterval(updateAttendanceData, 30000);
+                $.ajax({
+                    url: '../modals/decline_cash_advance_modal.php', // Path to PHP script to fetch modal content
+                    method: 'POST',
+                    data: {
+                        cash_advance_id: cash_advance_id
+                    },
+                    success: function(response) {
+                        $('#modalContainerCashAdvance').html(response);
+                        $('#updateCashAdvance').modal('show');
+                        console.log("#updateCashAdvance" + cash_advance_id);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
+                    }
+                });
+            });
+        });
     </script>
+
 </body>
 
 </html>
-
-<!-- Add Bootstrap CSS -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-
-<!-- Add Bootstrap JS and Popper.js for Modal functionality -->
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>

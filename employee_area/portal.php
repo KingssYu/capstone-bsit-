@@ -105,8 +105,13 @@ try {
                 </div>
                 <div class="input-group">
                     <label for="password">Password / Lastname</label>
-                    <input type="password" id="password" name="password" required>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" name="password" required>
+                        <span id="togglePassword">Show</span>
+                    </div>
                 </div>
+
+
                 <div class="checkbox-group">
                     <input type="checkbox" id="remember-me" name="remember-me">
                     <label for="remember-me">Remember Me</label>
@@ -116,7 +121,7 @@ try {
                     echo "<p style='color:red;'>$login_error</p>";
                 } ?>
                 <div class="forgot-password">
-                    <a href="#">Forgot Password?</a>
+                    <a href="./../forgot_password.php">Forgot Password?</a>
                 </div>
             </form>
         </div>
@@ -124,3 +129,55 @@ try {
 </body>
 
 </html>
+
+<script>
+    document.getElementById('togglePassword').addEventListener('click', function() {
+        const passwordField = document.getElementById('password');
+        const toggleButton = this;
+
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            toggleButton.textContent = 'Hide';
+        } else {
+            passwordField.type = 'password';
+            toggleButton.textContent = 'Show';
+        }
+    });
+</script>
+
+<style>
+    .input-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 20px;
+    }
+
+    .input-wrapper {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .input-wrapper input {
+        width: 100%;
+        padding-right: 50px;
+        /* Space for the toggle button */
+        box-sizing: border-box;
+    }
+
+    #togglePassword {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        /* Aligns the toggle button to the right */
+        transform: translateY(-50%);
+        cursor: pointer;
+        font-size: 0.9rem;
+        color: #007BFF;
+        user-select: none;
+    }
+
+    #togglePassword:hover {
+        color: #0056b3;
+    }
+</style>
