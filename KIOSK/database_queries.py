@@ -1,37 +1,18 @@
 import mysql.connector
 from datetime import datetime, timedelta, time
-
-
-
-def calculate_worked_time(clock_in, clock_out):
-    start_time = max(clock_in, datetime.combine(clock_in.date(), time(8, 0)))
-    end_time = min(clock_out, datetime.combine(clock_out.date(), time(17, 0)))
-    lunch_start = datetime.combine(clock_in.date(), time(12, 0))
-    lunch_end = datetime.combine(clock_in.date(), time(13, 0))
-
-    total_time = end_time - start_time
-    lunch_duration = min(timedelta(hours=1), max(timedelta(0), min(end_time, lunch_end) - max(start_time, lunch_start)))
-    worked_time = total_time - lunch_duration
-
-    return worked_time
-
-
-def calculate_overtime(worked_time):
-    regular_hours = timedelta(hours=8)
-    if worked_time <= regular_hours:
-        return timedelta(0)
-    
-    overtime = worked_time - regular_hours
-    overtime_hours = overtime.total_seconds() / 3600
-    rounded_overtime = round(overtime_hours * 2) / 2
-    return timedelta(hours=rounded_overtime)
+import os
+import random as rd
 
 
 
 class Database_queries:
     def __init__(self):
-        with open("config.txt") as file:
-            __conf = [x.replace("\n", "") for x in file.readlines()]
+        config_file = "config.txt"
+        if os.path.exists(config_file):
+            with open(config_file) as file:
+                __conf = [x.replace("\n", "") for x in file.readlines()]
+        else:
+            open(config_file, "w")
 
         self.__host = __conf[0]
         self.__user = __conf[1]
@@ -120,6 +101,79 @@ class Database_queries:
             return False
     
 
+    def __update_worked_time(self, emp_no, date_now):
+        try:
+            db, cursor = self.__create_connection()
+
+            qry = f"""
+                    UPDATE attendance
+                    SET 
+                        worked_time = SEC_TO_TIME(
+                            TIME_TO_SEC(TIMEDIFF(clock_out, clock_in)) - 
+                            IF(TIME('12:00:00') BETWEEN TIME(clock_in) AND TIME(clock_out) OR 
+                            TIME('13:00:00') BETWEEN TIME(clock_in) AND TIME(clock_out), 
+                            3600, 0)
+                        )
+                    WHERE 
+                        employee_no = '{emp_no}'
+                        AND DATE = '{date_now}';
+                    """
+
+
+            cursor.execute(qry)
+            db.commit()
+
+            self.__closeConnection(cursor, db)
+
+            return True
+        except Exception as err:
+            print(err)
+            return False
+    
+    def __calculate_ot(self, emp_no, date_now):
+        clock_in, clock_out = self.get_int_out(emp_no, date_now)
+        clock_in = clock_in.strftime('%Y-%m-%d %H:%M:%S')
+        clock_out = clock_out.strftime('%Y-%m-%d %H:%M:%S')
+
+        end_of_regular_hours = datetime.strptime(clock_in.split(' ')[0] + " 17:00:00", "%Y-%m-%d %H:%M:%S")
+        ot_acknowledge_time = datetime.strptime(clock_in.split(' ')[0] + " 21:00:00", "%Y-%m-%d %H:%M:%S")
+        ot_end_time = datetime.strptime(clock_in.split(' ')[0] + " 23:00:00", "%Y-%m-%d %H:%M:%S")
+        
+        clock_out_time = datetime.strptime(clock_out, "%Y-%m-%d %H:%M:%S")
+        
+        effective_clock_out = min(clock_out_time, ot_end_time)
+        
+        overtime_start = end_of_regular_hours
+        overtime_duration = effective_clock_out - overtime_start
+        
+        if clock_out_time < ot_acknowledge_time:
+            ot_time=  "00:00:00"
+        else:
+            ot_time = str(overtime_duration)
+
+        try:
+            db, cursor = self.__create_connection()
+
+            qry = f"""
+                    UPDATE attendance
+                    SET `overtime` = '{ot_time}'
+                    WHERE 
+                        employee_no = '{emp_no}'
+                        AND DATE = '{date_now}';
+                    """
+
+
+            cursor.execute(qry)
+            db.commit()
+
+            self.__closeConnection(cursor, db)
+
+            return True
+        except Exception as err:
+            print(err)
+            return False
+
+
     def get_emp_name(self, emp_no):
         return self.__get_qry("CONCAT(first_name, ' ' , last_name) fullname",
                                 "adding_employee",
@@ -136,7 +190,6 @@ class Database_queries:
         except Exception:
             condition_ = result == False
         return "In" if condition_ else "Out"
-    
 
     def attendance_insert(self, emp_no, date_now, clock_in_date_time):
         status = self.get_attendance_status(emp_no, date_now)
@@ -155,6 +208,8 @@ class Database_queries:
                                 employee_no = '{emp_no}'
                                 AND `date` = '{date_now}'
                                ''')
+            self.__update_worked_time(emp_no, date_now)
+            self.__calculate_ot(emp_no, date_now)
         return status
 
 
@@ -251,14 +306,161 @@ class Database_queries:
         except Exception as err:
             print(err)
             return False
+        
+
+    def __admin_login(self, username, password):
+        try:
+            db, cursor = self.__create_connection()
+
+            qry = f'''
+                    SELECT id FROM `admin`
+                    WHERE `username` = '{username}'
+                    AND `password` = ( SELECT MD5('{password}') )
+                    '''
+
+            cursor.execute(qry)
+            result = cursor.fetchall()
+
+            self.__closeConnection(cursor, db)
+
+            return True if len(result) > 0 else False
+        except Exception as err:
+            print(err)
+            return False
+        
+
+    def admin_login(self, username, password):
+        return self.__admin_login(username, password)
+    
+    
+    def generate_emp_no(self):
+        yr_today = datetime.now().year
+
+        while True:
+            random_int = rd.randint(1111, 9999)
+            emp_no = f"{yr_today}-{random_int}"
+            try:
+                db, cursor = self.__create_connection()
+
+                qry = f'''
+                        SELECT COUNT(*)
+                        FROM `adding_employee`
+                        WHERE `employee_no` = '{emp_no}'
+                        '''
+                cursor.execute(qry)
+                result = cursor.fetchone()[0]
+                self.__closeConnection(cursor, db)
+
+                if result == 0:
+                    break
+            except Exception as err:
+                print(err)
+                return False
+        return emp_no
+    
+
+    def get_positions(self):
+        try:
+            db, cursor = self.__create_connection()
+
+            qry = f'''
+                    SELECT rp.`rate_position` FROM `rate_position` rp
+                    '''
+            cursor.execute(qry)
+            result = cursor.fetchall()
+            self.__closeConnection(cursor, db)
+            return [x[0] for x in result]
+        except Exception as err:
+            print(err)
+            return False
+
+
+    def get_int_out(self, emp_no, date_):
+        try:
+            db, cursor = self.__create_connection()
+
+            qry = f'''
+                    SELECT `clock_in`, `clock_out`
+                    FROM `attendance`
+                    WHERE `employee_no` = '{emp_no}'
+                    AND `date` = '{date_}'
+                    '''
+            cursor.execute(qry)
+            result = cursor.fetchall()
+            self.__closeConnection(cursor, db)
+            return result[0]
+        except Exception as err:
+            print(err)
+            return False
+    
+    def save_new_emp(self, employee_no, last_name, 
+                    first_name, middle_name, 
+                    email, contact, rate_id, 
+                    department, date_hired, 
+                    address, face_samples):
+        try:
+            db, cursor = self.__create_connection()
+
+            qry1 = f'''
+                    INSERT INTO adding_employee (
+                    employee_no, last_name, 
+                    first_name, middle_name, 
+                    email, contact, rate_id, 
+                    department, date_hired, 
+                    address, face_samples, 
+                    face_descriptors, password_changed, 
+                    password, birthdate, gender, 
+                    nationality, emergency_contact_name, 
+                    emergency_contact_number
+                ) 
+                VALUES (
+                    '{employee_no}', 
+                    '{first_name}', 
+                    '{last_name}', 
+                    '{middle_name}', 
+                    '{email}', 
+                    '{contact}', 
+                    {rate_id}, 
+                    '{department}', 
+                    '{date_hired}', 
+                    '{address}', 
+                    {face_samples}, 
+                    '', 
+                    0, 
+                    '', 
+                    '0000-00-00', 
+                    '', 
+                    '', 
+                    '', 
+                    ''
+                );
+                    '''
+     
+            cursor.execute(qry1)
+            db.commit()
+
+            self.__closeConnection(cursor, db)
+
+            return True
+        except Exception as err:
+            print(err)
+            return False
+
     
 
 if __name__ == "__main__":
     Db = Database_queries()
-    print(Db.get_emp_name("EMP-00029"))
-    #print(Db.attendance_insert("EMP-6601", "2024-11-21", "2024-11-21 18:00:00")) # working, auto detect if in or out
+    print(Db.get_emp_name("EMP-6601"))
+    #print(Db.attendance_insert("EMP-6601", "2024-11-15", "2024-11-16 18:53:26")) # working, auto detect if in or out
     # Db.attendance_insert("EMP-6601", "2024-11-20", "2024-11-20 17:00:00") #working
     # Db.attendance_report("EMP-6601", "Late", "2024-11-20", "08:15") 
     # Db.mark_absent_employees() #working
     # Db.transfer_attendance_to_report() #working
-    #print(Db.get_attendance_status("EMP-6601", "2024-11-21"))
+    #print(Db.get_attendance_status("EMP-6601", "2024-11-21")) #working
+    #print(Db.admin_login("admin", 123123)) #working
+    # print(Db.generate_emp_no()) #working
+    #print(Db.get_positions()) #working
+    # Db.save_new_emp("2024-1234", "A", "B", "C", "a@gmail", '09615953569',
+    # 1,"IT", '2024-11-23', 'caloocan', 30) #working
+
+

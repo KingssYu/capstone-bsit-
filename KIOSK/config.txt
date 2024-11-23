@@ -1,6 +1,7 @@
 localhost
 root
-admin_area
-1234
+admin_login
+
 3306
-C:/xampp/htdocs/capstone-bsit-/admin_area/employee_faces
+C:/xampp/htdocs/capstone-bsit-/admin_area/
+C:/xampp/htdocs/capstone-bsit-/admin_area/
