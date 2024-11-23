@@ -5,3 +5,17 @@ INFO:root:Saved 30 face samples for employee 2024-5177
 INFO:root:Saved 30 face samples for employee 2024-6768
 INFO:root:Saved 30 face samples for employee 2024-8164
 INFO:root:Saved 30 face samples for employee 2024-9235
+INFO:root:Saved 30 face samples for employee 2024-9750
+INFO:root:Saved 30 face samples for employee 2024-1874
+INFO:root:Saved 30 face samples for employee 2024-2241
+ERROR:root:Failed to capture frame
+ERROR:root:Error in capture_faces: Failed to capture frame
+ERROR:root:Traceback (most recent call last):
+  File "C:\xampp\htdocs\capstone-bsit-\KIOSK\face_capture.py", line 56, in capture_faces
+    raise Exception("Failed to capture frame")
+Exception: Failed to capture frame
+
+INFO:root:Saved 30 face samples for employee 2024-9461
+INFO:root:Saved 30 face samples for employee 2024-9397
+INFO:root:Saved 30 face samples for employee 2024-8157
+INFO:root:Saved 30 face samples for employee 2024-2058

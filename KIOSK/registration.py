@@ -4,6 +4,20 @@ import cv2
 from database_queries import Database_queries
 import face_capture as fc
 import time as tm
+from datetime import datetime as dt
+import os
+
+config_file_name = "config.txt"
+config_file_exist = os.path.exists(config_file_name)
+
+
+if os.path.exists(config_file_name):
+    with open(config_file_name) as file:
+        base_path = file.readlines()[-1]
+else:
+    base_path = ""
+
+
 
 Dq = Database_queries()
 
@@ -130,7 +144,15 @@ def open_main_app():
                 num_samples = fc.capture_faces(emp_no_entry.get(), cam_pos)
                 if num_samples == 30:
                     break
-
+            
+            emp_pic = f"{base_path}/employee_faces/{emp_no}/face_1.jpg".replace("/", "\\")
+            with open(emp_pic, "rb") as pic_file:
+                pic_data = pic_file.read()
+ 
+            orig_date_format = date_hired_picker.get()
+            date_obj = dt.strptime(orig_date_format, "%m/%d/%y")
+            new_date_format = date_obj.strftime("%Y-%m-%d")
+            
             Dq.save_new_emp(
                 emp_no,
                 field_check_list["Last Name"],
@@ -140,10 +162,12 @@ def open_main_app():
                 field_check_list["Contact No."],
                 job_positions.index(field_check_list["Position"]) + 1,
                 field_check_list["Department"],
-                date_hired_picker.get(),
+                new_date_format,
                 field_check_list["Address"],
-                num_samples
+                num_samples,
+                pic_data
             )
+
             update_emp_no()
             last_name_entry.delete(0, len(last_name_entry.get()))
             first_name_entry.delete(0, len(first_name_entry.get()))

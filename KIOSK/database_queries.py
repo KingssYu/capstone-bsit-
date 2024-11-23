@@ -394,57 +394,45 @@ class Database_queries:
             return False
     
     def save_new_emp(self, employee_no, last_name, 
-                    first_name, middle_name, 
-                    email, contact, rate_id, 
-                    department, date_hired, 
-                    address, face_samples):
+                 first_name, middle_name, 
+                 email, contact, rate_id, 
+                 department, date_hired, 
+                 address, face_samples, face_data):
         try:
             db, cursor = self.__create_connection()
 
-            qry1 = f'''
+            qry1 = '''
                     INSERT INTO adding_employee (
-                    employee_no, last_name, 
-                    first_name, middle_name, 
-                    email, contact, rate_id, 
-                    department, date_hired, 
-                    address, face_samples, 
-                    face_descriptors, password_changed, 
-                    password, birthdate, gender, 
-                    nationality, emergency_contact_name, 
-                    emergency_contact_number
-                ) 
-                VALUES (
-                    '{employee_no}', 
-                    '{first_name}', 
-                    '{last_name}', 
-                    '{middle_name}', 
-                    '{email}', 
-                    '{contact}', 
-                    {rate_id}, 
-                    '{department}', 
-                    '{date_hired}', 
-                    '{address}', 
-                    {face_samples}, 
-                    '', 
-                    0, 
-                    '', 
-                    '0000-00-00', 
-                    '', 
-                    '', 
-                    '', 
-                    ''
-                );
+                        employee_no, last_name, 
+                        first_name, middle_name, 
+                        email, contact, rate_id, 
+                        department, date_hired, 
+                        address, face_samples, 
+                        face_descriptors, password_changed, 
+                        password, birthdate, gender, 
+                        nationality, emergency_contact_name, 
+                        emergency_contact_number
+                    ) 
+                    VALUES (
+                        %s, %s, %s, %s, %s, %s, 
+                        %s, %s, %s, %s, %s, %s, 
+                        %s, %s, %s, %s, %s, %s, %s
+                    );
                     '''
-     
-            cursor.execute(qry1)
+            
+            values = (
+                employee_no, first_name, last_name, middle_name, email,
+                contact, rate_id, department, date_hired, address,
+                face_samples, face_data, 0, '', '0000-00-00', '', '', '', ''
+            )
+
+            cursor.execute(qry1, values)
             db.commit()
-
-            self.__closeConnection(cursor, db)
-
-            return True
-        except Exception as err:
-            print(err)
-            return False
+        except Exception as e:
+            print(f"Error: {e}")
+        finally:
+            if db:
+                db.close()
 
     
 
