@@ -8,7 +8,7 @@
     <li><a href="cash_advance_request.php">Cash Advance Request</a></li>
     <li><a href="timesheet.php">Timesheet</a></li>
     <li><a href="payslip.php">Payslip Record</a></li>
-
+    <li><a href="changepass_module.php">Change Password</a></li>
 
     <!-- <li><a href="#">Leave Request</a></li> -->
   </ul>

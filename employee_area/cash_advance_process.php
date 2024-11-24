@@ -72,4 +72,3 @@ if (isset($_POST['submit_cash_advance'])) {
     }
   }
 }
-?>

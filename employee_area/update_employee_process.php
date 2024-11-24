@@ -11,6 +11,9 @@ if (isset($_POST['update_profile'])) {
   $contact = isset($_POST['contact']) ? mysqli_real_escape_string($conn, $_POST['contact']) : null;
   $address = isset($_POST['address']) ? mysqli_real_escape_string($conn, $_POST['address']) : null;
   $email = isset($_POST['email']) ? mysqli_real_escape_string($conn, $_POST['email']) : null;
+  $emergency_contact_name = isset($_POST['emergency_contact_name']) ? mysqli_real_escape_string($conn, $_POST['emergency_contact_name']) : null;
+  $emergency_contact_number = isset($_POST['emergency_contact_number']) ? mysqli_real_escape_string($conn, $_POST['emergency_contact_number']) : null;
+
 
   $sql = "SELECT profile_picture FROM adding_employee WHERE employee_no='$employee_no'";
   $result = mysqli_query($conn, $sql);
@@ -89,7 +92,9 @@ if (isset($_POST['update_profile'])) {
                     contact = '$contact',
                     `address` = '$address',
                     email = '$email',
-                    profile_picture = '$new_filename'
+                    profile_picture = '$new_filename',
+                    emergency_contact_name = '$emergency_contact_name',
+                    emergency_contact_number = '$emergency_contact_number'
                 WHERE employee_no = '$employee_no'";
 
     // Execute the query
