@@ -89,10 +89,10 @@ if (isset($_GET['search'])) {
             <div class="search-employee">
                 <input type="text" placeholder="Search Employee..." class="search-input">
             </div>
-            <div class="action-buttons">
+            <!-- <div class="action-buttons">
                 <a href="#" class="filter-button">Filter</a>
                 <a href="employee_register.php" class="add-button">Add Employee</a>
-            </div>
+            </div> -->
         </div>
 
         <!-- Main content goes here -->
