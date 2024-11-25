@@ -26,14 +26,16 @@ if ($result_total->num_rows > 0) {
 }
 
 // Fetch employee data
-// Fetch employee data with department after contact
-$sql = "SELECT * FROM adding_employee LEFT JOIN rate_position ON adding_employee.rate_id = rate_position.rate_id";
+$sql = "SELECT * FROM adding_employee 
+        LEFT JOIN rate_position ON adding_employee.rate_id = rate_position.rate_id";
+
 $result = $conn->query($sql);
 
 if (isset($_GET['search'])) {
     $search = $conn->real_escape_string($_GET['search']);
     $sql = "SELECT * 
-            FROM adding_employee LEFT JOIN rate_position ON adding_employee.rate_id = rate_position.rate_id
+            FROM adding_employee 
+            LEFT JOIN rate_position ON adding_employee.rate_id = rate_position.rate_id
             WHERE first_name LIKE '%$search%' 
                OR last_name LIKE '%$search%' 
                OR email LIKE '%$search%' 
@@ -43,11 +45,16 @@ if (isset($_GET['search'])) {
     $employees = [];
     while ($row = $result->fetch_assoc()) {
         $employee_no = $row['employee_no'];
-        $employee_image_path = "employee_faces/$employee_no/face_25.jpg";
-        if (!file_exists($employee_image_path) || !is_readable($employee_image_path)) {
-            $employee_image_path = "employee_profile/default.png";
+
+        // Check if face_descriptors (blob) exists for the employee
+        if (!empty($row['face_descriptors'])) {
+            // Base64 encode the binary data for direct embedding in HTML
+            $row['image_blob'] = 'data:image/jpeg;base64,' . base64_encode($row['face_descriptors']);
+        } else {
+            // Use a default image if no blob is found
+            $row['image_blob'] = "employee_profile/default.png";
         }
-        $row['image_path'] = $employee_image_path;
+
         $employees[] = $row;
     }
 
@@ -105,61 +112,50 @@ if (isset($_GET['search'])) {
                         $email = $row['email'];
                         $contact = $row['contact'];
 
-                        // Check if the employee's first face sample exists
-                        $employee_image_path = "employee_faces/$employee_no/face_25.jpg"; // Changed from face_30.png to face_1.png
-                
-                        // If the image doesn't exist, use a default placeholder image
-                        if (!file_exists($employee_image_path)) {
-                            $employee_image_path = "employee_profile/default.png";
-                        }
-
-                        // Make sure the image file is readable
-                        if (!is_readable($employee_image_path)) {
-                            error_log("Cannot read image file: $employee_image_path");
+                        // Use blob data if available; otherwise, use the default placeholder
+                        if (!empty($row['face_descriptors'])) {
+                            $employee_image_path = 'data:image/jpeg;base64,' . base64_encode($row['face_descriptors']);
+                        } else {
                             $employee_image_path = "employee_profile/default.png";
                         }
 
                         // Display employee box
                         echo '
-            <a href="employee_all_details.php?employee_no=' . $row['employee_no'] . '" class="employee-box">
-                <div class="employee-header">
-                    <img src="' . htmlspecialchars($employee_image_path) . '" alt="Employee Image" class="employee-image">
-                    <div class="employee-info">
-                        <p class="employee-name">' . htmlspecialchars($full_name) . '</p>
-                        <p class="employee-position">' . htmlspecialchars($rate_position) . '</p>
-                    </div>
-                </div>
-                <div class="employee-details">
-                    <div class="employee-group">
-                        <div class="employee-detail-item">
-                            <p class="employee-title">Department:</p>
-                            <p class="employee-department">' . htmlspecialchars($department) . '</p>
-                        </div>
-                        <div class="employee-detail-item">
-                            <p class="employee-title">Date Hired:</p>
-                            <p class="employee-date-hired">' . $date_hired . '</p>
+                <a href="employee_all_details.php?employee_no=' . $row['employee_no'] . '" class="employee-box">
+                    <div class="employee-header">
+                        <img src="' . htmlspecialchars($employee_image_path) . '" alt="Employee Image" class="employee-image">
+                        <div class="employee-info">
+                            <p class="employee-name">' . htmlspecialchars($full_name) . '</p>
+                            <p class="employee-position">' . htmlspecialchars($rate_position) . '</p>
                         </div>
                     </div>
-                    <div class="employee-contact-group">
-                        <p class="employee-contact">
-                            <i class="email-icon">📧</i> ' . htmlspecialchars($email) . '
-                        </p>
-                        <p class="employee-contact">
-                            <i class="contact-icon">📞</i> ' . htmlspecialchars($contact) . '
-                        </p>
+                    <div class="employee-details">
+                        <div class="employee-group">
+                            <div class="employee-detail-item">
+                                <p class="employee-title">Department:</p>
+                                <p class="employee-department">' . htmlspecialchars($department) . '</p>
+                            </div>
+                            <div class="employee-detail-item">
+                                <p class="employee-title">Date Hired:</p>
+                                <p class="employee-date-hired">' . $date_hired . '</p>
+                            </div>
+                        </div>
+                        <div class="employee-contact-group">
+                            <p class="employee-contact">
+                                <i class="email-icon">📧</i> ' . htmlspecialchars($email) . '
+                            </p>
+                            <p class="employee-contact">
+                                <i class="contact-icon">📞</i> ' . htmlspecialchars($contact) . '
+                            </p>
+                        </div>
                     </div>
-                </div>
-            </a>';
+                </a>';
                     }
                 } else {
                     echo '<p>No employees found.</p>';
                 }
-
-                // Close the database connection
-                $conn->close();
                 ?>
             </div>
-
         </div>
         <script>
             function updateTime() {
@@ -182,8 +178,8 @@ if (isset($_GET['search'])) {
         </script>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
-            $(document).ready(function () {
-                $('.search-input').on('input', function () {
+            $(document).ready(function() {
+                $('.search-input').on('input', function() {
                     var searchTerm = $(this).val();
                     if (searchTerm.length > 2) {
                         $.ajax({
@@ -193,12 +189,12 @@ if (isset($_GET['search'])) {
                                 search: searchTerm
                             },
                             dataType: 'json',
-                            success: function (data) {
+                            success: function(data) {
                                 var employeeList = $('.employee-list');
                                 employeeList.empty();
 
                                 if (data.length > 0) {
-                                    $.each(data, function (index, employee) {
+                                    $.each(data, function(index, employee) {
                                         var employeeHtml = `
                                 <a href="employee_all_details.php?employee_no=${employee.employee_no}" class="employee-box">
                                     <div class="employee-header">
@@ -236,7 +232,7 @@ if (isset($_GET['search'])) {
                                     employeeList.html('<p>No employees found.</p>');
                                 }
                             },
-                            error: function (xhr, status, error) {
+                            error: function(xhr, status, error) {
                                 console.log("XHR Object:", xhr);
                                 console.log("Status:", status);
                                 console.log("Error:", error);

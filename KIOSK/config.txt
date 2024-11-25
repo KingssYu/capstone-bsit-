@@ -1,7 +1,0 @@
-localhost
-root
-admin_login
-
-3306
-C:/xampp/htdocs/capstone-bsit-/admin_area/
-C:/xampp/htdocs/capstone-bsit-/admin_area/

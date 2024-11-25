@@ -2,7 +2,7 @@
   <div class="header-container">
     <!-- Logo and Title -->
     <div>
-      <a href="/bsu_payroll/index.php" class="logo-section">
+      <a href="/payroll/index.php" class="logo-section">
         <img src="image/logobg.png" alt="Company Logo" class="logo">
         <h1 class="company-title">MAPOLCom <span>Incorporated</span></h1>
       </a>
@@ -19,12 +19,12 @@
     <!-- Enhanced Navigation -->
     <nav class="nav-section">
       <ul id="nav-menu">
-        <li><a href="/bsu_payroll/index.php" class="active"><i class="fas fa-home"></i> Home</a></li>
-        <li><a href="/bsu_payroll/employee_area/homepage.php#about"><i class="fas fa-info-circle"></i> About</a></li>
+        <li><a href="/payroll/index.php" class="active"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="/payroll/employee_area/homepage.php#about"><i class="fas fa-info-circle"></i> About</a></li>
 
-        <li><a href="/bsu_payroll/employee_area/projects.php" class="projects-link"><i
+        <li><a href="/payroll/employee_area/projects.php" class="projects-link"><i
               class="fas fa-project-diagram"></i> Projects</a></li>
-        <li><a href="/bsu_payroll/employee_area/portal.php" class="admin-button">
+        <li><a href="/payroll/employee_area/portal.php" class="admin-button">
             <i class="fas fa-user"></i>
             <span>Login</span>
           </a></li>

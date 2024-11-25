@@ -10,25 +10,25 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Get the employee_no from the URL
 $employee_no = isset($_GET['employee_no']) ? $conn->real_escape_string($_GET['employee_no']) : '';
 
 if ($employee_no) {
     // Query to fetch employee details based on employee_no
     $sql = "SELECT adding_employee.id AS employee_id, 
-                adding_employee.*, 
-                cash_advance.id AS cash_advance_id, 
-                cash_advance.requested_amount,
-                cash_advance.months,
-                cash_advance.monthly_payment,
-                cash_advance.remaining_balance,
-                cash_advance.paid_amount,
-                cash_advance.status,
-                rate_position.*
-        FROM adding_employee
-        LEFT JOIN rate_position ON adding_employee.rate_id = rate_position.rate_id
-        LEFT JOIN cash_advance ON adding_employee.id = cash_advance.id
-        WHERE adding_employee.employee_no = '$employee_no'";
+                   adding_employee.*, 
+                   cash_advance.id AS cash_advance_id, 
+                   cash_advance.requested_amount,
+                   cash_advance.months,
+                   cash_advance.monthly_payment,
+                   cash_advance.remaining_balance,
+                   cash_advance.paid_amount,
+                   cash_advance.status,
+                   rate_position.*,
+                   adding_employee.face_descriptors
+            FROM adding_employee
+            LEFT JOIN rate_position ON adding_employee.rate_id = rate_position.rate_id
+            LEFT JOIN cash_advance ON adding_employee.id = cash_advance.id
+            WHERE adding_employee.employee_no = '$employee_no'";
 
     $result = $conn->query($sql);
 
@@ -36,10 +36,11 @@ if ($employee_no) {
         // Fetch the employee details
         $employee = $result->fetch_assoc();
 
-        // Check if the face image exists in the employee_faces directory
-        $face_image_path = "employee_faces/" . $employee_no . "/face_30.jpg";
-        if (!file_exists($face_image_path)) {
-            $face_image_path = "default_face.png"; // Fallback image if no face image exists
+        // Use blob data for the image if available
+        if (!empty($employee['face_descriptors'])) {
+            $face_image_path = 'data:image/jpeg;base64,' . base64_encode($employee['face_descriptors']);
+        } else {
+            $face_image_path = "default_face.png"; // Fallback image if no blob data exists
         }
     } else {
         echo "<p>Employee not found.</p>";
@@ -49,7 +50,6 @@ if ($employee_no) {
     echo "<p>No employee number provided.</p>";
     exit();
 }
-
 // Handle the delete request
 if (isset($_POST['delete_employee'])) {
     // Start a transaction
@@ -455,7 +455,7 @@ $conn->close();
         <!-- HTML to display employee details -->
         <div class="employee-details-container">
             <div class="profile-image-box">
-                <img src="<?php echo $face_image_path; ?>" alt="Profile Image" class="profile-image">
+                <img src="<?php echo htmlspecialchars($face_image_path); ?>" alt="Profile Image" class="profile-image">
             </div>
             <div class="employee-name">
                 <?php echo htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']); ?>

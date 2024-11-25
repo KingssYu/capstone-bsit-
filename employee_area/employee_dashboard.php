@@ -130,50 +130,7 @@ if ($result_total->num_rows > 0) {
     </div>
 
 
-    <script>
-        // Create the real calendar
-        function generateCalendar() {
-            const calendarElement = document.getElementById('calendar');
-            const date = new Date();
-            const month = date.getMonth();
-            const year = date.getFullYear();
 
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const firstDayIndex = new Date(year, month, 1).getDay();
-
-            // Month and Year Header
-            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-            const calendarHeader = `<h2>${monthNames[month]} ${year}</h2>`;
-
-            // Days of the Week Header
-            const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            let weekDaysRow = '<div class="weekdays">';
-            for (let i = 0; i < 7; i++) {
-                weekDaysRow += `<div>${weekDays[i]}</div>`;
-            }
-            weekDaysRow += '</div>';
-
-            // Days of the Month
-            let daysHTML = '<div class="days">';
-            for (let i = 0; i < firstDayIndex; i++) {
-                daysHTML += '<div class="empty"></div>'; // Empty days before the start of the month
-            }
-            for (let i = 1; i <= daysInMonth; i++) {
-                if (i === date.getDate()) {
-                    daysHTML += `<div class="today">${i}</div>`; // Highlight current day
-                } else {
-                    daysHTML += `<div>${i}</div>`;
-                }
-            }
-            daysHTML += '</div>';
-
-            // Final Calendar HTML
-            calendarElement.innerHTML = calendarHeader + weekDaysRow + daysHTML;
-        }
-
-        // Call the function to generate the calendar
-        generateCalendar();
-    </script>
 
 </body>
 
@@ -185,3 +142,48 @@ if ($result_total->num_rows > 0) {
 <!-- Add Bootstrap JS and Popper.js for Modal functionality -->
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+<script>
+    // Create the real calendar
+    function generateCalendar() {
+        const calendarElement = document.getElementById('calendar');
+        const date = new Date();
+        const month = date.getMonth();
+        const year = date.getFullYear();
+
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const firstDayIndex = new Date(year, month, 1).getDay();
+
+        // Month and Year Header
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        const calendarHeader = `<h2>${monthNames[month]} ${year}</h2>`;
+
+        // Days of the Week Header
+        const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        let weekDaysRow = '<div class="weekdays">';
+        for (let i = 0; i < 7; i++) {
+            weekDaysRow += `<div>${weekDays[i]}</div>`;
+        }
+        weekDaysRow += '</div>';
+
+        // Days of the Month
+        let daysHTML = '<div class="days">';
+        for (let i = 0; i < firstDayIndex; i++) {
+            daysHTML += '<div class="empty"></div>'; // Empty days before the start of the month
+        }
+        for (let i = 1; i <= daysInMonth; i++) {
+            if (i === date.getDate()) {
+                daysHTML += `<div class="today">${i}</div>`; // Highlight current day
+            } else {
+                daysHTML += `<div>${i}</div>`;
+            }
+        }
+        daysHTML += '</div>';
+
+        // Final Calendar HTML
+        calendarElement.innerHTML = calendarHeader + weekDaysRow + daysHTML;
+    }
+
+    // Call the function to generate the calendar
+    generateCalendar();
+</script>
