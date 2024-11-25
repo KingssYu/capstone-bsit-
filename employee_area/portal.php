@@ -100,11 +100,11 @@ try {
             <h2>Mapolcom Portal</h2>
             <form action="" method="post">
                 <div class="input-group">
-                    <label for="username">Username / Employee Number</label>
+                    <label for="username">Username</label>
                     <input type="text" id="username" name="username" required>
                 </div>
                 <div class="input-group">
-                    <label for="password">Password / Lastname</label>
+                    <label for="password">Password</label>
                     <div class="input-wrapper">
                         <input type="password" id="password" name="password" required>
                         <span id="togglePassword">Show</span>
