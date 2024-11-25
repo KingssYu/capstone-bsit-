@@ -40,11 +40,27 @@
             <p>Your trusted construction partner</p>
           </div>
         </div>
+        <div class="carousel-item">
+          <img src="image/slide4.jpg" alt="Construction Project 4">
+          <div class="carousel-caption">
+            <h3>Professional Services</h3>
+            <p>Your trusted construction partner</p>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <img src="image/slide5.jpg" alt="Construction Project 5">
+          <div class="carousel-caption">
+            <h3>Professional Services</h3>
+            <p>Your trusted construction partner</p>
+          </div>
+        </div>
       </div>
       <div class="carousel-indicators">
         <span class="indicator active" onclick="currentSlide(1)"></span>
         <span class="indicator" onclick="currentSlide(2)"></span>
         <span class="indicator" onclick="currentSlide(3)"></span>
+        <span class="indicator" onclick="currentSlide(4)"></span>
+        <span class="indicator" onclick="currentSlide(5)"></span>
       </div>
       <button class="carousel-control prev" onclick="plusSlides(-1)">
         <i class="fas fa-chevron-left"></i>
@@ -163,7 +179,7 @@
         }
       });
 
-      // Your existing carousel JavaScript
+      // Carousel logic
       let slideIndex = 1;
       showSlides(slideIndex);
 
@@ -180,10 +196,10 @@
         const indicators = document.getElementsByClassName("indicator");
 
         if (n > slides.length) {
-          slideIndex = 1
+          slideIndex = 1;
         }
         if (n < 1) {
-          slideIndex = slides.length
+          slideIndex = slides.length;
         }
 
         for (let i = 0; i < slides.length; i++) {
