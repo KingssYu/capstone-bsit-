@@ -14,36 +14,42 @@ $employee = $_SESSION['employee'];
 $employee_no = $_SESSION['employee']['employee_no'];
 
 
+// Prepare the statement to prevent SQL injection
 $sql_present = "SELECT COUNT(DISTINCT adding_employee.employee_no) AS total_employees_present
                 FROM adding_employee
                 INNER JOIN attendance_report
                 ON adding_employee.employee_no = attendance_report.employee_no
-                WHERE attendance_report.date = CURDATE() AND adding_employee.employee_no = '$employee_no'";
+                WHERE attendance_report.date = CURDATE() AND adding_employee.employee_no = ?";
 
-$result_present = $conn->query($sql_present);
+$stmt_present = $conn->prepare($sql_present);
+$stmt_present->bind_param("s", $employee_no); // Bind the employee number
+$stmt_present->execute();
+$result_present = $stmt_present->get_result();
+
 $total_employees_present = 0;
-
 if ($result_present->num_rows > 0) {
     $row_present = $result_present->fetch_assoc();
     $total_employees_present = $row_present['total_employees_present'];
 }
 
-
 $sql_absent = "SELECT COUNT(DISTINCT adding_employee.employee_no) AS total_employees_absent
-        FROM adding_employee
-        LEFT JOIN attendance_report
-        ON adding_employee.employee_no = attendance_report.employee_no
-        AND (attendance_report.date = CURDATE() OR attendance_report.date IS NULL) WHERE adding_employee.employee_no = '$employee_no'
+               FROM adding_employee
+               LEFT JOIN attendance_report
+               ON adding_employee.employee_no = attendance_report.employee_no
+               AND (attendance_report.date = CURDATE() OR attendance_report.date IS NULL) 
+               WHERE adding_employee.employee_no = ?";
 
-        ";
+$stmt_absent = $conn->prepare($sql_absent);
+$stmt_absent->bind_param("s", $employee_no); // Bind the employee number
+$stmt_absent->execute();
+$result_absent = $stmt_absent->get_result();
 
-$result_total = $conn->query($sql_absent);
 $total_employees_absent = 0;
-
-if ($result_total->num_rows > 0) {
-    $row_total = $result_total->fetch_assoc();
-    $total_employees_absent = $row_total['total_employees_absent'];
+if ($result_absent->num_rows > 0) {
+    $row_absent = $result_absent->fetch_assoc();
+    $total_employees_absent = $row_absent['total_employees_absent'];
 }
+
 
 ?>
 
