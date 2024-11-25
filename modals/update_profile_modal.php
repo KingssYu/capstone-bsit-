@@ -38,17 +38,17 @@ if (isset($_SESSION['employee'])) {
                 <input type="hidden" name="employee_no" value="<?php echo $row['employee_no']; ?>">
 
                 <div class="form-row">
-                  <div class="form-group col-md-12">
+                  <!-- <div class="form-group col-md-12">
                     <label for="profile_picture">Upload Profile Picture:</label>
                     <input type="file" class="form-control" id="profile_picture" name="fileToUpload">
                     <div class="file-info">
-                      <?php if (!empty($profile_picture) && file_exists('../uploads/' . $profile_picture)): ?>
+                      </?php if (!empty($profile_picture) && file_exists('../uploads/' . $profile_picture)): ?>
                         <p><strong>Current Image:</strong> <img src="../uploads/<?php echo $profile_picture; ?>" alt="Profile Picture" style="max-width: 100px;"></p>
-                      <?php else: ?>
+                      </?php else: ?>
                         <p>No image available.</p>
-                      <?php endif; ?>
+                      </?php endif; ?>
                     </div>
-                  </div>
+                  </div> -->
 
                   <div class="form-group col-md-12">
                     <label for="category_name">First Name:</label>
