@@ -1,7 +1,20 @@
 <?php
 // Start the session
 session_start();
-include '../connection/connections.php';
+$servername = "localhost";
+$username = "u759574209_bsupayroll";
+$password = "Mybossrocks081677!";
+$dbname = "u759574209_bsupayroll";
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+} else {
+    // echo "SUCCESS";
+}
 
 // Check if employee is logged in
 if (!isset($_SESSION['employee'])) {
@@ -63,7 +76,24 @@ if ($result_absent->num_rows > 0) {
 
 <body>
 
-    <?php include 'employee_navigation.php' ?>
+    <div class="sidebar">
+        <div class="logo">
+            <img src="../image/logobg.png" alt="Company Logo">
+        </div>
+        <ul class="nav-links">
+            <li><a href="employee_dashboard.php">Home</a></li>
+            <li><a href="my_profile.php">My Profile</a></li>
+            <li><a href="cash_advance_request.php">Cash Advance Request</a></li>
+            <li><a href="timesheet.php">Timesheet</a></li>
+            <li><a href="payslip.php">Payslip Record</a></li>
+            <li><a href="changepass_module.php">Change Password</a></li>
+
+            <!-- <li><a href="#">Leave Request</a></li> -->
+        </ul>
+        <div class="logout">
+            <a href="logout.php" class="logout-button">Logout</a>
+        </div>
+    </div>
 
     <div class="employee-greeting">
         <h1>Hello, <?php echo $employee['first_name']; ?></h1>
@@ -141,7 +171,6 @@ if ($result_absent->num_rows > 0) {
 </body>
 
 </html>
-
 
 <script>
     // Create the real calendar
