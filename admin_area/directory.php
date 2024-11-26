@@ -309,8 +309,12 @@ $conn->close();
                     <tr>
                         <td class="name-cell">
                             <?php
-                            $employee_image_path = "employee_faces/{$employee['employee_no']}/face_25.jpg";
-                            if (!file_exists($employee_image_path) || !is_readable($employee_image_path)) {
+                            // Check if the `face_descriptors` blob exists and is not empty
+                            if (!empty($employee['face_descriptors'])) {
+                                // Base64 encode the binary data for direct embedding in the src attribute of the <img> tag
+                                $employee_image_path = 'data:image/jpeg;base64,' . base64_encode($employee['face_descriptors']);
+                            } else {
+                                // Use a default image if the blob is empty
                                 $employee_image_path = "employee_profile/default.png";
                             }
                             ?>
@@ -328,7 +332,7 @@ $conn->close();
     </div>
 
     <script>
-        document.querySelector('form').addEventListener('submit', function (e) {
+        document.querySelector('form').addEventListener('submit', function(e) {
             e.preventDefault();
             var formData = new FormData(this);
             var searchParams = new URLSearchParams(formData);

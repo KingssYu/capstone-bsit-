@@ -35,7 +35,7 @@ if (isset($_POST['forgot_password'])) {
         $mail->Host       = 'smtp.gmail.com';                       // Set the SMTP server to send through
         $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
         $mail->Username   = 'cassielee680@gmail.com';          // SMTP username
-        $mail->Password   = 'vqnaiecqqvjqghqs';                     // SMTP password
+        $mail->Password   = 'wtanlkmdxodolnvk';                     // SMTP password
         $mail->SMTPSecure = 'ssl';                                  // Enable TLS encryption; `ssl` encouraged
         $mail->Port       = 465;                                    // TCP port to connect to
 

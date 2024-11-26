@@ -1,7 +1,20 @@
 <?php
 // Start the session
 session_start();
-include '../connection/connections.php';
+$servername = "localhost";
+$username = "u759574209_bsupayroll";
+$password = "Mybossrocks081677!";
+$dbname = "u759574209_bsupayroll";
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+} else {
+    // echo "SUCCESS";
+}
 
 // Check if employee is logged in
 if (!isset($_SESSION['employee'])) {
@@ -14,36 +27,42 @@ $employee = $_SESSION['employee'];
 $employee_no = $_SESSION['employee']['employee_no'];
 
 
+// Prepare the statement to prevent SQL injection
 $sql_present = "SELECT COUNT(DISTINCT adding_employee.employee_no) AS total_employees_present
                 FROM adding_employee
                 INNER JOIN attendance_report
                 ON adding_employee.employee_no = attendance_report.employee_no
-                WHERE attendance_report.date = CURDATE() AND adding_employee.employee_no = '$employee_no'";
+                WHERE attendance_report.date = CURDATE() AND adding_employee.employee_no = ?";
 
-$result_present = $conn->query($sql_present);
+$stmt_present = $conn->prepare($sql_present);
+$stmt_present->bind_param("s", $employee_no); // Bind the employee number
+$stmt_present->execute();
+$result_present = $stmt_present->get_result();
+
 $total_employees_present = 0;
-
 if ($result_present->num_rows > 0) {
     $row_present = $result_present->fetch_assoc();
     $total_employees_present = $row_present['total_employees_present'];
 }
 
-
 $sql_absent = "SELECT COUNT(DISTINCT adding_employee.employee_no) AS total_employees_absent
-        FROM adding_employee
-        LEFT JOIN attendance_report
-        ON adding_employee.employee_no = attendance_report.employee_no
-        AND (attendance_report.date = CURDATE() OR attendance_report.date IS NULL) WHERE adding_employee.employee_no = '$employee_no'
+               FROM adding_employee
+               LEFT JOIN attendance_report
+               ON adding_employee.employee_no = attendance_report.employee_no
+               AND (attendance_report.date = CURDATE() OR attendance_report.date IS NULL) 
+               WHERE adding_employee.employee_no = ?";
 
-        ";
+$stmt_absent = $conn->prepare($sql_absent);
+$stmt_absent->bind_param("s", $employee_no); // Bind the employee number
+$stmt_absent->execute();
+$result_absent = $stmt_absent->get_result();
 
-$result_total = $conn->query($sql_absent);
 $total_employees_absent = 0;
-
-if ($result_total->num_rows > 0) {
-    $row_total = $result_total->fetch_assoc();
-    $total_employees_absent = $row_total['total_employees_absent'];
+if ($result_absent->num_rows > 0) {
+    $row_absent = $result_absent->fetch_assoc();
+    $total_employees_absent = $row_absent['total_employees_absent'];
 }
+
 
 ?>
 
@@ -57,7 +76,24 @@ if ($result_total->num_rows > 0) {
 
 <body>
 
-    <?php include 'employee_navigation.php' ?>
+    <div class="sidebar">
+        <div class="logo">
+            <img src="../image/logobg.png" alt="Company Logo">
+        </div>
+        <ul class="nav-links">
+            <li><a href="employee_dashboard.php">Home</a></li>
+            <li><a href="my_profile.php">My Profile</a></li>
+            <li><a href="cash_advance_request.php">Cash Advance Request</a></li>
+            <li><a href="timesheet.php">Timesheet</a></li>
+            <li><a href="payslip.php">Payslip Record</a></li>
+            <li><a href="changepass_module.php">Change Password</a></li>
+
+            <!-- <li><a href="#">Leave Request</a></li> -->
+        </ul>
+        <div class="logout">
+            <a href="logout.php" class="logout-button">Logout</a>
+        </div>
+    </div>
 
     <div class="employee-greeting">
         <h1>Hello, <?php echo $employee['first_name']; ?></h1>
@@ -130,58 +166,53 @@ if ($result_total->num_rows > 0) {
     </div>
 
 
-    <script>
-        // Create the real calendar
-        function generateCalendar() {
-            const calendarElement = document.getElementById('calendar');
-            const date = new Date();
-            const month = date.getMonth();
-            const year = date.getFullYear();
 
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const firstDayIndex = new Date(year, month, 1).getDay();
-
-            // Month and Year Header
-            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-            const calendarHeader = `<h2>${monthNames[month]} ${year}</h2>`;
-
-            // Days of the Week Header
-            const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            let weekDaysRow = '<div class="weekdays">';
-            for (let i = 0; i < 7; i++) {
-                weekDaysRow += `<div>${weekDays[i]}</div>`;
-            }
-            weekDaysRow += '</div>';
-
-            // Days of the Month
-            let daysHTML = '<div class="days">';
-            for (let i = 0; i < firstDayIndex; i++) {
-                daysHTML += '<div class="empty"></div>'; // Empty days before the start of the month
-            }
-            for (let i = 1; i <= daysInMonth; i++) {
-                if (i === date.getDate()) {
-                    daysHTML += `<div class="today">${i}</div>`; // Highlight current day
-                } else {
-                    daysHTML += `<div>${i}</div>`;
-                }
-            }
-            daysHTML += '</div>';
-
-            // Final Calendar HTML
-            calendarElement.innerHTML = calendarHeader + weekDaysRow + daysHTML;
-        }
-
-        // Call the function to generate the calendar
-        generateCalendar();
-    </script>
 
 </body>
 
 </html>
 
-<!-- Add Bootstrap CSS -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+<script>
+    // Create the real calendar
+    function generateCalendar() {
+        const calendarElement = document.getElementById('calendar');
+        const date = new Date();
+        const month = date.getMonth();
+        const year = date.getFullYear();
 
-<!-- Add Bootstrap JS and Popper.js for Modal functionality -->
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const firstDayIndex = new Date(year, month, 1).getDay();
+
+        // Month and Year Header
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        const calendarHeader = `<h2>${monthNames[month]} ${year}</h2>`;
+
+        // Days of the Week Header
+        const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        let weekDaysRow = '<div class="weekdays">';
+        for (let i = 0; i < 7; i++) {
+            weekDaysRow += `<div>${weekDays[i]}</div>`;
+        }
+        weekDaysRow += '</div>';
+
+        // Days of the Month
+        let daysHTML = '<div class="days">';
+        for (let i = 0; i < firstDayIndex; i++) {
+            daysHTML += '<div class="empty"></div>'; // Empty days before the start of the month
+        }
+        for (let i = 1; i <= daysInMonth; i++) {
+            if (i === date.getDate()) {
+                daysHTML += `<div class="today">${i}</div>`; // Highlight current day
+            } else {
+                daysHTML += `<div>${i}</div>`;
+            }
+        }
+        daysHTML += '</div>';
+
+        // Final Calendar HTML
+        calendarElement.innerHTML = calendarHeader + weekDaysRow + daysHTML;
+    }
+
+    // Call the function to generate the calendar
+    generateCalendar();
+</script>
