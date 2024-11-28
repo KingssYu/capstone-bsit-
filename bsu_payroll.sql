@@ -11,7 +11,7 @@
  Target Server Version : 100432 (10.4.32-MariaDB)
  File Encoding         : 65001
 
- Date: 28/11/2024 14:22:18
+ Date: 28/11/2024 22:25:15
 */
 
 SET NAMES utf8mb4;
@@ -30,7 +30,7 @@ CREATE TABLE `adding_employee`  (
   `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `rate_id` int NOT NULL,
   `contact` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `department` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `department_id` int NOT NULL,
   `date_hired` date NOT NULL,
   `address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `face_samples` longblob NOT NULL,
@@ -51,9 +51,9 @@ CREATE TABLE `adding_employee`  (
 -- ----------------------------
 -- Records of adding_employee
 -- ----------------------------
-INSERT INTO `adding_employee` VALUES (39, 'EMP-3475', 'Mariano', 'Janine Kaye', 'Binatero', 'gajultos.garry123@gmail.com', 3, '09420542776', 'Sales', '2024-11-13', 'upper bigte', 0x3330, '', 1, '$2y$10$HlBeBNdC7QSiJdbBq/sSI.eOD3V567uBvuUmHsOpjfKu4zipXe1Ba', '0000-00-00', '', '', '23', '3', '../uploads/Dinuguan.jpg', NULL);
-INSERT INTO `adding_employee` VALUES (41, 'EMP-6601', 'Yu', 'King Mark', 'rodriguez', 'kingking2931@gmail.com', 4, '09420542776', 'IT', '2024-11-15', 'blk 16', 0x3330, '', 1, '$2y$10$oz1ZZr/loobrcKmANSZxTOdCgEr7FmEk4dqMPafZzakLJpip5.nO6', '0000-00-00', '', '', '', '', NULL, NULL);
-INSERT INTO `adding_employee` VALUES (45, 'EMP-9237', 'Gajultos', 'Garry', 'Dela Torre', 'test1@gmail.com', 5, '23', 'Sales', '2024-12-12', 'ee', '', '', 0, '', '0000-00-00', '', '', '', '', NULL, NULL);
+INSERT INTO `adding_employee` VALUES (39, 'EMP-3475', 'Mariano', 'Janine Kaye', 'Binatero', 'gajultos.garry123@gmail.com', 3, '09420542776', 5, '2024-11-13', 'upper bigte', 0x3330, '', 1, '$2y$10$HlBeBNdC7QSiJdbBq/sSI.eOD3V567uBvuUmHsOpjfKu4zipXe1Ba', '2024-11-28', '', '', '23', '3', '../uploads/Dinuguan.jpg', 'Regular');
+INSERT INTO `adding_employee` VALUES (41, 'EMP-6601', 'Yu', 'King Mark', 'rodriguez', 'kingking2931@gmail.com', 4, '09420542776', 2, '2024-11-15', 'blk 16', 0x3330, '', 1, '$2y$10$oz1ZZr/loobrcKmANSZxTOdCgEr7FmEk4dqMPafZzakLJpip5.nO6', '0000-00-00', '', '', '', '', NULL, 'Part Time');
+INSERT INTO `adding_employee` VALUES (45, 'EMP-9237', 'Gajultos', 'Garry', 'Dela Torre', 'test1@gmail.com', 5, '23', 4, '2024-12-12', 'ee', '', '', 0, '', '0000-00-00', '', '', '', '', NULL, 'Part Time');
 
 -- ----------------------------
 -- Table structure for admin
@@ -154,8 +154,27 @@ CREATE TABLE `cash_advance`  (
 -- ----------------------------
 -- Records of cash_advance
 -- ----------------------------
-INSERT INTO `cash_advance` VALUES (10, 'EMP-3475', 4000.00, NULL, 0.01, 'Approved', '2024-11-19 13:36:34', NULL, 3, 39, 1333.33);
-INSERT INTO `cash_advance` VALUES (11, 'EMP-3475', 4000.00, NULL, 4000.00, 'Approved', '2024-11-19 22:20:28', NULL, 3, 39, 1333.33);
+INSERT INTO `cash_advance` VALUES (10, 'EMP-3475', 4000.00, NULL, 0.01, 'Pending', '2024-11-19 13:36:34', NULL, 3, 39, 1333.33);
+INSERT INTO `cash_advance` VALUES (11, 'EMP-3475', 4000.00, NULL, 4000.00, 'Pending', '2024-11-19 22:20:28', NULL, 3, 39, 1333.33);
+
+-- ----------------------------
+-- Table structure for department
+-- ----------------------------
+DROP TABLE IF EXISTS `department`;
+CREATE TABLE `department`  (
+  `department_id` int NOT NULL AUTO_INCREMENT,
+  `department_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`department_id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of department
+-- ----------------------------
+INSERT INTO `department` VALUES (2, 'Department 1');
+INSERT INTO `department` VALUES (4, 'Department 2');
+INSERT INTO `department` VALUES (5, 'Department 3');
+INSERT INTO `department` VALUES (6, 'Department 4');
+INSERT INTO `department` VALUES (7, 'Department 5');
 
 -- ----------------------------
 -- Table structure for payroll
@@ -220,19 +239,19 @@ CREATE TABLE `rate_position`  (
   `rate_per_hour` decimal(11, 2) NULL DEFAULT NULL,
   `rate_per_day` decimal(11, 2) NULL DEFAULT NULL,
   `ot_per_hour` decimal(10, 2) NULL DEFAULT NULL,
+  `department_id` int NULL DEFAULT NULL,
   PRIMARY KEY (`rate_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of rate_position
 -- ----------------------------
-INSERT INTO `rate_position` VALUES (1, 'Mechanical Engineering', 69.00, 552.00, 69.00);
-INSERT INTO `rate_position` VALUES (2, 'Authorize Manager Officer', 89.00, 712.00, 89.00);
-INSERT INTO `rate_position` VALUES (3, 'Quality Control Manger ', 99.00, 792.00, 99.00);
-INSERT INTO `rate_position` VALUES (4, 'Office Staff', 89.00, 712.00, 89.00);
-INSERT INTO `rate_position` VALUES (5, 'Safety Practitioner', 78.00, 624.00, 78.00);
-INSERT INTO `rate_position` VALUES (6, 'Test', NULL, NULL, NULL);
-INSERT INTO `rate_position` VALUES (7, 'Testttt', NULL, NULL, NULL);
+INSERT INTO `rate_position` VALUES (1, 'Mechanical Engineering', 69.00, 552.00, 69.00, 2);
+INSERT INTO `rate_position` VALUES (2, 'Authorize Manager Officer', 89.00, 712.00, 89.00, 4);
+INSERT INTO `rate_position` VALUES (3, 'Quality Control Manger ', 99.00, 792.00, 99.00, 5);
+INSERT INTO `rate_position` VALUES (4, 'Office Staff', 89.00, 712.00, 89.00, 6);
+INSERT INTO `rate_position` VALUES (5, 'Safety Practitioner', 78.00, 624.00, 78.00, 4);
+INSERT INTO `rate_position` VALUES (9, 'Test', NULL, NULL, NULL, 2);
 
 -- ----------------------------
 -- Table structure for under_position
@@ -246,12 +265,14 @@ CREATE TABLE `under_position`  (
   `ot_per_hour` decimal(11, 2) NULL DEFAULT NULL,
   `position_id` int NULL DEFAULT NULL,
   PRIMARY KEY (`rate_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 16 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of under_position
 -- ----------------------------
 INSERT INTO `under_position` VALUES (3, '23', 23.00, 23.00, NULL, 5);
-INSERT INTO `under_position` VALUES (4, '23', 23.00, 23.00, NULL, 1);
+INSERT INTO `under_position` VALUES (12, 'Test', 23.00, 23.00, NULL, 6);
+INSERT INTO `under_position` VALUES (14, 'Senior Position', 80.00, 800.00, NULL, 1);
+INSERT INTO `under_position` VALUES (15, 'Junior Position', 70.00, 700.00, NULL, 1);
 
 SET FOREIGN_KEY_CHECKS = 1;

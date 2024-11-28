@@ -218,12 +218,16 @@ if (!isset($_SESSION['admin'])) {
     </button>
     <br>
     <br>
+    <div id="modalDeletePosition"></div>
+
     <!-- Table with Employee Data -->
     <table class="directory-table" name="position_table" id="position_table">
       <thead>
         <tr>
           <th>ID</th>
+          <th>Department</th>
           <th>Position</th>
+
           <th>Manage</th>
         </tr>
       </thead>

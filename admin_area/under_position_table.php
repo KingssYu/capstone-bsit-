@@ -44,20 +44,42 @@ $columns = array(
   ),
 
   array(
-    'db' => 'ot_per_hour',
+    'db' => 'rate_id',
     'dt' => 4,
-    'field' => 'ot_per_hour',
+    'field' => 'rate_id',
     'formatter' => function ($lab4, $row) {
-      return $row['ot_per_hour'];
+      return '
+            <div class="dropdown">
+                <button class="btn btn-info" type="button" id="dropdownMenuButton' . $row['rate_id'] . '" data-bs-toggle="dropdown" aria-expanded="false">
+                    &#x22EE;
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $row['rate_id'] . '">
+                    <li>
+                        <a class="dropdown-item" href="#" onclick="if(confirm(\'Are you sure you want to delete this Rank?\')) { window.location.href=\'delete_rank_process.php?rate_id=' . $row['rate_id'] . '\'; }">Delete</a>
+                    </li>
+                </ul>
+            </div>
+        ';
     }
   ),
 
   array(
     'db' => 'position_id',
-    'dt' => 4,
+    'dt' => 5,
     'field' => 'position_id',
     'formatter' => function ($lab4, $row) {
       return $row['position_id'];
+    }
+  ),
+
+
+
+  array(
+    'db' => 'ot_per_hour',
+    'dt' => 6,
+    'field' => 'ot_per_hour',
+    'formatter' => function ($lab4, $row) {
+      return $row['ot_per_hour'];
     }
   ),
 );

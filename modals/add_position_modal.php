@@ -1,34 +1,16 @@
 <?php
-// Ensure session is started
-
-// Check if the session contains employee data
-// if (!isset($_SESSION['employee']) || !isset($_SESSION['employee']['employee_no'])) {
-//   die("User is not logged in.");
-// }
-
 // Include database connection
 include '../connection/connections.php';
 
-// // Get the employee_no from the session
-// $employee_no = $_SESSION['employee']['employee_no'];
+$sql = "SELECT * FROM department";
+$result = mysqli_query($conn, $sql);
 
-// // Sanitize the input to prevent SQL injection
-// $employee_no = mysqli_real_escape_string($conn, $employee_no);
-
-// // Fetch employee data from the database
-// $sql = "SELECT * FROM adding_employee WHERE employee_no = '$employee_no'";
-// $resultCategory = mysqli_query($conn, $sql);
-
-// if (!$resultCategory) {
-//   die("Query failed: " . mysqli_error($conn));
-// }
-
-// // Fetch the employee data as an associative array
-// $employeeData = mysqli_fetch_assoc($resultCategory);
-
-// if (!$employeeData) {
-//   die("Employee not found.");
-// }
+$department_names = [];
+if ($result) {
+  while ($row = mysqli_fetch_assoc($result)) {
+    $department_names[] = $row;
+  }
+}
 ?>
 
 <!-- Modal (Bootstrap) -->
@@ -48,6 +30,19 @@ include '../connection/connections.php';
             <input type="text" class="form-control" id="rate_position" name="rate_position"
               placeholder="Enter Position Name" required>
           </div>
+
+          <div class="mb-3">
+            <label for="department_id" class="form-label">Select Department</label>
+            <select class="form-control" id="department_id" name="department_id" required style="appearance: none; background-image: url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27currentColor%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpolyline points=%276 9 12 15 18 9%27/%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 10px center;">
+              <option value="" disabled selected>Select Supplier</option>
+              <?php foreach ($department_names as $supplier_rows) : ?>
+                <option value="<?php echo $supplier_rows['department_id']; ?>">
+                  <?php echo $supplier_rows['department_name']; ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+
 
           <input type="hidden" name="add_position" value="1">
 

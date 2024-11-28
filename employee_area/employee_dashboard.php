@@ -123,7 +123,7 @@ if ($result_absent->num_rows > 0) {
                     <p><strong>Date Hired:</strong> <?php echo $employee['date_hired']; ?></p>
                 </div>
                 <div class="stat-row">
-                    <p><strong>Department:</strong> <?php echo $employee['department']; ?></p>
+                    <p><strong>Department:</strong> <?php echo $employee['department_name']; ?></p>
                     <p><strong>Contact:</strong> <?php echo $employee['contact']; ?></p>
                 </div>
             </div>

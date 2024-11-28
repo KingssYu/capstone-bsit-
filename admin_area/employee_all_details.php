@@ -24,10 +24,12 @@ if ($employee_no) {
                    cash_advance.paid_amount,
                    cash_advance.status,
                    under_position.*,
+                   department.*,
                    adding_employee.face_descriptors
             FROM adding_employee
             LEFT JOIN under_position ON adding_employee.rate_id = under_position.rate_id
             LEFT JOIN cash_advance ON adding_employee.id = cash_advance.id
+            LEFT JOIN department ON adding_employee.department_id = department.department_id
             WHERE adding_employee.employee_no = '$employee_no'";
 
     $result = $conn->query($sql);
@@ -478,7 +480,7 @@ $conn->close();
                 </div>
                 <div class="info-item">
                     <div class="info-title">Department</div>
-                    <div class="info-content"><?php echo htmlspecialchars($employee['department']); ?></div>
+                    <div class="info-content"><?php echo htmlspecialchars($employee['department_name']); ?></div>
                 </div>
                 <div class="info-item">
                     <div class="info-title">Email</div>

@@ -26,14 +26,16 @@ if ($result_total->num_rows > 0) {
 // Fetch departments and positions
 $departments = [];
 $positions = [];
-$sql = "SELECT DISTINCT department FROM adding_employee";
+$sql = "SELECT * FROM adding_employee
+        LEFT JOIN department ON adding_employee.department_id = department.department_id";
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        $departments[] = $row['department'];
+        $departments[] = $row['department_name'];
     }
 }
-$sql = "SELECT DISTINCT * FROM adding_employee LEFT JOIN under_position ON adding_employee.rate_id = under_position.rate_id";
+$sql = "SELECT DISTINCT * FROM adding_employee 
+        LEFT JOIN under_position ON adding_employee.rate_id = under_position.rate_id";
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
@@ -48,10 +50,10 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         $search = $conn->real_escape_string($_GET['search']);
         $where_clause .= " WHERE (last_name LIKE '%$search%' OR first_name LIKE '%$search%' OR middle_name LIKE '%$search%')";
     }
-    if (!empty($_GET['department']) && $_GET['department'] != 'all-departments') {
-        $department = $conn->real_escape_string($_GET['department']);
+    if (!empty($_GET['department_name']) && $_GET['department_name'] != 'all-departments') {
+        $department_name = $conn->real_escape_string($_GET['department_name']);
         $where_clause .= empty($where_clause) ? " WHERE" : " AND";
-        $where_clause .= " department = '$department'";
+        $where_clause .= " department_name = '$department_name'";
     }
     if (!empty($_GET['rate_position']) && $_GET['rate_position'] != 'all-positions') {
         $rate_position = $conn->real_escape_string($_GET['rate_position']);
@@ -61,7 +63,10 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 }
 
 // Fetch employees
-$sql = "SELECT * FROM adding_employee LEFT JOIN under_position ON adding_employee.rate_id = under_position.rate_id" . $where_clause;
+$sql = "SELECT * FROM adding_employee 
+        LEFT JOIN under_position ON adding_employee.rate_id = under_position.rate_id
+        LEFT JOIN department ON adding_employee.department_id = department.department_id
+        " . $where_clause;
 $result = $conn->query($sql);
 $employees = [];
 if ($result->num_rows > 0) {
@@ -279,10 +284,10 @@ $conn->close();
             <input type="text" name="search" id="searchInput" placeholder="Search Directory"
                 value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>"
                 oninput="this.form.submit()">
-            <select name="department" onchange="this.form.submit()">
+            <select name="department_name" onchange="this.form.submit()">
                 <option value="all-departments">All Departments</option>
                 <?php foreach ($departments as $dept): ?>
-                    <option value="<?php echo htmlspecialchars($dept); ?>" <?php echo (isset($_GET['department']) && $_GET['department'] == $dept) ? 'selected' : ''; ?>><?php echo htmlspecialchars($dept); ?></option>
+                    <option value="<?php echo htmlspecialchars($dept); ?>" <?php echo (isset($_GET['department_name']) && $_GET['department_name'] == $dept) ? 'selected' : ''; ?>><?php echo htmlspecialchars($dept); ?></option>
                 <?php endforeach; ?>
             </select>
             <select name="rate_position" onchange="this.form.submit()">
@@ -322,7 +327,7 @@ $conn->close();
                             <?php echo htmlspecialchars($employee['last_name'] . ', ' . $employee['first_name'] . ' ' . $employee['middle_name']); ?>
                         </td>
                         <td><?php echo htmlspecialchars($employee['contact']); ?></td>
-                        <td><?php echo htmlspecialchars($employee['department']); ?></td>
+                        <td><?php echo htmlspecialchars($employee['department_name']); ?></td>
                         <td><?php echo htmlspecialchars($employee['rate_position']); ?></td>
                         <td><?php echo htmlspecialchars($employee['address']); ?></td>
                     </tr>

@@ -8,8 +8,6 @@ if (!isset($_SESSION['admin'])) {
   exit;
 }
 
-$rate_id = isset($_GET['rate_id']) ? $_GET['rate_id'] : null;
-
 ?>
 
 <!DOCTYPE html>
@@ -207,32 +205,26 @@ $rate_id = isset($_GET['rate_id']) ? $_GET['rate_id'] : null;
 <body>
   <!-- Sidebar -->
   <?php include './header.php'; ?>
-  <?php include '../modals/add_ranking_modal.php'; ?>
+  <?php include '../modals/add_department_modal.php'; ?>
 
   <!-- Directory Section -->
   <div class="directory-container">
     <div class="directory-header">
-      <h1>Rate per Ranks</h1>
+      <h1>Department</h1>
     </div>
-
     <br>
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rateRankingModal">
-      Add Ranks
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#positionModal">
+      Add Department
     </button>
     <br>
     <br>
-
-
     <!-- Table with Employee Data -->
-    <table class="directory-table" name="under_position_table" id="under_position_table">
+    <table class="directory-table" name="department_table" id="department_table">
       <thead>
         <tr>
           <th>ID</th>
-          <th>Rank</th>
-          <th>Per hour</th>
-          <th>Per Day</th>
+          <th>Department</th>
           <th>Manage</th>
-
         </tr>
       </thead>
     </table>
@@ -246,14 +238,15 @@ $rate_id = isset($_GET['rate_id']) ? $_GET['rate_id'] : null;
   <link rel="stylesheet" type="text/css" href="../datatables/datatables.min.css" />
   <script type="text/javascript" src="../datatables/datatables.min.js"></script>
   <script>
-    var under_position_table = $('#under_position_table').DataTable({
+    var department_table = $('#department_table').DataTable({
       "pagingType": "numbers",
       "processing": true,
       "serverSide": true,
       "ajax": {
-        "url": "./under_position_table.php",
-        data: function(d) {
-          d.rate_id = <?php echo $rate_id; ?>;
+        "url": "./department_table.php",
+        "data": function(d) {
+          d.date_from = $('#dateFrom').val();
+          d.date_to = $('#dateTo').val();
         }
       },
     });

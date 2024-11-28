@@ -221,6 +221,7 @@ if (!isset($_SESSION['admin'])) {
           <th>Employee Name</th>
           <th>Requested Amount</th>
           <th># of Months</th>
+          <th>Date Requested</th>
           <th>Remaining Balance</th>
           <th>Status</th>
           <th>Manage</th>
@@ -246,42 +247,46 @@ if (!isset($_SESSION['admin'])) {
       },
     });
 
-    $(document).ready(function () {
+    $(document).ready(function() {
       // Function to handle click event on datatable rows
-      $('#admin_cash_advance_table').on('click', 'tr td:nth-child(7) .fetchDataCashAdvance', function () {
+      $('#admin_cash_advance_table').on('click', 'tr td:nth-child(8) .fetchDataCashAdvance', function() {
         var cash_advance_id = $(this).closest('tr').find('td').first().text(); // Get the user_id from the clicked row
 
         $.ajax({
           url: '../modals/approve_cash_advance_modal.php', // Path to PHP script to fetch modal content
           method: 'POST',
-          data: { cash_advance_id: cash_advance_id },
-          success: function (response) {
+          data: {
+            cash_advance_id: cash_advance_id
+          },
+          success: function(response) {
             $('#modalContainerCashAdvance').html(response);
             $('#updateCashAdvance').modal('show');
             console.log("#updateCashAdvance" + cash_advance_id);
           },
-          error: function (xhr, status, error) {
+          error: function(xhr, status, error) {
             console.error(xhr.responseText);
           }
         });
       });
     });
 
-    $(document).ready(function () {
+    $(document).ready(function() {
       // Function to handle click event on datatable rows
-      $('#admin_cash_advance_table').on('click', 'tr td:nth-child(7) .fetchDataCashAdvanceDecline', function () {
+      $('#admin_cash_advance_table').on('click', 'tr td:nth-child(8) .fetchDataCashAdvanceDecline', function() {
         var cash_advance_id = $(this).closest('tr').find('td').first().text(); // Get the user_id from the clicked row
 
         $.ajax({
           url: '../modals/decline_cash_advance_modal.php', // Path to PHP script to fetch modal content
           method: 'POST',
-          data: { cash_advance_id: cash_advance_id },
-          success: function (response) {
+          data: {
+            cash_advance_id: cash_advance_id
+          },
+          success: function(response) {
             $('#modalContainerCashAdvance').html(response);
             $('#updateCashAdvance').modal('show');
             console.log("#updateCashAdvance" + cash_advance_id);
           },
-          error: function (xhr, status, error) {
+          error: function(xhr, status, error) {
             console.error(xhr.responseText);
           }
         });
