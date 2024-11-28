@@ -1,7 +1,7 @@
 <?php
 
 // Define table and primary key
-$table = 'rate_position';
+$table = 'under_position';
 $primaryKey = 'rate_id';
 // Define columns for DataTables
 $columns = array(
@@ -11,7 +11,6 @@ $columns = array(
     'field' => 'rate_id',
     'formatter' => function ($lab1, $row) {
       return $row['rate_id'];
-      // return '<a href="../admin_area/under_position.php?rate_id=' . $row['rate_id'] . '">' . $row['rate_id'] . ' </a>';
     }
   ),
 
@@ -26,29 +25,41 @@ $columns = array(
 
 
   array(
-    'db' => 'rate_id',
+    'db' => 'rate_per_hour',
     'dt' => 2,
-    'field' => 'rate_id',
+    'field' => 'rate_per_hour',
     'formatter' => function ($lab4, $row) {
-
-      return '
-            <div class="dropdown">
-                <button class="btn btn-info" type="button" id="dropdownMenuButton' . $row['rate_id'] . '" data-bs-toggle="dropdown" aria-expanded="false" data-bs-toggle="tooltip">
-                    &#x22EE;
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $row['rate_id'] . '">
-                    <li>
-                        <a class="dropdown-item fetchDataCashAdvance" href="../admin_area/under_position.php?rate_id=' . $row['rate_id'] . '">View Positions</a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item fetchDataCashAdvanceDecline" href="#"" >Cancel</a>
-                    </li>
-                </ul>
-            </div>
-        ';
+      return $row['rate_per_hour'];
     }
   ),
 
+
+  array(
+    'db' => 'rate_per_day',
+    'dt' => 3,
+    'field' => 'rate_per_day',
+    'formatter' => function ($lab4, $row) {
+      return $row['rate_per_day'];
+    }
+  ),
+
+  array(
+    'db' => 'ot_per_hour',
+    'dt' => 4,
+    'field' => 'ot_per_hour',
+    'formatter' => function ($lab4, $row) {
+      return $row['ot_per_hour'];
+    }
+  ),
+
+  array(
+    'db' => 'position_id',
+    'dt' => 4,
+    'field' => 'position_id',
+    'formatter' => function ($lab4, $row) {
+      return $row['position_id'];
+    }
+  ),
 );
 
 // Database connection details
@@ -57,9 +68,11 @@ include '../connection/ssp_connection.php';
 // Include the SSP class
 require('../datatables/ssp.class_with_where.php');
 
+$rate_id = isset($_GET['rate_id']) ? $_GET['rate_id'] : null;
+
 
 // Build the where condition
-$where = "rate_id";
+$where = "position_id = $rate_id";
 
 // Fetch and encode ONLY WHERE
 echo json_encode(SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $where));

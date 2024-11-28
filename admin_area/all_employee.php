@@ -27,7 +27,7 @@ if ($result_total->num_rows > 0) {
 
 // Fetch employee data
 $sql = "SELECT * FROM adding_employee 
-        LEFT JOIN rate_position ON adding_employee.rate_id = rate_position.rate_id";
+        LEFT JOIN under_position ON adding_employee.rate_id = under_position.rate_id";
 
 $result = $conn->query($sql);
 
@@ -35,7 +35,7 @@ if (isset($_GET['search'])) {
     $search = $conn->real_escape_string($_GET['search']);
     $sql = "SELECT * 
             FROM adding_employee 
-            LEFT JOIN rate_position ON adding_employee.rate_id = rate_position.rate_id
+            LEFT JOIN under_position ON adding_employee.rate_id = under_position.rate_id
             WHERE first_name LIKE '%$search%' 
                OR last_name LIKE '%$search%' 
                OR email LIKE '%$search%' 

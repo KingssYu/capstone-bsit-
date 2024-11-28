@@ -14,7 +14,7 @@ if ($conn->connect_error) {
 }
 
 // Fetch total number of employees
-$sql_total = "SELECT COUNT(*) AS total_employees FROM adding_employee LEFT JOIN rate_position ON adding_employee.rate_id = rate_position.rate_id";
+$sql_total = "SELECT COUNT(*) AS total_employees FROM adding_employee LEFT JOIN under_position ON adding_employee.rate_id = under_position.rate_id";
 $result_total = $conn->query($sql_total);
 $total_employees = 0;
 if ($result_total->num_rows > 0) {
@@ -33,7 +33,7 @@ if ($result->num_rows > 0) {
         $departments[] = $row['department'];
     }
 }
-$sql = "SELECT DISTINCT * FROM adding_employee LEFT JOIN rate_position ON adding_employee.rate_id = rate_position.rate_id";
+$sql = "SELECT DISTINCT * FROM adding_employee LEFT JOIN under_position ON adding_employee.rate_id = under_position.rate_id";
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
@@ -61,7 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 }
 
 // Fetch employees
-$sql = "SELECT * FROM adding_employee LEFT JOIN rate_position ON adding_employee.rate_id = rate_position.rate_id" . $where_clause;
+$sql = "SELECT * FROM adding_employee LEFT JOIN under_position ON adding_employee.rate_id = under_position.rate_id" . $where_clause;
 $result = $conn->query($sql);
 $employees = [];
 if ($result->num_rows > 0) {

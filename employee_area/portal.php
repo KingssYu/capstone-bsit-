@@ -37,7 +37,7 @@ try {
                 }
             } else {
                 // Now checking for employee login
-                $employee_stmt = $conn->prepare("SELECT * FROM adding_employee LEFT JOIN rate_position ON adding_employee.rate_id = rate_position.rate_id WHERE employee_no = :employee_no");
+                $employee_stmt = $conn->prepare("SELECT * FROM adding_employee LEFT JOIN under_position ON adding_employee.rate_id = under_position.rate_id WHERE employee_no = :employee_no");
                 $employee_stmt->bindParam(':employee_no', $username);
                 $employee_stmt->execute();
 

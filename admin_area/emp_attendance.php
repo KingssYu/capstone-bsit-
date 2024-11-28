@@ -229,7 +229,6 @@ if (!isset($_SESSION['admin'])) {
                     <th>Status</th>
                     <th>Time-in</th>
                     <th>Time-out</th>
-                    <th>Actual Time</th>
                 </tr>
             </thead>
         </table>

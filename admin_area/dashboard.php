@@ -62,7 +62,7 @@ function getRecentEmployees($conn)
     $threeOaysAgo = date('Y-m-d', strtotime('-3 days'));
     $sql = "SELECT *
             FROM adding_employee 
-            LEFT JOIN rate_position ON adding_employee.rate_id = rate_position.rate_id
+            LEFT JOIN under_position ON adding_employee.rate_id = under_position.rate_id
             WHERE date_hired >= '$threeOaysAgo' 
             ORDER BY date_hired DESC 
             LIMIT 5";

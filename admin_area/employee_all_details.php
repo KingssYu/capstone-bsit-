@@ -23,10 +23,10 @@ if ($employee_no) {
                    cash_advance.remaining_balance,
                    cash_advance.paid_amount,
                    cash_advance.status,
-                   rate_position.*,
+                   under_position.*,
                    adding_employee.face_descriptors
             FROM adding_employee
-            LEFT JOIN rate_position ON adding_employee.rate_id = rate_position.rate_id
+            LEFT JOIN under_position ON adding_employee.rate_id = under_position.rate_id
             LEFT JOIN cash_advance ON adding_employee.id = cash_advance.id
             WHERE adding_employee.employee_no = '$employee_no'";
 

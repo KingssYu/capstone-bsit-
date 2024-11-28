@@ -8,6 +8,8 @@ if (!isset($_SESSION['admin'])) {
   exit;
 }
 
+$rate_id = isset($_GET['rate_id']) ? $_GET['rate_id'] : null;
+
 ?>
 
 <!DOCTYPE html>
@@ -205,26 +207,30 @@ if (!isset($_SESSION['admin'])) {
 <body>
   <!-- Sidebar -->
   <?php include './header.php'; ?>
-  <?php include '../modals/add_position_modal.php'; ?>
+  <?php include '../modals/add_ranking_modal.php'; ?>
 
   <!-- Directory Section -->
   <div class="directory-container">
     <div class="directory-header">
-      <h1>Positions</h1>
+      <h1>Rate per Ranks</h1>
     </div>
+
     <br>
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#positionModal">
-      Add Position
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rateRankingModal">
+      Add Ranks
     </button>
     <br>
     <br>
+
+
     <!-- Table with Employee Data -->
-    <table class="directory-table" name="position_table" id="position_table">
+    <table class="directory-table" name="under_position_table" id="under_position_table">
       <thead>
         <tr>
           <th>ID</th>
-          <th>Position</th>
-          <th>Manage</th>
+          <th>Rank</th>
+          <th>Per hour</th>
+          <th>Per Day</th>
         </tr>
       </thead>
     </table>
@@ -238,15 +244,14 @@ if (!isset($_SESSION['admin'])) {
   <link rel="stylesheet" type="text/css" href="../datatables/datatables.min.css" />
   <script type="text/javascript" src="../datatables/datatables.min.js"></script>
   <script>
-    var position_table = $('#position_table').DataTable({
+    var under_position_table = $('#under_position_table').DataTable({
       "pagingType": "numbers",
       "processing": true,
       "serverSide": true,
       "ajax": {
-        "url": "./position_table.php",
-        "data": function(d) {
-          d.date_from = $('#dateFrom').val();
-          d.date_to = $('#dateTo').val();
+        "url": "./under_position_table.php",
+        data: function(d) {
+          d.rate_id = <?php echo $rate_id; ?>;
         }
       },
     });
