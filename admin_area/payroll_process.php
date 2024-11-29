@@ -8,13 +8,13 @@ $todayDay = date('j'); // Get the day of the month (1-31)
 $lastDayOfMonth = date('t'); // Get the last day of the current month
 
 // Check if today is the 15th or the last day of the month
-if ($todayDay != 15 && $todayDay != $lastDayOfMonth) {
-  echo "<script>
-          alert('Payroll can only be processed on the 15th and the last day of the month.');
-          window.location.href = document.referrer; // Redirect to the previous page
-        </script>";
-  exit(); // Stop further execution
-}
+// if ($todayDay != 15 && $todayDay != $lastDayOfMonth) {
+//   echo "<script>
+//           alert('Payroll can only be processed on the 15th and the last day of the month.');
+//           window.location.href = document.referrer; // Redirect to the previous page
+//         </script>";
+//   exit(); // Stop further execution
+// }
 
 if (isset($_POST['submit_payroll'])) {
   // Retrieve values from the form
@@ -74,26 +74,45 @@ if (isset($_POST['submit_payroll'])) {
       throw new Exception("Error inserting payroll record: " . mysqli_error($conn));
     }
 
-    // Update the cash_advance table
     if ($cash_advance_pay > 0) {
-      $updateQuery = "
-        UPDATE cash_advance 
-        SET 
-          remaining_balance = remaining_balance - $cash_advance_pay,
-          paid_amount = paid_amount + $cash_advance_pay,
-          status = CASE 
-            WHEN remaining_balance - $cash_advance_pay <= 0 THEN 'Paid'
-            ELSE status
-          END
-        WHERE 
-          employee_no = '$employee_no'
-          AND remaining_balance > $cash_advance_pay
-          AND status = 'Approved'";
+      // Fetch the current remaining balance first
+      $balanceCheckQuery = "SELECT remaining_balance FROM cash_advance WHERE employee_no = '$employee_no' AND status = 'Approved'";
+      $balanceResult = mysqli_query($conn, $balanceCheckQuery);
 
-      if (!mysqli_query($conn, $updateQuery)) {
-        throw new Exception("Error updating cash_advance record: " . mysqli_error($conn));
+      if ($balanceResult) {
+        $row = mysqli_fetch_assoc($balanceResult);
+        $current_balance = $row['remaining_balance'];
+
+        if ($current_balance >= $cash_advance_pay) {
+          $new_balance = $current_balance - $cash_advance_pay;
+
+          // Prepare the status based on the new balance
+          $new_status = ($new_balance == 0) ? 'Paid' : 'Approved';
+
+          $updateQuery = "
+                  UPDATE cash_advance 
+                  SET 
+                      remaining_balance = $new_balance,
+                      paid_amount = paid_amount + $cash_advance_pay,
+                      status = '$new_status'
+                  WHERE 
+                      employee_no = '$employee_no'
+                      AND status = 'Approved'";
+
+          if (!mysqli_query($conn, $updateQuery)) {
+            throw new Exception("Error updating cash_advance record: " . mysqli_error($conn));
+          }
+        } else {
+          throw new Exception("Cash advance payment exceeds remaining balance.");
+        }
+      } else {
+        throw new Exception("Error fetching balance: " . mysqli_error($conn));
       }
     }
+
+
+
+
 
     // Update the attendance_report table
     $attendanceUpdateQuery = "

@@ -108,13 +108,16 @@
         <input type="number" id="cashAdvance" name="cashAdvance" placeholder="Enter amount"
           value="<?php echo $requestedAmount; ?>" onchange="calculateBalance()" readonly>
 
-        <label>Balance:</label>
+        <label>Remaining Balance:</label>
         <input type="text" id="remaining_balance" name="remaining_balance"
-          value="<?php echo number_format($existing_balance, 2); ?>" readonly>
+          value="<?php echo floor($remaining_balance); ?>" readonly>
 
-        <label>Cash Advance Pay:</label>
-        <input type="number" id="cashAdvancePay" name="cashAdvancePay" placeholder="Enter amount"
-          value="<?php echo $monthlyPayment; ?>" onchange="calculateBalance()" readonly>
+
+        <label>Payment:</label>
+        <!-- <input type="number" id="cashAdvancePay" name="cashAdvancePay" placeholder="Enter amount"
+          value="</?php echo $monthlyPayment; ?>" onchange="calculateBalance()"> -->
+
+        <input type="number" id="cashAdvancePay" name="cashAdvancePay" placeholder="Enter amount" value="0" onchange="calculateBalance()">
       </div>
 
 
@@ -193,6 +196,18 @@
     document.getElementById('netPay').value = netPay.toFixed(2) + ' Pesos';
   }
 
+  function calculateBalance() {
+    // Get the cashAdvancePay and netPay field values
+    const cashAdvancePay = parseFloat(document.getElementById('cashAdvancePay').value) || 0;
+    const netPay = parseFloat(document.getElementById('netPay').value) || 0;
+
+    // Calculate the new net pay after deducting cashAdvancePay
+    const updatedNetPay = netPay - cashAdvancePay;
+
+    // Update the netPay field with the new value
+    document.getElementById('netPay').value = updatedNetPay.toFixed(2); // Display with 2 decimal places
+  }
+
 
   function showPayslipModal() {
     const modal = document.getElementById('payslipModal');
@@ -217,7 +232,7 @@
                 </div>
                 <div class="employee-info">
                     <p><strong>Position:</strong> <?php echo $employee['rate_position']; ?></p>
-                    <p><strong>Department:</strong> <?php echo $employee['department']; ?></p>
+                    <p><strong>Department:</strong> <?php echo $employee['department_name']; ?></p>
                 </div>
               </div>
             <hr>

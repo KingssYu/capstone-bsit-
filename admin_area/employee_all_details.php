@@ -876,7 +876,7 @@ $conn->close();
                         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px;">
                             <div>
                                 <label>Department:</label>
-                                <div class="info-field"><?php echo htmlspecialchars($employee['department']); ?></div>
+                                <div class="info-field"><?php echo htmlspecialchars($employee['department_name']); ?></div>
                             </div>
                             <div>
                                 <label>Position:</label>

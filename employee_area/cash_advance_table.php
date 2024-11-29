@@ -23,31 +23,45 @@ $columns = array(
     }
   ),
 
+  array(
+    'db' => 'request_date',
+    'dt' => 2,
+    'field' => 'request_date',
+    'formatter' => function ($lab4, $row) {
+      // Get the request_date from the row
+      $datetime = $row['request_date'];
+
+      // Format it as Month day, Year (e.g., November 28, 2024)
+      $formatted_date = date("F j, Y", strtotime($datetime));
+
+      // Return the formatted date
+      return $formatted_date;
+    }
+  ),
+
 
   array(
     'db' => 'months',
-    'dt' => 2,
+    'dt' => 3,
     'field' => 'months',
     'formatter' => function ($lab4, $row) {
       return $row['months'];
-
     }
   ),
 
 
   array(
     'db' => 'remaining_balance',
-    'dt' => 3,
+    'dt' => 4,
     'field' => 'remaining_balance',
     'formatter' => function ($lab4, $row) {
       return intval($row['remaining_balance']);
-
     }
   ),
 
   array(
     'db' => 'status',
-    'dt' => 4,
+    'dt' => 5,
     'field' => 'status',
     'formatter' => function ($lab4, $row) {
       $status = $row['status'];

@@ -10,6 +10,21 @@ if (!isset($_SESSION['admin'])) {
 
 $rate_id = isset($_GET['rate_id']) ? $_GET['rate_id'] : null;
 
+if ($rate_id) {
+  $sql = "SELECT * FROM rate_position WHERE rate_id = '$rate_id'";
+  $result = mysqli_query($conn, $sql);
+
+  if ($result && mysqli_num_rows($result) > 0) {
+    $row = mysqli_fetch_assoc($result);
+    $rate_position = $row['rate_position'];
+  } else {
+    $rate_position = "Rate ID not found";
+  }
+} else {
+  $rate_position = "Invalid Rate ID";
+}
+
+
 ?>
 
 <!DOCTYPE html>
@@ -212,7 +227,8 @@ $rate_id = isset($_GET['rate_id']) ? $_GET['rate_id'] : null;
   <!-- Directory Section -->
   <div class="directory-container">
     <div class="directory-header">
-      <h1>Rate per Ranks</h1>
+      <h1>Add Rates for <?php echo htmlspecialchars($rate_position); ?></h1>
+
     </div>
 
     <br>
