@@ -482,13 +482,12 @@ $payroll_data = calculatePayroll($conn, $employee_no, $current_year, $current_mo
                 <?php echo htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']); ?>
             </div>
             <div class="employee-indicator"><?php echo htmlspecialchars($employee['rate_position']); ?></div>
-            <div class="employee-indicator" style="display: flex; align-items: center; gap: 10px;">
+            <button class="employee-indicator"
+                style="display: flex; align-items: center; gap: 10px; cursor: pointer;"
+                onclick="openStatusModal()">
                 <?php echo htmlspecialchars($employee['employee_stats']); ?>
-                <button type="button" class="edit-btn" onclick="openStatusModal()"
-                    style="padding: 5px 10px; background-color: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">
-                    Edit
-                </button>
-            </div>
+            </button>
+
 
             <!-- Modal Structure -->
             <div id="statusModal" class="modal"
