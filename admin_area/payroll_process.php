@@ -83,32 +83,38 @@ if (isset($_POST['submit_payroll'])) {
         $row = mysqli_fetch_assoc($balanceResult);
         $current_balance = $row['remaining_balance'];
 
-        if ($current_balance >= $cash_advance_pay) {
-          $new_balance = $current_balance - $cash_advance_pay;
+        if ($cash_advance_pay > $current_balance) {
+          // Show error alert and stop execution
+          echo "<script>
+                  alert('Error: Cash advance payment exceeds the remaining balance.');
+                  window.history.back(); // Go back to the previous page
+                </script>";
+          exit(); // Stop further execution
+        }
 
-          // Prepare the status based on the new balance
-          $new_status = ($new_balance == 0) ? 'Paid' : 'Approved';
+        // Calculate the new balance and prepare the status
+        $new_balance = $current_balance - $cash_advance_pay;
+        $new_status = ($new_balance == 0) ? 'Paid' : 'Approved';
 
-          $updateQuery = "
-                  UPDATE cash_advance 
-                  SET 
-                      remaining_balance = $new_balance,
-                      paid_amount = paid_amount + $cash_advance_pay,
-                      status = '$new_status'
-                  WHERE 
-                      employee_no = '$employee_no'
-                      AND status = 'Approved'";
+        // Update cash advance record
+        $updateQuery = "
+                UPDATE cash_advance 
+                SET 
+                    remaining_balance = $new_balance,
+                    paid_amount = paid_amount + $cash_advance_pay,
+                    status = '$new_status'
+                WHERE 
+                    employee_no = '$employee_no'
+                    AND status = 'Approved'";
 
-          if (!mysqli_query($conn, $updateQuery)) {
-            throw new Exception("Error updating cash_advance record: " . mysqli_error($conn));
-          }
-        } else {
-          throw new Exception("Cash advance payment exceeds remaining balance.");
+        if (!mysqli_query($conn, $updateQuery)) {
+          throw new Exception("Error updating cash_advance record: " . mysqli_error($conn));
         }
       } else {
         throw new Exception("Error fetching balance: " . mysqli_error($conn));
       }
     }
+
 
     // Update the attendance_report table
     $attendanceUpdateQuery = "
