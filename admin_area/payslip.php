@@ -218,7 +218,6 @@ if (!isset($_SESSION['admin'])) {
         <tr>
           <th>Employee #</th>
           <th># of Days</th>
-
           <th># of Hours</th>
           <th>Total Deduction</th>
           <th>Total Net Pay</th>
@@ -241,7 +240,7 @@ if (!isset($_SESSION['admin'])) {
       "serverSide": true,
       "ajax": {
         "url": "./payslip_table.php",
-        "data": function (d) {
+        "data": function(d) {
           d.date_from = $('#dateFrom').val();
           d.date_to = $('#dateTo').val();
         }

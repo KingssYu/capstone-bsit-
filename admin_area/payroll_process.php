@@ -15,10 +15,11 @@ $lastDayOfMonth = date('t'); // Get the last day of the current month
 //         </script>";
 //   exit(); // Stop further execution
 // }
+// Get employee_no from URL
 
 if (isset($_POST['submit_payroll'])) {
   // Retrieve values from the form
-  $employee_no = isset($_GET['employee_no']) ? $_GET['employee_no'] : null;
+  $employee_no = isset($_POST['employee_no']) ? $_POST['employee_no'] : null;
   $rate_per_hour = isset($_POST['ratePerHour']) ? $_POST['ratePerHour'] : null;
   $basic_per_day = isset($_POST['basicPerDay']) ? $_POST['basicPerDay'] : null;
   $number_of_days = isset($_POST['numberOfDays']) ? $_POST['numberOfDays'] : null;
