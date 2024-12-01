@@ -250,13 +250,13 @@ if (!isset($_SESSION['admin'])) {
             "serverSide": true,
             "ajax": {
                 "url": "./all_employee_table.php",
-                "data": function(d) {
-                    d.date_from = $('#dateFrom').val();
-                    d.date_to = $('#dateTo').val();
-                }
             },
+            "order": [
+                [4, "desc"]
+            ] // Sort by 'date_hired' (5th column, index 4) in descending order
         });
     </script>
+
 
 </body>
 

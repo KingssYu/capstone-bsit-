@@ -115,12 +115,10 @@ $where = "id";
 // Fetch and encode ONLY WHERE
 // echo json_encode(SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $where));
 
-$joinQuery = "FROM $table 
-              LEFT JOIN department ON $table.department_id = department.department_id
+$joinQuery = "FROM $table LEFT JOIN department ON $table.department_id = department.department_id
               LEFT JOIN rate_position ON $table.rate_id = rate_position.rate_id
               LEFT JOIN under_position ON $table.rate_id = under_position.rate_id
-              ORDER BY $table.date_hired DESC";
-
+              ";
 
 // Fetch and encode JOIN AND WHERE
 echo json_encode(SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $joinQuery, $where));
