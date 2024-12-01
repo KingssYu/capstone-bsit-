@@ -217,6 +217,7 @@ if (!isset($_SESSION['admin'])) {
       <thead>
         <tr>
           <th>Employee #</th>
+          <th>Payroll Date</th>
           <th># of Days</th>
           <th># of Hours</th>
           <th>Total Deduction</th>

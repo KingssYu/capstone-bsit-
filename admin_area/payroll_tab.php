@@ -87,17 +87,35 @@
       </script>
 
 
+
+      <?php
+      $emp = isset($_GET['employee_no']) ? htmlspecialchars($_GET['employee_no']) : '';
+
+      // Query to fetch the approved cash advance
+      $sql = "SELECT * FROM cash_advance WHERE employee_no = '$emp' AND `status` = 'Approved' LIMIT 1";
+      $result = mysqli_query($conn, $sql);
+
+      if ($result && mysqli_num_rows($result) > 0) {
+        $row = mysqli_fetch_assoc($result);
+        $requested_amount = $row['requested_amount'];
+        $remaining_balance = floor($row['remaining_balance']);
+      } else {
+        $requested_amount = 0;
+        $remaining_balance = 0;
+      }
+      ?>
+
       <!-- Loan/Advances Section -->
       <div class="payroll-box loans">
         <h4>LOAN/ADVANCES</h4>
 
         <label>Cash Advance:</label>
         <input type="number" id="cashAdvance" name="cashAdvance" placeholder="Enter amount"
-          value="<?php echo $requestedAmount; ?>" readonly>
+          value="<?php echo $requested_amount; ?>" readonly>
 
         <label>Remaining Balance:</label>
         <input type="text" id="remaining_balance" name="remaining_balance"
-          value="<?php echo floor($remaining_balance); ?>" readonly>
+          value="<?php echo $remaining_balance; ?>" readonly>
 
         <label>Payment:</label>
         <input type="number" id="cashAdvancePay" name="cashAdvancePay" placeholder="Enter amount"

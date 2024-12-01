@@ -26,7 +26,7 @@ if ($employee_no) {
         LEFT JOIN (
             SELECT * FROM cash_advance 
             WHERE employee_no = '$employee_no' 
-            ORDER BY id DESC 
+            ORDER BY id ASC 
             LIMIT 1
         ) ca ON ae.employee_no = ca.employee_no
         WHERE ae.employee_no = '$employee_no'";
@@ -240,7 +240,6 @@ function calculatePayroll($conn, $employee_no, $year, $month)
 $payroll_data = calculatePayroll($conn, $employee_no, $current_year, $current_month);
 
 // Close the database connection
-$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -483,6 +482,49 @@ $conn->close();
                 <?php echo htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']); ?>
             </div>
             <div class="employee-indicator"><?php echo htmlspecialchars($employee['rate_position']); ?></div>
+            <div class="employee-indicator" style="display: flex; align-items: center; gap: 10px;">
+                <?php echo htmlspecialchars($employee['employee_stats']); ?>
+                <button type="button" class="edit-btn" onclick="openStatusModal()"
+                    style="padding: 5px 10px; background-color: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">
+                    Edit
+                </button>
+            </div>
+
+            <!-- Modal Structure -->
+            <div id="statusModal" class="modal"
+                style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; background-color: white; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); width: 300px; text-align: center;">
+                <div class="modal-content">
+                    <h4 style="margin-bottom: 20px;">Edit Employee Status</h4>
+                    <form id="statusForm" action="employee_stats_process.php" method="POST" style="text-align: center;">
+                        <input type="text" id="employee_no" name="employee_no" readonly
+                            value="<?php echo isset($_GET['employee_no']) ? htmlspecialchars($_GET['employee_no']) : ''; ?>">
+                        <label for="employeeStatus" style="display: block; margin-bottom: 10px;">Select Status:</label>
+                        <select id="employeeStatus" name="employeeStatus"
+                            style="width: 100%; padding: 8px; margin-bottom: 20px; border-radius: 3px; border: 1px solid #ccc;">
+                            <option value="Regular" <?php echo ($employee['employee_stats'] === 'Regular') ? 'selected' : ''; ?>>Regular</option>
+                            <option value="Part Time" <?php echo ($employee['employee_stats'] === 'Part Time') ? 'selected' : ''; ?>>Part Time</option>
+                            <option value="Contractual" <?php echo ($employee['employee_stats'] === 'Contractual') ? 'selected' : ''; ?>>Contractual</option>
+                            <option value="Probationary" <?php echo ($employee['employee_stats'] === 'Probationary') ? 'selected' : ''; ?>>Probationary</option>
+                        </select>
+
+                        <button type="submit" style="padding: 8px 16px; background-color: #4CAF50; color: white; border: none; border-radius: 3px;">Save</button>
+                        <button type="button" onclick="closeStatusModal()" style="padding: 8px 16px; background-color: #f44336; color: white; border: none; border-radius: 3px;">Cancel</button>
+                    </form>
+
+                </div>
+            </div>
+
+            <script>
+                function openStatusModal() {
+                    document.getElementById('statusModal').style.display = 'block';
+                }
+
+                function closeStatusModal() {
+                    document.getElementById('statusModal').style.display = 'none';
+                }
+            </script>
+
+
             <div class="employee-info">
                 <div class="info-item">
                     <div class="info-title">Employee No.</div>
