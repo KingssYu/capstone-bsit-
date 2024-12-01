@@ -225,6 +225,7 @@ if (!isset($_SESSION['admin'])) {
                     <th>Fullname</th>
                     <th>Department</th>
                     <th>Position</th>
+                    <th>Date Hired</th>
                     <th>Employee Stats</th>
                     <th>Salary Per Day</th>
 
