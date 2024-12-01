@@ -54,7 +54,6 @@
       </div>
 
       <script>
-        // Function to calculate and update values
         function updateDeductions() {
           const sssInput = document.getElementById('sss');
           const philhealthInput = document.getElementById('philhealth');
@@ -62,11 +61,11 @@
           const totalInput = document.getElementById('totalDeductions');
 
           const today = new Date();
-          const day = today.getDate(); // Get the current day of the month
-          const isPayday = day === 15 || day === new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate(); // 15th or end of month
+          const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate(); // Get the last day of the current month
+          const isEndOfMonth = today.getDate() === lastDayOfMonth;
 
-          // Update deductions
-          if (isPayday) {
+          // Update deductions only on the last day of the month
+          if (isEndOfMonth) {
             sssInput.value = 500;
             philhealthInput.value = 200;
             pagibigInput.value = 250;
@@ -80,6 +79,7 @@
           const total = parseFloat(sssInput.value) + parseFloat(philhealthInput.value) + parseFloat(pagibigInput.value);
           totalInput.value = total;
         }
+
 
         // Call the function on page load
         updateDeductions();
