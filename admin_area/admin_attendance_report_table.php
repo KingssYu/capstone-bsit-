@@ -114,4 +114,4 @@ $where = "`date` = '$today'"; // Replace 'your_date_column' with your actual dat
 $joinQuery = "FROM $table LEFT JOIN adding_employee ON $table.employee_no = adding_employee.employee_no";
 
 // Fetch and encode JOIN AND WHERE
-// echo json_encode(SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $joinQuery, $where));
+echo json_encode(SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $joinQuery, $where));
