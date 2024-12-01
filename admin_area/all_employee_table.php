@@ -53,7 +53,7 @@ $columns = array(
 
   array(
     'db' => 'employee_stats',
-    'dt' => 4,
+    'dt' => 5,
     'field' => 'employee_stats',
     'formatter' => function ($lab1, $row) {
       return $row['employee_stats'];
@@ -62,7 +62,7 @@ $columns = array(
 
   array(
     'db' => 'under_position.rate_per_day',
-    'dt' => 5,
+    'dt' => 6,
     'field' => 'rate_per_day',
     'formatter' => function ($lab1, $row) {
       return $row['rate_per_day'];
@@ -71,7 +71,7 @@ $columns = array(
 
   array(
     'db' => 'id',
-    'dt' => 6,
+    'dt' => 7,
     'field' => 'id',
     'formatter' => function ($lab4, $row) {
       return '
@@ -91,7 +91,7 @@ $columns = array(
 
   array(
     'db' => 'last_name',
-    'dt' => 7,
+    'dt' => 8,
     'field' => 'last_name',
     'formatter' => function ($lab1, $row) {
       return $row['last_name'];
