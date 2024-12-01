@@ -8,13 +8,13 @@ $todayDay = date('j'); // Get the day of the month (1-31)
 $lastDayOfMonth = date('t'); // Get the last day of the current month
 
 // Check if today is the 15th or the last day of the month
-// if ($todayDay != 15 && $todayDay != $lastDayOfMonth) {
-//   echo "<script>
-//           alert('Payroll can only be processed on the 15th and the last day of the month.');
-//           window.location.href = document.referrer; // Redirect to the previous page
-//         </script>";
-//   exit(); // Stop further execution
-// }
+if ($todayDay != 15 && $todayDay != $lastDayOfMonth) {
+  echo "<script>
+          alert('Payroll can only be processed on the 15th and the last day of the month.');
+          window.location.href = document.referrer; // Redirect to the previous page
+        </script>";
+  exit(); // Stop further execution
+}
 
 if (isset($_POST['submit_payroll'])) {
   // Retrieve values from the form
