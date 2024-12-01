@@ -15,11 +15,11 @@ $columns = array(
   ),
 
   array(
-    'db' => 'date',
+    'db' => 'adding_employee.first_name',
     'dt' => 1,
-    'field' => 'date',
+    'field' => 'first_name',
     'formatter' => function ($lab1, $row) {
-      return $row['date'];
+      return $row['first_name'] . ' ' . $row['last_name'];
     }
   ),
 
@@ -76,18 +76,16 @@ $columns = array(
 
       return $row['clock_out'];
     }
-  )
+  ),
 
-
-
-  // array(
-  //   'db' => 'actual_time',
-  //   'dt' => 5,
-  //   'field' => 'actual_time',
-  //   'formatter' => function ($lab4, $row) {
-  //     return intval($row['actual_time']);
-  //   }
-  // ),
+  array(
+    'db' => 'adding_employee.last_name',
+    'dt' => 5,
+    'field' => 'last_name',
+    'formatter' => function ($lab1, $row) {
+      return $row['last_name'];
+    }
+  ),
 
 
 );
@@ -110,10 +108,10 @@ $today = date('Y-m-d');
 $where = "`date` = '$today'"; // Replace 'your_date_column' with your actual date column name
 
 // Fetch and encode data
-echo json_encode(SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $where));
+// echo json_encode(SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $where));
 
 
-// $joinQuery = "FROM $table LEFT JOIN adding_employee ON $table.employee_no = adding_employee.employee_no";
+$joinQuery = "FROM $table LEFT JOIN adding_employee ON $table.employee_no = adding_employee.employee_no";
 
 // Fetch and encode JOIN AND WHERE
 // echo json_encode(SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $joinQuery, $where));
