@@ -14,38 +14,58 @@ $employee_no = isset($_GET['employee_no']) ? $conn->real_escape_string($_GET['em
 
 if ($employee_no) {
     // Query to fetch employee details based on employee_no
-    $sql = "SELECT adding_employee.id AS employee_id, 
-                   adding_employee.*, 
-                   cash_advance.id AS cash_advance_id, 
-                   cash_advance.requested_amount,
-                   cash_advance.months,
-                   cash_advance.monthly_payment,
-                   cash_advance.remaining_balance,
-                   cash_advance.paid_amount,
-                   cash_advance.status,
-                   under_position.*,
-                   department.*,
-                   adding_employee.face_descriptors
-            FROM adding_employee
-            LEFT JOIN under_position ON adding_employee.rate_id = under_position.rate_id
-            LEFT JOIN cash_advance ON adding_employee.id = cash_advance.id
-            LEFT JOIN department ON adding_employee.department_id = department.department_id
-            WHERE adding_employee.employee_no = '$employee_no'";
+    $sql = "SELECT ae.id AS employee_id, 
+               ae.*, 
+               ca.*, 
+               up.*, 
+               d.*, 
+               ae.face_descriptors
+        FROM adding_employee ae
+        LEFT JOIN under_position up ON ae.rate_id = up.rate_id
+        LEFT JOIN department d ON ae.department_id = d.department_id
+        LEFT JOIN (
+            SELECT * FROM cash_advance 
+            WHERE employee_no = '$employee_no' 
+            ORDER BY id DESC 
+            LIMIT 1
+        ) ca ON ae.employee_no = ca.employee_no
+        WHERE ae.employee_no = '$employee_no'";
+
+
+
 
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
-        // Fetch the employee details
         $employee = $result->fetch_assoc();
 
-        // Use blob data for the image if available
+        // Handle face descriptor (image blob)
         if (!empty($employee['face_descriptors'])) {
             $face_image_path = 'data:image/jpeg;base64,' . base64_encode($employee['face_descriptors']);
         } else {
-            $face_image_path = "default_face.png"; // Fallback image if no blob data exists
+            $face_image_path = "default_face.png";
         }
+
+        // Handle loan details
+        $status = $employee['status'];
+        $months = $employee['months'] ?? 0;
+
+        // Process loan only if approved
+        if ($status === 'Approved') {
+            $requestedAmount = $employee['requested_amount'];
+            $monthlyPayment = $employee['monthly_payment'];
+            $remaining_balance = $employee['remaining_balance'];
+        } else {
+            $requestedAmount = 0;
+            $monthlyPayment = 0;
+            $remaining_balance = 0;
+        }
+
+        // Avoid division by zero
+        $existing_balance = ($months > 0) ? $requestedAmount / $months : 0;
+        $updatedRequestedAmount = $requestedAmount - $monthlyPayment;
     } else {
-        echo "<p>Employee not found.</p>";
+        echo "<p>Employee not found or no approved loans.</p>";
         exit();
     }
 } else {

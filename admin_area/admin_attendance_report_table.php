@@ -61,18 +61,20 @@ $columns = array(
     'dt' => 4,
     'field' => 'clock_out',
     'formatter' => function ($lab4, $row) {
-      // Set timezone to Manila, Philippines
-      date_default_timezone_set('Asia/Manila');
+      // // Set timezone to Manila, Philippines
+      // date_default_timezone_set('Asia/Manila');
 
-      $clockOutTime = DateTime::createFromFormat('H:i:s', $row['clock_out']); // Expecting full time format with seconds.
-      $thresholdTime = DateTime::createFromFormat('H:i', '16:59'); // Threshold for 4:59 PM.
+      // $clockOutTime = DateTime::createFromFormat('H:i:s', $row['clock_out']); // Expecting full time format with seconds.
+      // $thresholdTime = DateTime::createFromFormat('H:i', '16:59'); // Threshold for 4:59 PM.
 
-      // Check if time is valid (for potential null or incorrect data)
-      if ($clockOutTime && $clockOutTime >= $thresholdTime) {
-        return $row['clock_out'];
-      } else {
-        return '-';
-      }
+      // // Check if time is valid (for potential null or incorrect data)
+      // if ($clockOutTime && $clockOutTime >= $thresholdTime) {
+      //   return $row['clock_out'];
+      // } else {
+      //   return '-';
+      // }
+
+      return $row['clock_out'];
     }
   )
 

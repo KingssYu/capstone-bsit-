@@ -20,7 +20,7 @@ $columns = array(
     'dt' => 1,
     'field' => 'first_name',
     'formatter' => function ($lab1, $row) {
-      return $row['first_name'];
+      return $row['first_name'] . ' ' . $row['last_name'];
     }
   ),
 
@@ -108,8 +108,7 @@ $where = "id";
 
 $joinQuery = "FROM $table LEFT JOIN department ON $table.department_id = department.department_id
               LEFT JOIN rate_position ON $table.rate_id = rate_position.rate_id
-              LEFT JOIN under_position ON rate_position.rate_id = under_position.rate_id
-
+              LEFT JOIN under_position ON $table.rate_id = under_position.rate_id
               ";
 
 // Fetch and encode JOIN AND WHERE

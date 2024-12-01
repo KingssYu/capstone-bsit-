@@ -89,36 +89,20 @@
       <!-- Loan/Advances Section -->
       <div class="payroll-box loans">
         <h4>LOAN/ADVANCES</h4>
-        <?php
-        $status = $employee['status'];  // Assuming you have a status field in your employee data
-        $months = $employee['months'];
-
-        $remaining_balance = $employee['remaining_balance'];  // Round the remaining balance
-        $requestedAmount = $status !== 'Approved' ? 0 : $employee['requested_amount'];
-
-        $monthlyPayment = $status !== 'Approved' ? 0 : $employee['monthly_payment'];  // Round the monthly payment
-
-        // Check if $months is greater than 0 to avoid division by zero
-        $existing_balance = ($months > 0) ? $requestedAmount / $months : 0;
-
-        $updatedRequestedAmount = $requestedAmount - $monthlyPayment; // Calculate the remaining amount after deduction
-        ?>
 
         <label>Cash Advance:</label>
         <input type="number" id="cashAdvance" name="cashAdvance" placeholder="Enter amount"
-          value="<?php echo $requestedAmount; ?>" onchange="calculateBalance()" readonly>
+          value="<?php echo $requestedAmount; ?>" readonly>
 
         <label>Remaining Balance:</label>
         <input type="text" id="remaining_balance" name="remaining_balance"
           value="<?php echo floor($remaining_balance); ?>" readonly>
 
-
         <label>Payment:</label>
-        <!-- <input type="number" id="cashAdvancePay" name="cashAdvancePay" placeholder="Enter amount"
-          value="</?php echo $monthlyPayment; ?>" onchange="calculateBalance()"> -->
-
-        <input type="number" id="cashAdvancePay" name="cashAdvancePay" placeholder="Enter amount" value="0" onchange="calculateBalance()">
+        <input type="number" id="cashAdvancePay" name="cashAdvancePay" placeholder="Enter amount"
+          value="0" onchange="calculateBalance()">
       </div>
+
 
 
     </div>
@@ -197,16 +181,24 @@
   }
 
   function calculateBalance() {
-    // Get the cashAdvancePay and netPay field values
+    // Get the cashAdvancePay and original netPay values
     const cashAdvancePay = parseFloat(document.getElementById('cashAdvancePay').value) || 0;
-    const netPay = parseFloat(document.getElementById('netPay').value) || 0;
 
-    // Calculate the new net pay after deducting cashAdvancePay
-    const updatedNetPay = netPay - cashAdvancePay;
+    // Assuming you have a hidden field or stored the original value elsewhere
+    const originalNetPay = parseFloat(document.getElementById('netPay').dataset.originalValue) || 0;
+
+    // Calculate the updated net pay after deducting cashAdvancePay
+    const updatedNetPay = originalNetPay - cashAdvancePay;
 
     // Update the netPay field with the new value
     document.getElementById('netPay').value = updatedNetPay.toFixed(2); // Display with 2 decimal places
   }
+
+  // Store the original netPay when the page loads
+  window.onload = function() {
+    const netPayInput = document.getElementById('netPay');
+    netPayInput.dataset.originalValue = netPayInput.value; // Store original value in a custom data attribute
+  };
 
 
   function showPayslipModal() {

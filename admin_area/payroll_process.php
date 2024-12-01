@@ -110,10 +110,6 @@ if (isset($_POST['submit_payroll'])) {
       }
     }
 
-
-
-
-
     // Update the attendance_report table
     $attendanceUpdateQuery = "
         UPDATE attendance_report
