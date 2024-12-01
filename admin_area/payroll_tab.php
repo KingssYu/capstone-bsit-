@@ -6,7 +6,7 @@
 
       <!-- Earnings Section -->
       <div class="payroll-box earnings">
-        <input type="text" id="employee_no" name="employee_no" readonly
+        <input type="hidden" id="employee_no" name="employee_no" readonly
           value="<?php echo isset($_GET['employee_no']) ? htmlspecialchars($_GET['employee_no']) : ''; ?>">
 
         <h4>EARNINGS</h4>
