@@ -1,16 +1,16 @@
 <?php
 
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "bsu_payroll";
+// $servername = "localhost";
+// $username = "root";
+// $password = "";
+// $dbname = "bsu_payroll";
 
 // FOR LIVE BLUEHOST-
 
-// $servername = "localhost";
-// $username = "u759574209_bsupayroll";
-// $password = "Mybossrocks081677!";
-// $dbname = "u759574209_bsupayroll";
+$servername = "localhost";
+$username = "u759574209_bsupayroll";
+$password = "Mybossrocks081677!";
+$dbname = "u759574209_bsupayroll";
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
