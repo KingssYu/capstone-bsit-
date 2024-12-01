@@ -6,7 +6,7 @@ $primaryKey = 'id';
 // Define columns for DataTables
 $columns = array(
   array(
-    'db' => 'employee_no',
+    'db' => 'attendance.employee_no',
     'dt' => 0,
     'field' => 'employee_no',
     'formatter' => function ($lab1, $row) {
@@ -96,7 +96,7 @@ $columns = array(
 include '../connection/ssp_connection.php';
 
 // Include the SSP class
-require('../datatables/ssp.class_with_where.php');
+require('../datatables/ssp.class.php');
 
 // Set the timezone to Manila
 date_default_timezone_set('Asia/Manila');
