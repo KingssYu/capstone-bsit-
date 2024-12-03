@@ -122,7 +122,8 @@ function get_monthly_attendance($conn, $employee_no, $year, $month)
     $query = "
     SELECT DATE(date) as date, status, TIME(time_in) as time_in, TIME(time_out) as time_out, actual_time
     FROM attendance_report
-    WHERE employee_no = ? AND YEAR(date) = ? AND MONTH(date) = ? AND is_paid = 0
+    WHERE employee_no = ? AND YEAR(date) = ? AND MONTH(date) = ? AND is_paid = 0 AND date <= CURDATE()
+    ORDER BY date
     ";
 
     // Prepare and execute the query
