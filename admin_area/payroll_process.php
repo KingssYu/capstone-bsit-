@@ -122,7 +122,7 @@ if (isset($_POST['submit_payroll'])) {
         UPDATE attendance_report
         SET is_paid = 1
         WHERE employee_no = '$employee_no'
-        AND date < '$paymentDate'
+        AND date <= '$paymentDate'
         AND is_paid = 0";
 
     if (!mysqli_query($conn, $attendanceUpdateQuery)) {
