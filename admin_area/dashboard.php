@@ -28,9 +28,9 @@ if ($result_total->num_rows > 0) {
 
 $sql_present = "SELECT COUNT(DISTINCT adding_employee.employee_no) AS total_employees_present
                 FROM adding_employee
-                INNER JOIN attendance_report
-                ON adding_employee.employee_no = attendance_report.employee_no
-                WHERE attendance_report.date = CURDATE()";
+                INNER JOIN attendance
+                ON adding_employee.employee_no = attendance.employee_no
+                WHERE attendance.date = CURDATE()";
 
 $result_present = $conn->query($sql_present);
 $total_employees_present = 0;
@@ -43,9 +43,9 @@ if ($result_present->num_rows > 0) {
 
 $sql_absent = "SELECT COUNT(DISTINCT adding_employee.employee_no) AS total_employees_absent
         FROM adding_employee
-        LEFT JOIN attendance_report
-        ON adding_employee.employee_no = attendance_report.employee_no
-        AND (attendance_report.date = CURDATE() OR attendance_report.date IS NULL)
+        LEFT JOIN attendance
+        ON adding_employee.employee_no = attendance.employee_no
+        AND (attendance.date = CURDATE() OR attendance.date IS NULL)
 
         ";
 $result_total = $conn->query($sql_absent);
