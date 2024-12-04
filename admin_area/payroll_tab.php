@@ -24,7 +24,8 @@
 
         <label>Total No. Hours:</label>
         <input type="text" id="totalHours" name="totalHours" readonly
-          value="<?php echo number_format($attendance_data['summary']['total_hours'], 2); ?>">
+          value="<?php echo number_format($attendance_data['summary']['total_hours'] - 1, 2); ?>">
+
 
         <label>Overtime Total No. Hours:</label>
         <input type="text" id="totalOverTime" name="totalOverTime" readonly
@@ -32,9 +33,9 @@
 
         <label>Gross Pay:</label>
         <input type="text" id="grossPay" name="grossPay" readonly value="<?php
-                                                                          $totalWorkHours = $attendance_data['summary']['total_hours'] + $attendance_data['summary']['total_overtime'];
-                                                                          echo number_format($totalWorkHours * $employee['rate_per_hour'], 2);
-                                                                          ?>">
+        $totalWorkHours = $attendance_data['summary']['total_hours'] - 1;
+        echo number_format($totalWorkHours * $employee['rate_per_hour'], 2);
+        ?>">
 
       </div>
 
@@ -114,12 +115,12 @@
           value="<?php echo $requested_amount; ?>" readonly>
 
         <label>Remaining Balance:</label>
-        <input type="text" id="remaining_balance" name="remaining_balance"
-          value="<?php echo $remaining_balance; ?>" readonly>
+        <input type="text" id="remaining_balance" name="remaining_balance" value="<?php echo $remaining_balance; ?>"
+          readonly>
 
         <label>Payment:</label>
-        <input type="number" id="cashAdvancePay" name="cashAdvancePay" placeholder="Enter amount"
-          value="0" onchange="calculateBalance()">
+        <input type="number" id="cashAdvancePay" name="cashAdvancePay" placeholder="Enter amount" value="0"
+          onchange="calculateBalance()">
       </div>
 
 
@@ -214,7 +215,7 @@
   }
 
   // Store the original netPay when the page loads
-  window.onload = function() {
+  window.onload = function () {
     const netPayInput = document.getElementById('netPay');
     netPayInput.dataset.originalValue = netPayInput.value; // Store original value in a custom data attribute
   };
@@ -308,7 +309,7 @@
     const content = document.getElementById('payslipContent');
 
     doc.html(content, {
-      callback: function(doc) {
+      callback: function (doc) {
         doc.save('payslip.pdf');
       },
       x: 10,
