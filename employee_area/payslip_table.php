@@ -7,11 +7,11 @@ $primaryKey = 'id';
 $columns = array(
 
   array(
-    'db' => 'employee_name',
+    'db' => 'first_name',
     'dt' => 0,
-    'field' => 'employee_name',
+    'field' => 'first_name',
     'formatter' => function ($lab1, $row) {
-      return $row['employee_name'];
+      return $row['first_name'] . ' ' . $row['last_name'];
     }
   ),
 
@@ -61,6 +61,15 @@ $columns = array(
     }
   ),
 
+  array(
+    'db' => 'last_name',
+    'dt' => 5,
+    'field' => 'last_name',
+    'formatter' => function ($lab1, $row) {
+      return $row['last_name'];
+    }
+  ),
+
 );
 
 // Database connection details
@@ -78,7 +87,10 @@ $where = "payroll.employee_no = '$employee_no'";
 // Fetch and encode ONLY WHERE
 // echo json_encode(SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $where));
 
-$joinQuery = "FROM $table LEFT JOIN attendance_report ON $table.employee_no = attendance_report.employee_no";
+$joinQuery = "FROM $table LEFT JOIN attendance_report ON $table.employee_no = attendance_report.employee_no
+                          LEFT JOIN adding_employee ON $table.employee_no = adding_employee.employee_no
+
+";
 
 // Fetch and encode JOIN AND WHERE
 echo json_encode(SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $joinQuery, $where));

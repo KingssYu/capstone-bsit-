@@ -1,12 +1,12 @@
 <?php
 
 // Define table and primary key
-$table = 'attendance_report';
+$table = 'attendance';
 $primaryKey = 'id';
 // Define columns for DataTables
 $columns = array(
   array(
-    'db' => 'employee_no',
+    'db' => 'attendance.employee_no',
     'dt' => 0,
     'field' => 'employee_no',
     'formatter' => function ($lab1, $row) {
@@ -15,11 +15,11 @@ $columns = array(
   ),
 
   array(
-    'db' => 'employee_name',
+    'db' => 'adding_employee.first_name',
     'dt' => 1,
-    'field' => 'employee_name',
+    'field' => 'first_name',
     'formatter' => function ($lab1, $row) {
-      return $row['employee_name'];
+      return $row['first_name'] . ' ' . $row['last_name'];
     }
   ),
 
@@ -47,31 +47,43 @@ $columns = array(
   ),
 
   array(
-    'db' => 'time_in',
+    'db' => 'clock_in',
     'dt' => 3,
-    'field' => 'time_in',
+    'field' => 'clock_in',
     'formatter' => function ($lab1, $row) {
-      return $row['time_in'];
+      return $row['clock_in'];
     }
   ),
 
 
   array(
-    'db' => 'time_out',
+    'db' => 'clock_out',
     'dt' => 4,
-    'field' => 'time_out',
+    'field' => 'clock_out',
     'formatter' => function ($lab4, $row) {
-      return $row['time_out'];
+      // // Set timezone to Manila, Philippines
+      // date_default_timezone_set('Asia/Manila');
+
+      // $clockOutTime = DateTime::createFromFormat('H:i:s', $row['clock_out']); // Expecting full time format with seconds.
+      // $thresholdTime = DateTime::createFromFormat('H:i', '16:59'); // Threshold for 4:59 PM.
+
+      // // Check if time is valid (for potential null or incorrect data)
+      // if ($clockOutTime && $clockOutTime >= $thresholdTime) {
+      //   return $row['clock_out'];
+      // } else {
+      //   return '-';
+      // }
+
+      return $row['clock_out'];
     }
   ),
 
-
   array(
-    'db' => 'actual_time',
+    'db' => 'adding_employee.last_name',
     'dt' => 5,
-    'field' => 'actual_time',
-    'formatter' => function ($lab4, $row) {
-      return intval($row['actual_time']);
+    'field' => 'last_name',
+    'formatter' => function ($lab1, $row) {
+      return $row['last_name'];
     }
   ),
 
@@ -84,7 +96,7 @@ $columns = array(
 include '../connection/ssp_connection.php';
 
 // Include the SSP class
-require('../datatables/ssp.class_with_where.php');
+require('../datatables/ssp.class.php');
 
 // Set the timezone to Manila
 date_default_timezone_set('Asia/Manila');
@@ -96,10 +108,10 @@ $today = date('Y-m-d');
 $where = "`date` = '$today'"; // Replace 'your_date_column' with your actual date column name
 
 // Fetch and encode data
-echo json_encode(SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $where));
+// echo json_encode(SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $where));
 
 
-// $joinQuery = "FROM $table LEFT JOIN adding_employee ON $table.employee_no = adding_employee.employee_no";
+$joinQuery = "FROM $table LEFT JOIN adding_employee ON $table.employee_no = adding_employee.employee_no";
 
 // Fetch and encode JOIN AND WHERE
-// echo json_encode(SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $joinQuery, $where));
+echo json_encode(SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $joinQuery, $where));

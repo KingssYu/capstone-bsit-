@@ -205,23 +205,30 @@ if (!isset($_SESSION['admin'])) {
 <body>
   <!-- Sidebar -->
   <?php include './header.php'; ?>
+  <?php include '../modals/add_position_modal.php'; ?>
 
   <!-- Directory Section -->
   <div class="directory-container">
     <div class="directory-header">
-      <h1>Admin View Positions</h1>
+      <h1>Positions</h1>
     </div>
+    <br>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#positionModal">
+      Add Position
+    </button>
+    <br>
+    <br>
+    <div id="modalDeletePosition"></div>
 
     <!-- Table with Employee Data -->
     <table class="directory-table" name="position_table" id="position_table">
       <thead>
         <tr>
-          <th>Rate ID</th>
+          <th>ID</th>
+          <th>Department</th>
           <th>Position</th>
 
-          <th>Rate Per Hour</th>
-          <th>Rate Per Day</th>
-          <th>OT Per Hour</th>
+          <th>Manage</th>
         </tr>
       </thead>
     </table>
@@ -241,7 +248,7 @@ if (!isset($_SESSION['admin'])) {
       "serverSide": true,
       "ajax": {
         "url": "./position_table.php",
-        "data": function (d) {
+        "data": function(d) {
           d.date_from = $('#dateFrom').val();
           d.date_to = $('#dateTo').val();
         }

@@ -90,7 +90,7 @@ if (!$employeeData) {
 
 <script>
   // JavaScript to calculate monthly payment
-  document.addEventListener("DOMContentLoaded", function () {
+  document.addEventListener("DOMContentLoaded", function() {
     const amountInput = document.getElementById("requested_amount");
     const monthsInput = document.getElementById("months");
     const monthlyPaymentInput = document.getElementById("monthly_payment");

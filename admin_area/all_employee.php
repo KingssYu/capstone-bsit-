@@ -1,259 +1,263 @@
 <?php
-
 include '../connection/connections.php';
 
 session_start();
 if (!isset($_SESSION['admin'])) {
     header("Location: ./../employee_area/portal.php");
+
     exit;
 }
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Fetch total number of employees
-$sql_total = "SELECT COUNT(*) AS total_employees FROM adding_employee";
-$result_total = $conn->query($sql_total);
-$total_employees = 0;
-
-if ($result_total->num_rows > 0) {
-    $row_total = $result_total->fetch_assoc();
-    $total_employees = $row_total['total_employees'];
-}
-
-// Fetch employee data
-$sql = "SELECT * FROM adding_employee 
-        LEFT JOIN rate_position ON adding_employee.rate_id = rate_position.rate_id";
-
-$result = $conn->query($sql);
-
-if (isset($_GET['search'])) {
-    $search = $conn->real_escape_string($_GET['search']);
-    $sql = "SELECT * 
-            FROM adding_employee 
-            LEFT JOIN rate_position ON adding_employee.rate_id = rate_position.rate_id
-            WHERE first_name LIKE '%$search%' 
-               OR last_name LIKE '%$search%' 
-               OR email LIKE '%$search%' 
-               OR rate_position LIKE '%$search%'";
-    $result = $conn->query($sql);
-
-    $employees = [];
-    while ($row = $result->fetch_assoc()) {
-        $employee_no = $row['employee_no'];
-
-        // Check if face_descriptors (blob) exists for the employee
-        if (!empty($row['face_descriptors'])) {
-            // Base64 encode the binary data for direct embedding in HTML
-            $row['image_blob'] = 'data:image/jpeg;base64,' . base64_encode($row['face_descriptors']);
-        } else {
-            // Use a default image if no blob is found
-            $row['image_blob'] = "employee_profile/default.png";
-        }
-
-        $employees[] = $row;
-    }
-
-    echo json_encode($employees);
-    exit;
-}
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <title>Employee</title>
-    <link rel="stylesheet" href="admin_styles/all_employee.css">
+    <meta charset="UTF-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Positions</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        .sidenav {
+            height: 100vh;
+            width: 250px;
+            background-color: #D5ED9F;
+            color: #fff;
+            rate_position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Logo Section */
+        .sidenav .logo {
+            padding: 20px;
+            text-align: center;
+            background-color: #D5ED9F;
+            border-bottom: 1px solid #D5ED9F;
+        }
+
+        .sidenav .logo img {
+            max-width: 80%;
+            height: auto;
+        }
+
+        /* Menu Buttons */
+        .sidenav .menu {
+            flex: 1;
+        }
+
+        .sidenav .menu button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            background: #185519;
+            color: #fff;
+            text-align: left;
+            font-size: 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #ffffff;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidenav .menu button:hover {
+            background: #00712D;
+        }
+
+        /* Footer Buttons */
+        .sidenav .footer {
+            padding: 20px;
+            background-color: #D5ED9F;
+            text-align: center;
+        }
+
+        .sidenav .footer button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background: #185519;
+            border-radius: 50px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidenav .footer button:hover {
+            background: #00712D;
+        }
+
+        /* Directory Container */
+        .directory-container {
+            padding: 20px;
+            width: calc(100% - 250px);
+            background-color: #f4f4f9;
+            height: 100vh;
+            overflow: auto;
+        }
+
+        .directory-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .directory-header h1 {
+            font-size: 24px;
+            color: #333;
+        }
+
+        /* Search Bar Section */
+        .search-container {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        /* Dropdowns */
+        .search-container select {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            color: #333;
+        }
+
+        /* Search input */
+        .search-container input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 25px;
+            width: 100%;
+            max-width: 500px;
+            font-size: 14px;
+            color: #333;
+            margin: 0 10px;
+        }
+
+        /* Search Button */
+        .search-container button {
+            padding: 10px 20px;
+            background-color: #185519;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+
+        /* Directory Table */
+        .directory-table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .directory-table th,
+        .directory-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .directory-table th {
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        .directory-table td {
+            background-color: #fff;
+        }
+
+        /* Profile image */
+        .directory-table img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .directory-table .name-cell {
+            display: flex;
+            align-items: center;
+        }
+    </style>
 </head>
 
 <body>
+    <!-- Sidebar -->
     <?php include './header.php'; ?>
 
-    <div class="main-content">
-        <header class="main-header">
-            <h1>Employee</h1>
-            <div id="datetime" class="datetime"></div>
-        </header>
+    <!-- Directory Section -->
+    <div class="directory-container">
+        <h1>All Employees</h1>
 
-        <!-- Employee Summary and Action Buttons -->
-        <div class="employee-summary">
-            <div class="total-employees">
-                <h2><span><?php echo $total_employees; ?></span> Employees</h2>
-            </div>
-            <div class="search-employee">
-                <input type="text" placeholder="Search Employee..." class="search-input">
-            </div>
-            <!-- <div class="action-buttons">
-                <a href="#" class="filter-button">Filter</a>
-                <a href="employee_register.php" class="add-button">Add Employee</a>
-            </div> -->
-        </div>
+        <a type="button" class="btn btn-success" href="./all_employee_export_process.php">
+            Export to Excel
+        </a>
+        <br>
+        <br>
+        <div id="modalDeletePosition"></div>
 
-        <!-- Main content goes here -->
+        <!-- Table with Employee Data -->
+        <table class="directory-table" name="all_employee_table" id="all_employee_table">
+            <thead>
+                <tr>
+                    <th>Employee No</th>
+                    <th>Fullname</th>
+                    <th>Department</th>
+                    <th>Position</th>
+                    <th>Date Hired</th>
+                    <th>Employee Stats</th>
+                    <th>Salary Per Day</th>
 
-        <div class="employee-list-container">
-            <div class="employee-list">
-                <?php
-                if ($result->num_rows > 0) {
-                    // Loop through each employee and populate the HTML
-                    while ($row = $result->fetch_assoc()) {
-                        // Fetch data
-                        $employee_no = $row['employee_no'];
-                        $full_name = $row['first_name'] . ' ' . $row['last_name'];
-                        $rate_position = $row['rate_position'];
-                        $department = $row['department'];
-                        $date_hired = date("M d, Y", strtotime($row['date_hired']));
-                        $email = $row['email'];
-                        $contact = $row['contact'];
 
-                        // Use blob data if available; otherwise, use the default placeholder
-                        if (!empty($row['face_descriptors'])) {
-                            $employee_image_path = 'data:image/jpeg;base64,' . base64_encode($row['face_descriptors']);
-                        } else {
-                            $employee_image_path = "employee_profile/default.png";
-                        }
+                    <th>Manage</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <!-- Add Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 
-                        // Display employee box
-                        echo '
-                <a href="employee_all_details.php?employee_no=' . $row['employee_no'] . '" class="employee-box">
-                    <div class="employee-header">
-                        <img src="' . htmlspecialchars($employee_image_path) . '" alt="Employee Image" class="employee-image">
-                        <div class="employee-info">
-                            <p class="employee-name">' . htmlspecialchars($full_name) . '</p>
-                            <p class="employee-position">' . htmlspecialchars($rate_position) . '</p>
-                        </div>
-                    </div>
-                    <div class="employee-details">
-                        <div class="employee-group">
-                            <div class="employee-detail-item">
-                                <p class="employee-title">Department:</p>
-                                <p class="employee-department">' . htmlspecialchars($department) . '</p>
-                            </div>
-                            <div class="employee-detail-item">
-                                <p class="employee-title">Date Hired:</p>
-                                <p class="employee-date-hired">' . $date_hired . '</p>
-                            </div>
-                        </div>
-                        <div class="employee-contact-group">
-                            <p class="employee-contact">
-                                <i class="email-icon">📧</i> ' . htmlspecialchars($email) . '
-                            </p>
-                            <p class="employee-contact">
-                                <i class="contact-icon">📞</i> ' . htmlspecialchars($contact) . '
-                            </p>
-                        </div>
-                    </div>
-                </a>';
-                    }
-                } else {
-                    echo '<p>No employees found.</p>';
-                }
-                ?>
-            </div>
-        </div>
-        <script>
-            function updateTime() {
-                const now = new Date();
-                const options = {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
-                };
-                const formattedDate = now.toLocaleDateString('en-US', options);
-                document.getElementById('datetime').textContent = formattedDate;
-            }
+    <!-- Add Bootstrap JS and Popper.js for Modal functionality -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../datatables/datatables.min.css" />
+    <script type="text/javascript" src="../datatables/datatables.min.js"></script>
+    <script>
+        var all_employee_table = $('#all_employee_table').DataTable({
+            "pagingType": "numbers",
+            "processing": true,
+            "serverSide": true,
+            "ajax": {
+                "url": "./all_employee_table.php",
+            },
+            "order": [
+                [4, "desc"]
+            ] // Sort by 'date_hired' (5th column, index 4) in descending order
+        });
+    </script>
 
-            setInterval(updateTime, 1000);
-            updateTime(); // Initial call to set date/time immediately
-        </script>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script>
-            $(document).ready(function() {
-                $('.search-input').on('input', function() {
-                    var searchTerm = $(this).val();
-                    if (searchTerm.length > 2) {
-                        $.ajax({
-                            url: 'all_employee.php',
-                            method: 'GET',
-                            data: {
-                                search: searchTerm
-                            },
-                            dataType: 'json',
-                            success: function(data) {
-                                var employeeList = $('.employee-list');
-                                employeeList.empty();
 
-                                if (data.length > 0) {
-                                    $.each(data, function(index, employee) {
-                                        var employeeHtml = `
-                                <a href="employee_all_details.php?employee_no=${employee.employee_no}" class="employee-box">
-                                    <div class="employee-header">
-                                        <img src="${employee.image_path}" alt="Employee Image" class="employee-image">
-                                        <div class="employee-info">
-                                            <p class="employee-name">${employee.first_name} ${employee.last_name}</p>
-                                            <p class="employee-position">${employee.rate_position}</p>
-                                        </div>
-                                    </div>
-                                    <div class="employee-details">
-                                        <div class="employee-group">
-                                            <div class="employee-detail-item">
-                                                <p class="employee-title">Department:</p>
-                                                <p class="employee-department">${employee.department}</p>
-                                            </div>
-                                            <div class="employee-detail-item">
-                                                <p class="employee-title">Date Hired:</p>
-                                                <p class="employee-date-hired">${new Date(employee.date_hired).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
-                                            </div>
-                                        </div>
-                                        <div class="employee-contact-group">
-                                            <p class="employee-contact">
-                                                <i class="email-icon">📧</i> ${employee.email}
-                                            </p>
-                                            <p class="employee-contact">
-                                                <i class="contact-icon">📞</i> ${employee.contact}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </a>
-                            `;
-                                        employeeList.append(employeeHtml);
-                                    });
-                                } else {
-                                    employeeList.html('<p>No employees found.</p>');
-                                }
-                            },
-                            error: function(xhr, status, error) {
-                                console.log("XHR Object:", xhr);
-                                console.log("Status:", status);
-                                console.log("Error:", error);
-                                console.error("An error occurred: " + error);
-                            }
-
-                        });
-                    } else if (searchTerm.length === 0) {
-                        // If search is cleared, reload the page to show all employees
-                        location.reload();
-                    }
-                });
-            });
-        </script>
 </body>
 
 </html>
-
-<!-- Add Bootstrap CSS -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-
-<!-- Add Bootstrap JS and Popper.js for Modal functionality -->
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>

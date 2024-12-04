@@ -7,7 +7,8 @@
       <!-- Earnings Section -->
       <div class="payroll-box earnings">
         <input type="hidden" id="employee_no" name="employee_no" readonly
-          value="<?php echo htmlspecialchars($employee['employee_no']); ?>">
+          value="<?php echo isset($_GET['employee_no']) ? htmlspecialchars($_GET['employee_no']) : ''; ?>">
+
         <h4>EARNINGS</h4>
         <label>Rate per Hour/Overtime:</label>
         <input type="text" id="ratePerHour" name="ratePerHour" readonly
@@ -54,7 +55,6 @@
       </div>
 
       <script>
-        // Function to calculate and update values
         function updateDeductions() {
           const sssInput = document.getElementById('sss');
           const philhealthInput = document.getElementById('philhealth');
@@ -62,11 +62,11 @@
           const totalInput = document.getElementById('totalDeductions');
 
           const today = new Date();
-          const day = today.getDate(); // Get the current day of the month
-          const isPayday = day === 15 || day === new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate(); // 15th or end of month
+          const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate(); // Get the last day of the current month
+          const isEndOfMonth = today.getDate() === lastDayOfMonth;
 
-          // Update deductions
-          if (isPayday) {
+          // Update deductions only on the last day of the month
+          if (isEndOfMonth) {
             sssInput.value = 500;
             philhealthInput.value = 200;
             pagibigInput.value = 250;
@@ -81,41 +81,47 @@
           totalInput.value = total;
         }
 
+
         // Call the function on page load
         updateDeductions();
       </script>
 
 
+
+      <?php
+      $emp = isset($_GET['employee_no']) ? htmlspecialchars($_GET['employee_no']) : '';
+
+      // Query to fetch the approved cash advance
+      $sql = "SELECT * FROM cash_advance WHERE employee_no = '$emp' AND `status` = 'Approved' LIMIT 1";
+      $result = mysqli_query($conn, $sql);
+
+      if ($result && mysqli_num_rows($result) > 0) {
+        $row = mysqli_fetch_assoc($result);
+        $requested_amount = $row['requested_amount'];
+        $remaining_balance = floor($row['remaining_balance']);
+      } else {
+        $requested_amount = 0;
+        $remaining_balance = 0;
+      }
+      ?>
+
       <!-- Loan/Advances Section -->
       <div class="payroll-box loans">
         <h4>LOAN/ADVANCES</h4>
-        <?php
-        $status = $employee['status'];  // Assuming you have a status field in your employee data
-        $months = $employee['months'];
-
-        $remaining_balance = $employee['remaining_balance'];  // Round the remaining balance
-        $requestedAmount = $status !== 'Approved' ? 0 : $employee['requested_amount'];
-
-        $monthlyPayment = $status !== 'Approved' ? 0 : $employee['monthly_payment'];  // Round the monthly payment
-
-        // Check if $months is greater than 0 to avoid division by zero
-        $existing_balance = ($months > 0) ? $requestedAmount / $months : 0;
-
-        $updatedRequestedAmount = $requestedAmount - $monthlyPayment; // Calculate the remaining amount after deduction
-        ?>
 
         <label>Cash Advance:</label>
         <input type="number" id="cashAdvance" name="cashAdvance" placeholder="Enter amount"
-          value="<?php echo $requestedAmount; ?>" onchange="calculateBalance()" readonly>
+          value="<?php echo $requested_amount; ?>" readonly>
 
-        <label>Balance:</label>
+        <label>Remaining Balance:</label>
         <input type="text" id="remaining_balance" name="remaining_balance"
-          value="<?php echo number_format($existing_balance, 2); ?>" readonly>
+          value="<?php echo $remaining_balance; ?>" readonly>
 
-        <label>Cash Advance Pay:</label>
+        <label>Payment:</label>
         <input type="number" id="cashAdvancePay" name="cashAdvancePay" placeholder="Enter amount"
-          value="<?php echo $monthlyPayment; ?>" onchange="calculateBalance()" readonly>
+          value="0" onchange="calculateBalance()">
       </div>
+
 
 
     </div>
@@ -193,6 +199,26 @@
     document.getElementById('netPay').value = netPay.toFixed(2) + ' Pesos';
   }
 
+  function calculateBalance() {
+    // Get the cashAdvancePay and original netPay values
+    const cashAdvancePay = parseFloat(document.getElementById('cashAdvancePay').value) || 0;
+
+    // Assuming you have a hidden field or stored the original value elsewhere
+    const originalNetPay = parseFloat(document.getElementById('netPay').dataset.originalValue) || 0;
+
+    // Calculate the updated net pay after deducting cashAdvancePay
+    const updatedNetPay = originalNetPay - cashAdvancePay;
+
+    // Update the netPay field with the new value
+    document.getElementById('netPay').value = updatedNetPay.toFixed(2); // Display with 2 decimal places
+  }
+
+  // Store the original netPay when the page loads
+  window.onload = function() {
+    const netPayInput = document.getElementById('netPay');
+    netPayInput.dataset.originalValue = netPayInput.value; // Store original value in a custom data attribute
+  };
+
 
   function showPayslipModal() {
     const modal = document.getElementById('payslipModal');
@@ -217,7 +243,7 @@
                 </div>
                 <div class="employee-info">
                     <p><strong>Position:</strong> <?php echo $employee['rate_position']; ?></p>
-                    <p><strong>Department:</strong> <?php echo $employee['department']; ?></p>
+                    <p><strong>Department:</strong> <?php echo $employee['department_name']; ?></p>
                 </div>
               </div>
             <hr>

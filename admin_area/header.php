@@ -23,6 +23,10 @@
       <button>Record of Payslip</button>
     </a>
 
+    <a href="department.php">
+      <button>Department</button>
+    </a>
+
     <a href="position.php">
       <button>Positions</button>
     </a>

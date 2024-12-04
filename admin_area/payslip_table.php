@@ -15,8 +15,17 @@ $columns = array(
   ),
 
   array(
-    'db' => 'number_of_days',
+    'db' => 'payment_date',
     'dt' => 1,
+    'field' => 'payment_date',
+    'formatter' => function ($lab1, $row) {
+      return $row['payment_date'];
+    }
+  ),
+
+  array(
+    'db' => 'number_of_days',
+    'dt' => 2,
     'field' => 'number_of_days',
     'formatter' => function ($lab1, $row) {
       return $row['number_of_days'];
@@ -26,7 +35,7 @@ $columns = array(
 
   array(
     'db' => 'total_hours',
-    'dt' => 2,
+    'dt' => 3,
     'field' => 'total_hours',
     'formatter' => function ($lab4, $row) {
       // Check if total_hours is an integer
@@ -40,7 +49,7 @@ $columns = array(
 
   array(
     'db' => 'total_deductions',
-    'dt' => 3,
+    'dt' => 4,
     'field' => 'total_deductions',
     'formatter' => function ($lab4, $row) {
       return $row['total_deductions'];
@@ -49,7 +58,7 @@ $columns = array(
 
   array(
     'db' => 'net_pay',
-    'dt' => 4,
+    'dt' => 5,
     'field' => 'net_pay',
     'formatter' => function ($lab4, $row) {
       return $row['net_pay'];

@@ -8,6 +8,23 @@ if (!isset($_SESSION['admin'])) {
   exit;
 }
 
+$rate_id = isset($_GET['rate_id']) ? $_GET['rate_id'] : null;
+
+if ($rate_id) {
+  $sql = "SELECT * FROM rate_position WHERE rate_id = '$rate_id'";
+  $result = mysqli_query($conn, $sql);
+
+  if ($result && mysqli_num_rows($result) > 0) {
+    $row = mysqli_fetch_assoc($result);
+    $rate_position = $row['rate_position'];
+  } else {
+    $rate_position = "Rate ID not found";
+  }
+} else {
+  $rate_position = "Invalid Rate ID";
+}
+
+
 ?>
 
 <!DOCTYPE html>
@@ -17,7 +34,7 @@ if (!isset($_SESSION['admin'])) {
   <meta charset="UTF-8">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Payslip</title>
+  <title>Admin Positions</title>
   <style>
     /* General Styles */
     body {
@@ -205,23 +222,33 @@ if (!isset($_SESSION['admin'])) {
 <body>
   <!-- Sidebar -->
   <?php include './header.php'; ?>
+  <?php include '../modals/add_ranking_modal.php'; ?>
 
   <!-- Directory Section -->
   <div class="directory-container">
     <div class="directory-header">
-      <h1>Admin View Payslip</h1>
+      <h1>Add Rates for <?php echo htmlspecialchars($rate_position); ?></h1>
+
     </div>
 
+    <br>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rateRankingModal">
+      Add Ranks
+    </button>
+    <br>
+    <br>
+
+
     <!-- Table with Employee Data -->
-    <table class="directory-table" name="payslip_table" id="payslip_table">
+    <table class="directory-table" name="under_position_table" id="under_position_table">
       <thead>
         <tr>
-          <th>Employee #</th>
-          <th>Payroll Date</th>
-          <th># of Days</th>
-          <th># of Hours</th>
-          <th>Total Deduction</th>
-          <th>Total Net Pay</th>
+          <th>ID</th>
+          <th>Rank</th>
+          <th>Per hour</th>
+          <th>Per Day</th>
+          <th>Manage</th>
+
         </tr>
       </thead>
     </table>
@@ -235,15 +262,14 @@ if (!isset($_SESSION['admin'])) {
   <link rel="stylesheet" type="text/css" href="../datatables/datatables.min.css" />
   <script type="text/javascript" src="../datatables/datatables.min.js"></script>
   <script>
-    var payslip_table = $('#payslip_table').DataTable({
+    var under_position_table = $('#under_position_table').DataTable({
       "pagingType": "numbers",
       "processing": true,
       "serverSide": true,
       "ajax": {
-        "url": "./payslip_table.php",
-        "data": function(d) {
-          d.date_from = $('#dateFrom').val();
-          d.date_to = $('#dateTo').val();
+        "url": "./under_position_table.php",
+        data: function(d) {
+          d.rate_id = <?php echo $rate_id; ?>;
         }
       },
     });

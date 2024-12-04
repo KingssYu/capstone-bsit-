@@ -14,36 +14,58 @@ $employee_no = isset($_GET['employee_no']) ? $conn->real_escape_string($_GET['em
 
 if ($employee_no) {
     // Query to fetch employee details based on employee_no
-    $sql = "SELECT adding_employee.id AS employee_id, 
-                   adding_employee.*, 
-                   cash_advance.id AS cash_advance_id, 
-                   cash_advance.requested_amount,
-                   cash_advance.months,
-                   cash_advance.monthly_payment,
-                   cash_advance.remaining_balance,
-                   cash_advance.paid_amount,
-                   cash_advance.status,
-                   rate_position.*,
-                   adding_employee.face_descriptors
-            FROM adding_employee
-            LEFT JOIN rate_position ON adding_employee.rate_id = rate_position.rate_id
-            LEFT JOIN cash_advance ON adding_employee.id = cash_advance.id
-            WHERE adding_employee.employee_no = '$employee_no'";
+    $sql = "SELECT ae.id AS employee_id, 
+               ae.*, 
+               ca.*, 
+               up.*, 
+               d.*, 
+               ae.face_descriptors
+        FROM adding_employee ae
+        LEFT JOIN under_position up ON ae.rate_id = up.rate_id
+        LEFT JOIN department d ON ae.department_id = d.department_id
+        LEFT JOIN (
+            SELECT * FROM cash_advance 
+            WHERE employee_no = '$employee_no' 
+            ORDER BY id ASC 
+            LIMIT 1
+        ) ca ON ae.employee_no = ca.employee_no
+        WHERE ae.employee_no = '$employee_no'";
+
+
+
 
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
-        // Fetch the employee details
         $employee = $result->fetch_assoc();
 
-        // Use blob data for the image if available
+        // Handle face descriptor (image blob)
         if (!empty($employee['face_descriptors'])) {
             $face_image_path = 'data:image/jpeg;base64,' . base64_encode($employee['face_descriptors']);
         } else {
-            $face_image_path = "default_face.png"; // Fallback image if no blob data exists
+            $face_image_path = "default_face.png";
         }
+
+        // Handle loan details
+        $status = $employee['status'];
+        $months = $employee['months'] ?? 0;
+
+        // Process loan only if approved
+        if ($status === 'Approved') {
+            $requestedAmount = $employee['requested_amount'];
+            $monthlyPayment = $employee['monthly_payment'];
+            $remaining_balance = $employee['remaining_balance'];
+        } else {
+            $requestedAmount = 0;
+            $monthlyPayment = 0;
+            $remaining_balance = 0;
+        }
+
+        // Avoid division by zero
+        $existing_balance = ($months > 0) ? $requestedAmount / $months : 0;
+        $updatedRequestedAmount = $requestedAmount - $monthlyPayment;
     } else {
-        echo "<p>Employee not found.</p>";
+        echo "<p>Employee not found or no approved loans.</p>";
         exit();
     }
 } else {
@@ -100,7 +122,7 @@ function get_monthly_attendance($conn, $employee_no, $year, $month)
     $query = "
     SELECT DATE(date) as date, status, TIME(time_in) as time_in, TIME(time_out) as time_out, actual_time
     FROM attendance_report
-    WHERE employee_no = ? AND YEAR(date) = ? AND MONTH(date) = ? AND is_paid = 0 AND date < CURDATE()
+    WHERE employee_no = ? AND YEAR(date) = ? AND MONTH(date) = ? AND is_paid = 0 AND date <= CURDATE()
     ORDER BY date
     ";
 
@@ -218,7 +240,6 @@ function calculatePayroll($conn, $employee_no, $year, $month)
 $payroll_data = calculatePayroll($conn, $employee_no, $current_year, $current_month);
 
 // Close the database connection
-$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -461,6 +482,48 @@ $conn->close();
                 <?php echo htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']); ?>
             </div>
             <div class="employee-indicator"><?php echo htmlspecialchars($employee['rate_position']); ?></div>
+            <button class="employee-indicator"
+                style="display: flex; align-items: center; gap: 10px; cursor: pointer;"
+                onclick="openStatusModal()">
+                <?php echo htmlspecialchars($employee['employee_stats']); ?>
+            </button>
+
+
+            <!-- Modal Structure -->
+            <div id="statusModal" class="modal"
+                style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; background-color: white; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); width: 300px; text-align: center;">
+                <div class="modal-content">
+                    <h4 style="margin-bottom: 20px;">Edit Employee Status</h4>
+                    <form id="statusForm" action="employee_stats_process.php" method="POST" style="text-align: center;">
+                        <input type="text" id="employee_no" name="employee_no" readonly
+                            value="<?php echo isset($_GET['employee_no']) ? htmlspecialchars($_GET['employee_no']) : ''; ?>">
+                        <label for="employeeStatus" style="display: block; margin-bottom: 10px;">Select Status:</label>
+                        <select id="employeeStatus" name="employeeStatus"
+                            style="width: 100%; padding: 8px; margin-bottom: 20px; border-radius: 3px; border: 1px solid #ccc;">
+                            <option value="Regular" <?php echo ($employee['employee_stats'] === 'Regular') ? 'selected' : ''; ?>>Regular</option>
+                            <option value="Part Time" <?php echo ($employee['employee_stats'] === 'Part Time') ? 'selected' : ''; ?>>Part Time</option>
+                            <option value="Contractual" <?php echo ($employee['employee_stats'] === 'Contractual') ? 'selected' : ''; ?>>Contractual</option>
+                            <option value="Probationary" <?php echo ($employee['employee_stats'] === 'Probationary') ? 'selected' : ''; ?>>Probationary</option>
+                        </select>
+
+                        <button type="submit" style="padding: 8px 16px; background-color: #4CAF50; color: white; border: none; border-radius: 3px;">Save</button>
+                        <button type="button" onclick="closeStatusModal()" style="padding: 8px 16px; background-color: #f44336; color: white; border: none; border-radius: 3px;">Cancel</button>
+                    </form>
+
+                </div>
+            </div>
+
+            <script>
+                function openStatusModal() {
+                    document.getElementById('statusModal').style.display = 'block';
+                }
+
+                function closeStatusModal() {
+                    document.getElementById('statusModal').style.display = 'none';
+                }
+            </script>
+
+
             <div class="employee-info">
                 <div class="info-item">
                     <div class="info-title">Employee No.</div>
@@ -478,7 +541,7 @@ $conn->close();
                 </div>
                 <div class="info-item">
                     <div class="info-title">Department</div>
-                    <div class="info-content"><?php echo htmlspecialchars($employee['department']); ?></div>
+                    <div class="info-content"><?php echo htmlspecialchars($employee['department_name']); ?></div>
                 </div>
                 <div class="info-item">
                     <div class="info-title">Email</div>
@@ -874,7 +937,7 @@ $conn->close();
                         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px;">
                             <div>
                                 <label>Department:</label>
-                                <div class="info-field"><?php echo htmlspecialchars($employee['department']); ?></div>
+                                <div class="info-field"><?php echo htmlspecialchars($employee['department_name']); ?></div>
                             </div>
                             <div>
                                 <label>Position:</label>

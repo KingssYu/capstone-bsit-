@@ -41,6 +41,7 @@ $employee = $_SESSION['employee'];
         <tr>
           <th>Employee #</th>
           <th>Requested Amount</th>
+          <th>Date of Request</th>
           <th># of Months</th>
           <th>Remaining Balance</th>
           <th>Status</th>

@@ -39,24 +39,39 @@ $columns = array(
     'field' => 'months',
     'formatter' => function ($lab4, $row) {
       return $row['months'];
+    }
+  ),
 
+
+  array(
+    'db' => 'request_date',
+    'dt' => 4,
+    'field' => 'request_date',
+    'formatter' => function ($lab4, $row) {
+      // Get the request_date from the row
+      $datetime = $row['request_date'];
+
+      // Format it as Month day, Year (e.g., November 28, 2024)
+      $formatted_date = date("F j, Y", strtotime($datetime));
+
+      // Return the formatted date
+      return $formatted_date;
     }
   ),
 
 
   array(
     'db' => 'remaining_balance',
-    'dt' => 4,
+    'dt' => 5,
     'field' => 'remaining_balance',
     'formatter' => function ($lab4, $row) {
       return intval($row['remaining_balance']);
-
     }
   ),
 
   array(
     'db' => 'status',
-    'dt' => 5,
+    'dt' => 6,
     'field' => 'status',
     'formatter' => function ($lab4, $row) {
       $status = $row['status'];
@@ -81,7 +96,7 @@ $columns = array(
 
   array(
     'db' => 'cash_advance_id',
-    'dt' => 6,
+    'dt' => 7,
     'field' => 'cash_advance_id',
     'formatter' => function ($lab4, $row) {
       // Check if status is 'Approved', 'Declined', 'Paid' or 'Partially Paid'
@@ -109,7 +124,7 @@ $columns = array(
 
   array(
     'db' => 'last_name',
-    'dt' => 7,
+    'dt' => 8,
     'field' => 'last_name',
     'formatter' => function ($lab4, $row) {
       return $row['last_name'];
