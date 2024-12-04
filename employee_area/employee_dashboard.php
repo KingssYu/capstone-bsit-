@@ -138,9 +138,9 @@ if ($result_absent->num_rows > 0) {
         <div class="attendance-container">
             <h3>Attendance for today <a href="timesheet.php" class="view-stats">View Stats</a></h3>
             <div class="attendance-status">
-                <p><span class="dot green"></span> <?php echo $total_employees_present . ' Present';  ?></p>
-                <p><span class="dot yellow"></span> <?php echo $total_employees_present . ' Late';  ?></p>
-                <p><span class="dot red"></span> <?php echo $total_employees_absent . ' Absent';  ?></p>
+                <p><span class="dot green"></span> <?php echo $total_employees_present . ' Present'; ?></p>
+                <p><span class="dot yellow"></span> <?php echo $total_employees_present . ' Late'; ?></p>
+                <p><span class="dot red"></span> <?php echo $total_employees_absent . ' Absent'; ?></p>
             </div>
         </div>
 
