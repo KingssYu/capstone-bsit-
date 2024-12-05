@@ -1,3 +1,63 @@
+<?php
+$employee_no = $_GET['employee_no'];
+
+$queryPayroll = "SELECT employee_no, time_in, time_out FROM attendance_report WHERE employee_no = '$employee_no' AND is_paid = 0";
+
+$result = mysqli_query($conn, $queryPayroll);
+
+$total_hours = 0;
+$total_hours_ot = 0; // For overtime
+
+$lunch_break_duration = 3600;
+
+while ($row = mysqli_fetch_assoc($result)) {
+  $time_in = $row['time_in'];
+  $time_out = $row['time_out'];
+
+  $time_in_obj = strtotime($time_in);
+  $time_out_obj = strtotime($time_out);
+
+  if (date('H:i', $time_in_obj) < '08:30') {
+    $adjusted_time_in = strtotime(date('Y-m-d', $time_in_obj) . ' 08:00:00');
+  } else {
+    $adjusted_time_in = strtotime(date('Y-m-d', $time_in_obj) . ' 09:00:00');
+  }
+
+  $regular_hours = 0;
+  $ot_hours = 0;
+
+  $regular_end_time = strtotime(date('Y-m-d', $time_out_obj) . ' 17:00:00'); // 5:00 PM
+  if ($time_out_obj >= $regular_end_time && $time_out_obj < strtotime(date('Y-m-d', $time_out_obj) . ' 19:00:00')) {
+    $time_out_obj = $regular_end_time; // Treat it as 5:00 PM
+  }
+
+  if ($time_in_obj < $regular_end_time) {
+    $worked_regular_hours = ($time_out_obj - $adjusted_time_in) / 3600; // Convert seconds to hours
+    $worked_regular_hours -= 1; // Subtract 1 hour for lunch break
+    $worked_regular_hours = max(0, $worked_regular_hours); // Ensure it’s not negative
+
+    $regular_hours = $worked_regular_hours;
+  }
+
+  $ot_start_time = strtotime(date('Y-m-d', $time_out_obj) . ' 19:00:00'); // OT starts at 7:00 PM
+  if ($time_out_obj > $ot_start_time) {
+    $ot_hours = ($time_out_obj - $ot_start_time) / 3600; // Overtime hours
+  }
+
+  if ($time_out_obj >= strtotime('19:00:00')) {
+    $ot_hours += 1;
+  }
+
+  if ($time_out_obj >= strtotime('19:00:00') && $time_out_obj < strtotime('23:59:59')) {
+    $regular_hours -= 1;
+  }
+
+  $total_hours += $regular_hours - $ot_hours;
+
+  $total_hours_ot += $ot_hours;
+}
+?>
+
 <!-- Payroll System Section -->
 <div id="payrollSystem" class="info-section-content">
   <form action="payroll_process.php" method="POST" id="payrollForm">
@@ -22,22 +82,28 @@
         <input type="text" id="numberOfDays" name="numberOfDays" readonly
           value="<?php echo $attendance_data['summary']['total_present'] + $attendance_data['summary']['total_late']; ?>">
 
-        <label>Total No. Hours:</label>
+        <label>Total No. Regular Hours:</label>
         <input type="text" id="totalHours" name="totalHours" readonly
-          value="<?php echo number_format($attendance_data['summary']['total_hours'] - 1, 2); ?>">
-
+          value="<?php echo number_format($total_hours, 2); ?>">
 
         <label>Overtime Total No. Hours:</label>
         <input type="text" id="totalOverTime" name="totalOverTime" readonly
-          value="<?php echo number_format($attendance_data['summary']['total_overtime'], 2); ?>">
+          value="<?php echo number_format($total_hours_ot, 2); ?>">
 
         <label>Gross Pay:</label>
         <input type="text" id="grossPay" name="grossPay" readonly value="<?php
-        $totalWorkHours = $attendance_data['summary']['total_hours'] - 1;
-        echo number_format($totalWorkHours * $employee['rate_per_hour'], 2);
+        // Calculate the gross pay correctly
+        $totalWorkHours = number_format($total_hours, 2);
+        $grossPayCalculation = number_format($totalWorkHours, 2) + number_format($total_hours_ot, 2);
+
+        $grossPay = $grossPayCalculation * $employee['rate_per_hour'];
+        // Ensure precision with rounding or formatting
+        echo number_format($grossPay, 2);
         ?>">
 
+
       </div>
+
 
       <!-- Other Deductions/Government Section -->
       <div class="payroll-box deductions">
@@ -115,12 +181,13 @@
           value="<?php echo $requested_amount; ?>" readonly>
 
         <label>Remaining Balance:</label>
-        <input type="text" id="remaining_balance" name="remaining_balance" value="<?php echo $remaining_balance; ?>"
-          readonly>
+        <input type="text" id="remaining_balance" name="remaining_balance"
+          value="<?php echo number_format($remaining_balance, 2); ?>" readonly>
+
 
         <label>Payment:</label>
-        <input type="number" id="cashAdvancePay" name="cashAdvancePay" placeholder="Enter amount" value="0"
-          onchange="calculateBalance()">
+        <input type="number" id="cashAdvancePay" name="cashAdvancePay" placeholder="Enter amount"
+          value="<?php echo $row['monthly_payment'] ?>" onchange="calculateBalance()">
       </div>
 
 
@@ -186,33 +253,43 @@
     calculateNetPay();
   }
 
+  // Function to calculate the net pay based on gross pay, deductions, and cash advance pay
   function calculateNetPay() {
-    // const grossPay = parseFloat(document.getElementById('grossPay').value);
-    const totalOvertimeHours = parseFloat(document.getElementById('totalDeductions').value) || 0;
+    // Get the gross pay and remove any commas
+    const grossPay = parseFloat(document.getElementById('grossPay').value.replace(/,/g, '')) || 0;
 
-    const grossPay = parseFloat(document.getElementById('grossPay').value.replace(/,/g, ''));
-
-
+    // Get total deductions and cash advance payment
     const totalDeductions = parseFloat(document.getElementById('totalDeductions').value) || 0;
     const cashAdvancePay = parseFloat(document.getElementById('cashAdvancePay').value) || 0;
+
+    // Calculate net pay
     const netPay = grossPay - totalDeductions - cashAdvancePay;
-    console.log(grossPay)
-    document.getElementById('netPay').value = netPay.toFixed(2) + ' Pesos';
+
+    // Store the calculated net pay in the dataset for future reference
+    const netPayField = document.getElementById('netPay');
+    netPayField.dataset.originalValue = netPay.toFixed(2);
+
+    // Update the netPay field
+    netPayField.value = netPay.toFixed(2) + ' Pesos';
   }
 
+  // Function to update net pay when cash advance pay changes
   function calculateBalance() {
-    // Get the cashAdvancePay and original netPay values
+    // Get the cash advance payment
     const cashAdvancePay = parseFloat(document.getElementById('cashAdvancePay').value) || 0;
 
-    // Assuming you have a hidden field or stored the original value elsewhere
-    const originalNetPay = parseFloat(document.getElementById('netPay').dataset.originalValue) || 0;
+    // Retrieve the original gross pay and deductions
+    const grossPay = parseFloat(document.getElementById('grossPay').value.replace(/,/g, '')) || 0;
+    const totalDeductions = parseFloat(document.getElementById('totalDeductions').value) || 0;
 
-    // Calculate the updated net pay after deducting cashAdvancePay
-    const updatedNetPay = originalNetPay - cashAdvancePay;
+    // Calculate the updated net pay after cash advance pay
+    const updatedNetPay = grossPay - totalDeductions - cashAdvancePay;
 
-    // Update the netPay field with the new value
-    document.getElementById('netPay').value = updatedNetPay.toFixed(2); // Display with 2 decimal places
+    // Update the netPay field
+    document.getElementById('netPay').value = updatedNetPay.toFixed(2) + ' Pesos';
   }
+
+
 
   // Store the original netPay when the page loads
   window.onload = function () {
@@ -255,8 +332,11 @@
                     <p><strong>Rate per Hours:</strong> ${document.getElementById('ratePerHour').value}</p>
                     <p><strong>Basic per Day:</strong> ${document.getElementById('basicPerDay').value}</p>
                     <p><strong>Number of Days:</strong> ${document.getElementById('numberOfDays').value}</p>
-                    <p><strong>Total No. of Hours:</strong> <?php echo $attendance_data['summary']['total_hours']; ?></p>
-                    <p><strong>Gross Pay:</strong> <?php echo number_format($attendance_data['summary']['total_hours'] * 68.75, 2); ?></p>
+                    <p><strong>Total No. of Hours:</strong> <?php echo number_format($total_hours, 2) ?></p>
+                    <p><strong>Gross Pay:</strong> <?php
+                    $totalWorkHours = number_format($total_hours, 2);
+                    echo number_format($totalWorkHours * $employee['rate_per_hour'], 2);
+                    ?></p>
                 </div>
                 <div class="deductions">
                     <h2>Government Deduction</h2>

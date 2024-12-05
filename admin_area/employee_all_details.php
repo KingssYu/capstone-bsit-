@@ -153,6 +153,19 @@ function get_monthly_attendance($conn, $employee_no, $year, $month)
         elseif ($record['status'] == 'Late')
             $total_late++;
 
+        // Adjust time_in if necessary
+        $time_in = new DateTime($record['time_in']);
+        $time_in_adjusted = $time_in;
+
+        // If time_in is before 8:30 AM, set it to 8:00 AM
+        if ($time_in < new DateTime('08:30:00')) {
+            $time_in_adjusted = new DateTime('08:00:00');
+        }
+        // If time_in is after 8:30 AM, set it to 9:00 AM
+        elseif ($time_in >= new DateTime('08:30:00')) {
+            $time_in_adjusted = new DateTime('09:00:00');
+        }
+
         // Calculate regular hours
         if ($record['actual_time']) {
             list($hours, $minutes, $seconds) = explode(':', $record['actual_time']);
@@ -194,6 +207,7 @@ function get_monthly_attendance($conn, $employee_no, $year, $month)
         'current_date' => date('Y-m-d') // Current date in PHT
     ];
 }
+
 
 // Handle AJAX requests
 if (isset($_GET['ajax']) && $_GET['ajax'] == 'getAttendance') {
@@ -482,8 +496,7 @@ $payroll_data = calculatePayroll($conn, $employee_no, $current_year, $current_mo
                 <?php echo htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']); ?>
             </div>
             <div class="employee-indicator"><?php echo htmlspecialchars($employee['rate_position']); ?></div>
-            <button class="employee-indicator"
-                style="display: flex; align-items: center; gap: 10px; cursor: pointer;"
+            <button class="employee-indicator" style="display: flex; align-items: center; gap: 10px; cursor: pointer;"
                 onclick="openStatusModal()">
                 <?php echo htmlspecialchars($employee['employee_stats']); ?>
             </button>
@@ -506,8 +519,10 @@ $payroll_data = calculatePayroll($conn, $employee_no, $current_year, $current_mo
                             <option value="Probationary" <?php echo ($employee['employee_stats'] === 'Probationary') ? 'selected' : ''; ?>>Probationary</option>
                         </select>
 
-                        <button type="submit" style="padding: 8px 16px; background-color: #4CAF50; color: white; border: none; border-radius: 3px;">Save</button>
-                        <button type="button" onclick="closeStatusModal()" style="padding: 8px 16px; background-color: #f44336; color: white; border: none; border-radius: 3px;">Cancel</button>
+                        <button type="submit"
+                            style="padding: 8px 16px; background-color: #4CAF50; color: white; border: none; border-radius: 3px;">Save</button>
+                        <button type="button" onclick="closeStatusModal()"
+                            style="padding: 8px 16px; background-color: #f44336; color: white; border: none; border-radius: 3px;">Cancel</button>
                     </form>
 
                 </div>
@@ -775,7 +790,7 @@ $payroll_data = calculatePayroll($conn, $employee_no, $current_year, $current_mo
         }
 
         // Add event listener to close the modal when clicking outside of it
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             const modal = document.getElementById('editModal');
             if (event.target == modal) {
                 closeEditModal();
@@ -790,9 +805,9 @@ $payroll_data = calculatePayroll($conn, $employee_no, $current_year, $current_mo
             formData.append('action', 'update_employee');
 
             fetch('update_employee.php', {
-                    method: 'POST',
-                    body: formData
-                })
+                method: 'POST',
+                body: formData
+            })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -887,7 +902,7 @@ $payroll_data = calculatePayroll($conn, $employee_no, $current_year, $current_mo
             const content = document.getElementById('timeRecordContent');
 
             doc.html(content, {
-                callback: function(doc) {
+                callback: function (doc) {
                     doc.save('daily-time-record.pdf');
                 },
                 x: 10,
@@ -898,7 +913,7 @@ $payroll_data = calculatePayroll($conn, $employee_no, $current_year, $current_mo
         }
 
         // Close modal when clicking outside
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             const modal = document.getElementById('timeRecordModal');
             if (event.target == modal) {
                 closeTimeRecordModal();
@@ -937,7 +952,8 @@ $payroll_data = calculatePayroll($conn, $employee_no, $current_year, $current_mo
                         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px;">
                             <div>
                                 <label>Department:</label>
-                                <div class="info-field"><?php echo htmlspecialchars($employee['department_name']); ?></div>
+                                <div class="info-field"><?php echo htmlspecialchars($employee['department_name']); ?>
+                                </div>
                             </div>
                             <div>
                                 <label>Position:</label>
@@ -1035,10 +1051,7 @@ $payroll_data = calculatePayroll($conn, $employee_no, $current_year, $current_mo
                     calendarDays.appendChild(dayElement);
                 }
 
-                // Update summary
-                document.getElementById('totalAttendance').textContent = data.summary.total_present;
-                document.getElementById('totalAbsent').textContent = data.summary.total_absent;
-                document.getElementById('totalHours').textContent = `${data.summary.total_hours} hours`;
+
 
                 // Update current date display
                 document.getElementById('currentDate').textContent = `Current Date: ${new Date(currentYear, currentMonth - 1, 1).toLocaleString('default', { month: 'long', year: 'numeric' })}`;

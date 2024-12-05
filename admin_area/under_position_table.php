@@ -59,6 +59,8 @@ $columns = array(
                     </li>
                 </ul>
             </div>
+
+            
         ';
     }
   ),

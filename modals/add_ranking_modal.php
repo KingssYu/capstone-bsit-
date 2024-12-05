@@ -16,11 +16,11 @@ $rate_id = isset($_GET['rate_id']) ? $_GET['rate_id'] : null;
       <div class="modal-body">
         <form method="POST" action="ranking_process.php">
 
-          <input type="hidden" class="form-control" id="position_id" name="position_id" value=" <?php echo $rate_id ?> " required>
+          <input type="hidden" class="form-control" id="position_id" name="position_id" value=" <?php echo $rate_id ?> "
+            required>
 
           <!-- Requested Amount -->
           <div class="mb-3">
-
             <label for="rate_position" class="form-label">Position</label>
             <input type="text" class="form-control" id="rate_position" name="rate_position"
               placeholder="Enter Position Name" required>

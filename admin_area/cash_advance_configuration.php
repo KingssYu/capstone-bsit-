@@ -8,22 +8,18 @@ if (!isset($_SESSION['admin'])) {
   exit;
 }
 
-$rate_id = isset($_GET['rate_id']) ? $_GET['rate_id'] : null;
+// Get the `employee_no` from the URL
+$employee_no = $_GET['employee_no'];
 
-if ($rate_id) {
-  $sql = "SELECT * FROM rate_position WHERE rate_id = '$rate_id'";
-  $result = mysqli_query($conn, $sql);
+// Query the database for the cash advance configuration
+$query = "SELECT * FROM cash_advance_configuration WHERE employee_no = '$employee_no'";
+$result = mysqli_query($conn, $query);
 
-  if ($result && mysqli_num_rows($result) > 0) {
-    $row = mysqli_fetch_assoc($result);
-    $rate_position = $row['rate_position'];
-  } else {
-    $rate_position = "Rate ID not found";
-  }
+if ($result && mysqli_num_rows($result) > 0) {
+  $row = mysqli_fetch_assoc($result);
 } else {
-  $rate_position = "Invalid Rate ID";
+  $row = ['employee_no' => '', 'cashloan_percentage' => '', 'cashloan_maximum_month' => ''];
 }
-
 
 ?>
 
@@ -34,7 +30,7 @@ if ($rate_id) {
   <meta charset="UTF-8">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Positions</title>
+  <title>Admin Cash Advance</title>
   <style>
     /* General Styles */
     body {
@@ -222,37 +218,75 @@ if ($rate_id) {
 <body>
   <!-- Sidebar -->
   <?php include './header.php'; ?>
-  <?php include '../modals/add_ranking_modal.php'; ?>
 
   <!-- Directory Section -->
   <div class="directory-container">
     <div class="directory-header">
-      <h1>Add Rates for <?php echo htmlspecialchars($rate_position); ?></h1>
-
+      <h1>Cash Advance Configuration for </h1>
     </div>
 
-    <br>
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rateRankingModal">
-      Add Ranks
-    </button>
-    <br>
-    <br>
+    <!-- Position -->
+    <div class="mb-3">
+      <label for="employee_no" class="form-label">Employee No</label>
+      <input type="text" class="form-control" id="employee_no" name="employee_no"
+        value="<?php echo $row['employee_no']; ?>" readonly>
+    </div>
 
-    <div id="modalContainerProduct"></div>
+    <div class="mb-3">
+      <label for="cashloan_percentage" class="form-label">Cash Loan Max Salary Percentage</label>
+      <input type="number" class="form-control" id="cashloan_percentage" name="cashloan_percentage"
+        placeholder="Maximum Month" value="<?php echo $row['cashloan_percentage']; ?>" readonly>
+    </div>
 
-    <!-- Table with Employee Data -->
-    <table class="directory-table" name="under_position_table" id="under_position_table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Rank</th>
-          <th>Per hour</th>
-          <th>Per Day</th>
-          <th>Manage</th>
+    <!-- Rate Per Day -->
+    <div class="mb-3">
+      <label for="cashloan_maximum_month" class="form-label">Max Month</label>
+      <input type="number" class="form-control" id="cashloan_maximum_month" name="cashloan_maximum_month"
+        placeholder="Maximum Month" value="<?php echo $row['cashloan_maximum_month']; ?>" readonly>
+    </div>
 
-        </tr>
-      </thead>
-    </table>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary" id="updateButton" data-bs-toggle="modal"
+        data-bs-target="#updateModal">Update</button>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="updateModalLabel">Update Cash Advance Configuration</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form method="POST" action="update_cash_advance.php">
+          <div class="modal-body">
+            <!-- Employee No -->
+            <div class="mb-3">
+              <label for="modal_employee_no" class="form-label">Employee No</label>
+              <input type="text" class="form-control" id="modal_employee_no" name="employee_no"
+                value="<?php echo $row['employee_no']; ?>" readonly>
+            </div>
+
+            <div class="mb-3">
+              <label for="modal_cashloan_percentage" class="form-label">Cash Loan Max Salary Percentage</label>
+              <input type="text" class="form-control" id="modal_cashloan_percentage" name="modal_cashloan_percentage"
+                value="<?php echo $row['employee_no']; ?>" readonly>
+            </div>
+            <!-- Maximum Month -->
+            <div class="mb-3">
+              <label for="modal_cashloan_maximum_month" class="form-label">Max Month</label>
+              <input type="number" class="form-control" id="modal_cashloan_maximum_month" name="cashloan_maximum_month"
+                value="<?php echo $row['cashloan_maximum_month']; ?>" required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-success">Save Changes</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
   <!-- Add Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -260,44 +294,6 @@ if ($rate_id) {
   <!-- Add Bootstrap JS and Popper.js for Modal functionality -->
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
-  <link rel="stylesheet" type="text/css" href="../datatables/datatables.min.css" />
-  <script type="text/javascript" src="../datatables/datatables.min.js"></script>
-  <script>
-    var under_position_table = $('#under_position_table').DataTable({
-      "pagingType": "numbers",
-      "processing": true,
-      "serverSide": true,
-      "ajax": {
-        "url": "./under_position_table.php",
-        data: function (d) {
-          d.rate_id = <?php echo $rate_id; ?>;
-        }
-      },
-    });
-
-    $(document).ready(function () {
-      // Function to handle click event on datatable rows
-      $('#under_position_table').on('click', 'tr td:nth-child(5) .fetchData', function () {
-        var rate_id = $(this).closest('tr').find('td').first().text(); // Get the rate_id from the clicked row
-
-        $.ajax({
-          url: './../modals/modal_edit_rate.php', // Path to PHP script to fetch modal content
-          method: 'POST',
-          data: {
-            rate_id: rate_id
-          },
-          success: function (response) {
-            $('#modalContainerProduct').html(response);
-            $('#editRates').modal('show');
-            console.log("#editRates" + rate_id);
-          },
-          error: function (xhr, status, error) {
-            console.error(xhr.responseText);
-          }
-        });
-      });
-    });
-  </script>
 
 </body>
 
