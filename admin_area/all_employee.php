@@ -222,7 +222,9 @@ if (!isset($_SESSION['admin'])) {
             <thead>
                 <tr>
                     <th>Employee No</th>
-                    <th>Fullname</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+
                     <th>Department</th>
                     <th>Position</th>
                     <th>Date Hired</th>

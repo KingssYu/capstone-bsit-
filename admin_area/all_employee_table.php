@@ -20,13 +20,22 @@ $columns = array(
     'dt' => 1,
     'field' => 'first_name',
     'formatter' => function ($lab1, $row) {
-      return $row['first_name'] . ' ' . $row['last_name'];
+      return $row['first_name'];
+    }
+  ),
+
+  array(
+    'db' => 'last_name',
+    'dt' => 2,
+    'field' => 'last_name',
+    'formatter' => function ($lab1, $row) {
+      return $row['last_name'];
     }
   ),
 
   array(
     'db' => 'department_name',
-    'dt' => 2,
+    'dt' => 3,
     'field' => 'department_name',
     'formatter' => function ($lab1, $row) {
       return $row['department_name'];
@@ -35,7 +44,7 @@ $columns = array(
 
   array(
     'db' => 'under_position.rate_position',
-    'dt' => 3,
+    'dt' => 4,
     'field' => 'rate_position',
     'formatter' => function ($lab1, $row) {
       return $row['rate_position'];
@@ -44,7 +53,7 @@ $columns = array(
 
   array(
     'db' => 'date_hired',
-    'dt' => 4,
+    'dt' => 5,
     'field' => 'date_hired',
     'formatter' => function ($lab1, $row) {
       return $row['date_hired'];
@@ -53,7 +62,7 @@ $columns = array(
 
   array(
     'db' => 'employee_stats',
-    'dt' => 5,
+    'dt' => 6,
     'field' => 'employee_stats',
     'formatter' => function ($lab1, $row) {
       return $row['employee_stats'];
@@ -62,7 +71,7 @@ $columns = array(
 
   array(
     'db' => 'under_position.rate_per_day',
-    'dt' => 6,
+    'dt' => 7,
     'field' => 'rate_per_day',
     'formatter' => function ($lab1, $row) {
       return $row['rate_per_day'];
@@ -71,7 +80,7 @@ $columns = array(
 
   array(
     'db' => 'id',
-    'dt' => 7,
+    'dt' => 8,
     'field' => 'id',
     'formatter' => function ($lab4, $row) {
       return '
@@ -87,15 +96,6 @@ $columns = array(
                 </ul>
             </div>
         ';
-    }
-  ),
-
-  array(
-    'db' => 'last_name',
-    'dt' => 8,
-    'field' => 'last_name',
-    'formatter' => function ($lab1, $row) {
-      return $row['last_name'];
     }
   ),
 
