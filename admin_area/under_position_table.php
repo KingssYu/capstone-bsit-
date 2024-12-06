@@ -55,6 +55,7 @@ $columns = array(
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $row['rate_id'] . '">
                     <li>
+                        <a class="dropdown-item fetchData" href="#">Edit</a>
                         <a class="dropdown-item" href="#" onclick="if(confirm(\'Are you sure you want to delete this Rank?\')) { window.location.href=\'delete_rank_process.php?rate_id=' . $row['rate_id'] . '\'; }">Delete</a>
                     </li>
                 </ul>

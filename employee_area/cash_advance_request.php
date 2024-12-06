@@ -1,15 +1,39 @@
 <?php
 // Start the session
 session_start();
-
+include '../connection/connections.php';
 // Check if employee is logged in
 if (!isset($_SESSION['employee'])) {
   header("Location: login.php");
   exit();
 }
 
-// Get employee data from session
 $employee = $_SESSION['employee'];
+$employee_no = $_SESSION['employee']['employee_no'];
+
+$query = "SELECT * FROM adding_employee 
+          LEFT JOIN under_position ON adding_employee.rate_id = under_position.rate_id
+          LEFT JOIN cash_advance_configuration ON adding_employee.employee_no = cash_advance_configuration.employee_no
+          WHERE adding_employee.employee_no = '$employee_no'";
+$result = mysqli_query($conn, $query);
+
+if ($result && mysqli_num_rows($result) > 0) {
+  $row = mysqli_fetch_assoc($result);
+
+  $rate_per_hour = $row['rate_per_hour'];
+  $cashloan_maximum_month = $row['rate_per_hour'];
+
+  $cashloan_percentage = $row['cashloan_percentage'];
+
+  // Calculate monthly salary
+  $monthly_salary = $rate_per_hour * 8 * 22; // 8 hours/day, 22 days/month
+
+  // Calculate maximum cash advance
+  $maximum_cash_advance = ($monthly_salary * $cashloan_percentage) / 100;
+} else {
+  $maximum_cash_advance = 0; // Default value if no data is found
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -32,6 +56,13 @@ $employee = $_SESSION['employee'];
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cashRequestModal">
       Request Cash Advance
     </button>
+    <hr>
+    <h2>Your Maximum Cash Advance is: <strong><?php echo number_format($maximum_cash_advance, 2); ?> </strong></h2>
+    <hr>
+
+    <h2>Your Maximum Month of Payment is: <strong><?php echo $row['cashloan_maximum_month'] . ' months'; ?></strong>
+    </h2>
+
   </div>
   </div>
 
@@ -43,6 +74,8 @@ $employee = $_SESSION['employee'];
           <th>Requested Amount</th>
           <th>Date of Request</th>
           <th># of Months</th>
+          <th>Monthly Payment</th>
+
           <th>Remaining Balance</th>
           <th>Status</th>
         </tr>

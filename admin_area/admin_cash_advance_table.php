@@ -19,13 +19,22 @@ $columns = array(
     'dt' => 1,
     'field' => 'first_name',
     'formatter' => function ($lab1, $row) {
-      return $row['first_name'] . ' ' . $row['last_name'];
+      return $row['first_name'];
+    }
+  ),
+
+  array(
+    'db' => 'last_name',
+    'dt' => 2,
+    'field' => 'last_name',
+    'formatter' => function ($lab1, $row) {
+      return $row['last_name'];
     }
   ),
 
   array(
     'db' => 'requested_amount',
-    'dt' => 2,
+    'dt' => 3,
     'field' => 'requested_amount',
     'formatter' => function ($lab1, $row) {
       return $row['requested_amount'];
@@ -35,7 +44,7 @@ $columns = array(
 
   array(
     'db' => 'months',
-    'dt' => 3,
+    'dt' => 4,
     'field' => 'months',
     'formatter' => function ($lab4, $row) {
       return $row['months'];
@@ -45,7 +54,7 @@ $columns = array(
 
   array(
     'db' => 'request_date',
-    'dt' => 4,
+    'dt' => 5,
     'field' => 'request_date',
     'formatter' => function ($lab4, $row) {
       // Get the request_date from the row
@@ -62,7 +71,7 @@ $columns = array(
 
   array(
     'db' => 'remaining_balance',
-    'dt' => 5,
+    'dt' => 6,
     'field' => 'remaining_balance',
     'formatter' => function ($lab4, $row) {
       return intval($row['remaining_balance']);
@@ -70,8 +79,18 @@ $columns = array(
   ),
 
   array(
+    'db' => 'monthly_payment',
+    'dt' => 7,
+    'field' => 'monthly_payment',
+    'formatter' => function ($lab4, $row) {
+      return $row['monthly_payment'];
+
+    }
+  ),
+
+  array(
     'db' => 'status',
-    'dt' => 6,
+    'dt' => 8,
     'field' => 'status',
     'formatter' => function ($lab4, $row) {
       $status = $row['status'];
@@ -96,7 +115,7 @@ $columns = array(
 
   array(
     'db' => 'cash_advance_id',
-    'dt' => 7,
+    'dt' => 9,
     'field' => 'cash_advance_id',
     'formatter' => function ($lab4, $row) {
       // Check if status is 'Approved', 'Declined', 'Paid' or 'Partially Paid'
@@ -118,16 +137,6 @@ $columns = array(
                 </ul>
             </div>
         ';
-    }
-  ),
-
-
-  array(
-    'db' => 'last_name',
-    'dt' => 8,
-    'field' => 'last_name',
-    'formatter' => function ($lab4, $row) {
-      return $row['last_name'];
     }
   ),
 

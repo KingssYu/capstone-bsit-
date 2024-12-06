@@ -3,18 +3,6 @@
 include '../connection/connections.php';
 session_start();
 
-//Change the servername IP ADDRESS base on your IP ADDRESS used
-// $servername = "162.241.218.154";
-// $username = "vssphcom_bsupayroll";
-// $password = "Mybossrocks081677";
-// $dbname = "vssphcom_bsupayroll";
-
-// $conn = mysqli_connect($servername, $username, $password, $dbname);
-
-// if (!$conn) {
-//   die("Database connection failed: " . mysqli_connect_error());
-// }
-
 if (isset($_POST['submit_cash_advance'])) {
   // Retrieve form values
   $id = isset($_POST['id']) ? $_POST['id'] : null;
@@ -27,16 +15,19 @@ if (isset($_POST['submit_cash_advance'])) {
   // Get today's date dynamically
   $paymentDate = date('Y-m-d');
 
-  // Query to check employee status and calculate max allowed cash advance
+  // Query to get employee's salary and cash advance configuration
   $check_sql = "
       SELECT 
           ae.employee_stats,
-          up.rate_per_day,
-          (up.rate_per_day * 11 * 0.50) AS max_cash_advance 
+          up.rate_per_hour,
+          cac.cashloan_percentage,
+          cac.cashloan_maximum_month
       FROM 
           adding_employee ae 
       LEFT JOIN 
           under_position up ON ae.rate_id = up.rate_id 
+      LEFT JOIN 
+          cash_advance_configuration cac ON ae.employee_no = cac.employee_no
       WHERE 
           ae.employee_no = '$employee_no'
   ";
@@ -53,11 +44,33 @@ if (isset($_POST['submit_cash_advance'])) {
     exit;
   }
 
-  // Validate requested amount against the maximum allowable cash advance
-  $max_cash_advance = $employee['max_cash_advance'];
-  if ($requested_amount > $max_cash_advance) {
+  // Retrieve the cashloan_maximum_month and validate against the submitted months
+  $cashloan_maximum_month = $employee['cashloan_maximum_month'];
+
+  // Check if the requested months exceed the maximum allowed months
+  if ($months > $cashloan_maximum_month) {
     echo "<script>
-              alert('Requested amount exceeds 50% of your cutoff pay.');
+              alert('Requested months exceed the maximum allowed months of $cashloan_maximum_month.');
+              window.history.back();
+            </script>";
+    exit;
+  }
+
+  // Calculate the maximum cash advance based on the salary and cashloan_percentage
+  $rate_per_hour = $employee['rate_per_hour'];
+  $cashloan_percentage = $employee['cashloan_percentage'];
+
+  // Monthly salary calculation
+  $monthly_salary = $rate_per_hour * 8 * 22; // Assuming 8 hours/day, 22 days/month
+  $max_cash_advance = ($monthly_salary * $cashloan_percentage) / 100;
+
+  // Adjust the maximum cash advance by the cashloan_maximum_month
+  $adjusted_max_cash_advance = $max_cash_advance * $cashloan_maximum_month;
+
+  // Validate requested amount against the maximum allowable cash advance (considering months)
+  if ($requested_amount > $adjusted_max_cash_advance) {
+    echo "<script>
+              alert('Requested amount exceeds the maximum cash advance for $months months.');
               window.history.back();
             </script>";
     exit;
@@ -80,9 +93,9 @@ if (isset($_POST['submit_cash_advance'])) {
     // Insert new cash advance request
     $insert_sql = "
           INSERT INTO cash_advance (
-              id, employee_no, requested_amount, months, remaining_balance, monthly_payment
+              id, employee_no, requested_amount, months, remaining_balance, monthly_payment, notification_status
           ) VALUES (
-              '$id', '$employee_no', '$requested_amount', '$months', '$remaining_balance', '$monthly_payment'
+              '$id', '$employee_no', '$requested_amount', '$months', '$remaining_balance', '$monthly_payment', 'Unread'
           )
       ";
 

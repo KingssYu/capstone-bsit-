@@ -186,8 +186,8 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 
         <label>Payment:</label>
-        <input type="number" id="cashAdvancePay" name="cashAdvancePay" placeholder="Enter amount"
-          value="<?php echo $row['monthly_payment'] ?>" onchange="calculateBalance()">
+        <input type="number" id="cashAdvancePay" name="cashAdvancePay" placeholder="Amount"
+          value="<?php echo $row['monthly_payment'] ?>" onchange="calculateBalance()" readonly>
       </div>
 
 

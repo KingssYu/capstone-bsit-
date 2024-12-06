@@ -49,10 +49,19 @@ $columns = array(
     }
   ),
 
+  array(
+    'db' => 'monthly_payment',
+    'dt' => 4,
+    'field' => 'monthly_payment',
+    'formatter' => function ($lab4, $row) {
+      return $row['monthly_payment'];
+    }
+  ),
+
 
   array(
     'db' => 'remaining_balance',
-    'dt' => 4,
+    'dt' => 5,
     'field' => 'remaining_balance',
     'formatter' => function ($lab4, $row) {
       return intval($row['remaining_balance']);
@@ -61,7 +70,7 @@ $columns = array(
 
   array(
     'db' => 'status',
-    'dt' => 5,
+    'dt' => 6,
     'field' => 'status',
     'formatter' => function ($lab4, $row) {
       $status = $row['status'];

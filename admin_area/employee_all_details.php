@@ -542,7 +542,7 @@ $payroll_data = calculatePayroll($conn, $employee_no, $current_year, $current_mo
             <div class="employee-info">
                 <div class="info-item">
                     <div class="info-title">Employee No.</div>
-                    <div class="info-content"><?php echo htmlspecialchars($employee['employee_no']); ?></div>
+                    <div class="info-content"><?php echo htmlspecialchars($employee_no); ?></div>
                 </div>
                 <div class="info-item">
                     <div class="info-title">Hire Date</div>

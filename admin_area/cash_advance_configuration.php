@@ -11,6 +11,14 @@ if (!isset($_SESSION['admin'])) {
 // Get the `employee_no` from the URL
 $employee_no = $_GET['employee_no'];
 
+$queryEmployee = "SELECT * FROM adding_employee WHERE employee_no = '$employee_no'";
+$resultEmployee = mysqli_query($conn, $queryEmployee);
+
+if ($resultEmployee && mysqli_num_rows($resultEmployee) > 0) {
+  $rowEmployee = mysqli_fetch_assoc($resultEmployee);
+}
+
+
 // Query the database for the cash advance configuration
 $query = "SELECT * FROM cash_advance_configuration WHERE employee_no = '$employee_no'";
 $result = mysqli_query($conn, $query);
@@ -222,32 +230,36 @@ if ($result && mysqli_num_rows($result) > 0) {
   <!-- Directory Section -->
   <div class="directory-container">
     <div class="directory-header">
-      <h1>Cash Advance Configuration for </h1>
+      <h1>Cash Advance Configuration for <?php echo $rowEmployee['first_name'] . ' ' . $rowEmployee['last_name']; ?>
+      </h1>
     </div>
 
     <!-- Position -->
-    <div class="mb-3">
+    <div class="mb-3" style="width: 50%; margin: 0 auto; text-align: center;">
       <label for="employee_no" class="form-label">Employee No</label>
-      <input type="text" class="form-control" id="employee_no" name="employee_no"
-        value="<?php echo $row['employee_no']; ?>" readonly>
+      <input type="text" class="form-control" id="employee_no" name="employee_no" value="<?php echo $employee_no; ?>"
+        readonly>
     </div>
 
-    <div class="mb-3">
+    <div class="mb-3" style="width: 50%; margin: 0 auto; text-align: center;">
       <label for="cashloan_percentage" class="form-label">Cash Loan Max Salary Percentage</label>
-      <input type="number" class="form-control" id="cashloan_percentage" name="cashloan_percentage"
-        placeholder="Maximum Month" value="<?php echo $row['cashloan_percentage']; ?>" readonly>
+      <input type="text" class="form-control" id="cashloan_percentage" name="cashloan_percentage"
+        placeholder="Max Percentage of Salary"
+        value="<?php echo ($row['cashloan_percentage'] !== null ? $row['cashloan_percentage'] . '%' : '0%'); ?>"
+        readonly>
     </div>
+
 
     <!-- Rate Per Day -->
-    <div class="mb-3">
+    <div class="mb-3" style="width: 50%; margin: 0 auto; text-align: center;">
       <label for="cashloan_maximum_month" class="form-label">Max Month</label>
       <input type="number" class="form-control" id="cashloan_maximum_month" name="cashloan_maximum_month"
         placeholder="Maximum Month" value="<?php echo $row['cashloan_maximum_month']; ?>" readonly>
     </div>
 
-    <div class="modal-footer">
+    <div class="modal-footer" style="width: 50%; margin: 0 auto; text-align: center;">
       <button type="button" class="btn btn-primary" id="updateButton" data-bs-toggle="modal"
-        data-bs-target="#updateModal">Update</button>
+        data-bs-target="#updateModal">Click to Update</button>
     </div>
   </div>
 
@@ -259,31 +271,36 @@ if ($result && mysqli_num_rows($result) > 0) {
           <h5 class="modal-title" id="updateModalLabel">Update Cash Advance Configuration</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <form method="POST" action="update_cash_advance.php">
+        <form method="POST" action="update_cash_configuration_process.php">
           <div class="modal-body">
             <!-- Employee No -->
             <div class="mb-3">
-              <label for="modal_employee_no" class="form-label">Employee No</label>
-              <input type="text" class="form-control" id="modal_employee_no" name="employee_no"
-                value="<?php echo $row['employee_no']; ?>" readonly>
+              <label for="memployee_no" class="form-label">Employee No</label>
+              <input type="text" class="form-control" id="employee_no" name="employee_no"
+                value="<?php echo $employee_no; ?>" readonly>
             </div>
 
             <div class="mb-3">
-              <label for="modal_cashloan_percentage" class="form-label">Cash Loan Max Salary Percentage</label>
-              <input type="text" class="form-control" id="modal_cashloan_percentage" name="modal_cashloan_percentage"
-                value="<?php echo $row['employee_no']; ?>" readonly>
+              <label for="cashloan_percentage" class="form-label">Cash Loan Max Salary Percentage</label>
+              <input type="number" class="form-control" id="cashloan_percentage" name="cashloan_percentage"
+                placeholder="Enter Cash Loan Percentage" value="<?php echo $row['cashloan_percentage']; ?>" min="0"
+                required>
             </div>
             <!-- Maximum Month -->
             <div class="mb-3">
-              <label for="modal_cashloan_maximum_month" class="form-label">Max Month</label>
-              <input type="number" class="form-control" id="modal_cashloan_maximum_month" name="cashloan_maximum_month"
-                value="<?php echo $row['cashloan_maximum_month']; ?>" required>
+              <label for="cashloan_maximum_month" class="form-label">Max Month</label>
+              <input type="number" class="form-control" id="cashloan_maximum_month" name="cashloan_maximum_month"
+                placeholder="Enter Cash Loan Percentage" value="<?php echo $row['cashloan_maximum_month']; ?>" min="0"
+                required>
             </div>
           </div>
           <div class="modal-footer">
             <button type="submit" class="btn btn-success">Save Changes</button>
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           </div>
+
+          <input type="hidden" name="update_cash_configuration" value="1">
+
         </form>
       </div>
     </div>

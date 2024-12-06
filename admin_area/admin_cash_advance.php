@@ -206,10 +206,25 @@ if (!isset($_SESSION['admin'])) {
   <!-- Sidebar -->
   <?php include './header.php'; ?>
 
-  <!-- Directory Section -->
   <div class="directory-container">
     <div class="directory-header">
-      <h1>Cash Advance Requests</h1>
+      <div class="header-left">
+        <h1>Cash Advance Requests</h1>
+      </div>
+      <div class="header-right">
+        <!-- Notification Button -->
+        <div class="notification-container">
+          <button class="notification-button" id="notificationButton">
+            Notifications <span class="notification-badge" id="notificationBadge">0</span>
+          </button>
+          <!-- Tooltip Content -->
+          <div class="tooltip-content" id="tooltipContent">
+            <ul id="notificationList">
+              <!-- Notifications will be dynamically loaded here -->
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div id="modalContainerCashAdvance"></div>
@@ -218,17 +233,20 @@ if (!isset($_SESSION['admin'])) {
       <thead>
         <tr>
           <th>Cash Advance ID</th>
-          <th>Employee Name</th>
+          <th>First Name</th>
+          <th>Last Name</th>
           <th>Requested Amount</th>
           <th># of Months</th>
           <th>Date Requested</th>
           <th>Remaining Balance</th>
+          <th>Monthly Payment</th>
           <th>Status</th>
           <th>Manage</th>
         </tr>
       </thead>
     </table>
   </div>
+
   <!-- Add Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -247,9 +265,9 @@ if (!isset($_SESSION['admin'])) {
       },
     });
 
-    $(document).ready(function() {
+    $(document).ready(function () {
       // Function to handle click event on datatable rows
-      $('#admin_cash_advance_table').on('click', 'tr td:nth-child(8) .fetchDataCashAdvance', function() {
+      $('#admin_cash_advance_table').on('click', 'tr td:nth-child(10) .fetchDataCashAdvance', function () {
         var cash_advance_id = $(this).closest('tr').find('td').first().text(); // Get the user_id from the clicked row
 
         $.ajax({
@@ -258,21 +276,21 @@ if (!isset($_SESSION['admin'])) {
           data: {
             cash_advance_id: cash_advance_id
           },
-          success: function(response) {
+          success: function (response) {
             $('#modalContainerCashAdvance').html(response);
             $('#updateCashAdvance').modal('show');
             console.log("#updateCashAdvance" + cash_advance_id);
           },
-          error: function(xhr, status, error) {
+          error: function (xhr, status, error) {
             console.error(xhr.responseText);
           }
         });
       });
     });
 
-    $(document).ready(function() {
+    $(document).ready(function () {
       // Function to handle click event on datatable rows
-      $('#admin_cash_advance_table').on('click', 'tr td:nth-child(8) .fetchDataCashAdvanceDecline', function() {
+      $('#admin_cash_advance_table').on('click', 'tr td:nth-child(10) .fetchDataCashAdvanceDecline', function () {
         var cash_advance_id = $(this).closest('tr').find('td').first().text(); // Get the user_id from the clicked row
 
         $.ajax({
@@ -281,12 +299,12 @@ if (!isset($_SESSION['admin'])) {
           data: {
             cash_advance_id: cash_advance_id
           },
-          success: function(response) {
+          success: function (response) {
             $('#modalContainerCashAdvance').html(response);
             $('#updateCashAdvance').modal('show');
             console.log("#updateCashAdvance" + cash_advance_id);
           },
-          error: function(xhr, status, error) {
+          error: function (xhr, status, error) {
             console.error(xhr.responseText);
           }
         });
@@ -297,3 +315,174 @@ if (!isset($_SESSION['admin'])) {
 </body>
 
 </html>
+
+<style>
+  .directory-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .header-left h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+  }
+
+  .notification-container {
+    position: relative;
+  }
+
+  .notification-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .notification-badge {
+    background-color: red;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 50%;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+  }
+
+  .tooltip-content {
+    display: none;
+    position: absolute;
+    top: 120%;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 550px;
+    z-index: 1000;
+    padding: 10px;
+  }
+
+  .tooltip-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .tooltip-content li {
+    padding: 5px 0;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .tooltip-content li:last-child {
+    border-bottom: none;
+  }
+
+  .notification-button:focus+.tooltip-content,
+  .notification-button:hover+.tooltip-content {
+    display: block;
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const notificationButton = document.getElementById("notificationButton");
+    const notificationList = document.getElementById("notificationList");
+    const notificationBadge = document.getElementById("notificationBadge");
+
+    // Automatically fetch notifications when the page loads
+    fetchNotifications();
+
+    // Fetch notifications when the button is clicked
+    notificationButton.addEventListener("click", function () {
+      toggleTooltip();
+    });
+
+    // Function to toggle tooltip visibility
+    function toggleTooltip() {
+      const tooltipContent = document.getElementById("tooltipContent");
+      tooltipContent.style.display =
+        tooltipContent.style.display === "block" ? "none" : "block";
+    }
+
+    // Function to fetch notifications via AJAX
+    function fetchNotifications() {
+      const xhr = new XMLHttpRequest();
+      xhr.open("GET", "./fetch_notifications.php", true); // Replace with your PHP script
+      xhr.onload = function () {
+        if (xhr.status === 200) {
+          const notifications = JSON.parse(xhr.responseText);
+          renderNotifications(notifications);
+        }
+      };
+      xhr.send();
+    }
+
+    // Function to render notifications
+    function renderNotifications(notifications) {
+      notificationList.innerHTML = ""; // Clear the list
+      if (notifications.length === 0) {
+        notificationList.innerHTML = "<li>No new notifications</li>";
+        notificationBadge.textContent = "0";
+      } else {
+        notificationBadge.textContent = notifications.length;
+        notifications.forEach((notification) => {
+          const li = document.createElement("li");
+          li.innerHTML = `
+          ${notification.message}
+          <button class="dismiss-btn" data-id="${notification.id}">X</button>
+        `;
+          notificationList.appendChild(li);
+        });
+        attachDismissHandlers();
+      }
+    }
+
+    // Function to attach dismiss handlers to buttons
+    function attachDismissHandlers() {
+      const dismissButtons = document.querySelectorAll(".dismiss-btn");
+      dismissButtons.forEach((btn) => {
+        btn.addEventListener("click", function () {
+          const notificationId = this.getAttribute("data-id");
+          dismissNotification(notificationId, this);
+        });
+      });
+    }
+
+    // Function to dismiss a notification
+    function dismissNotification(notificationId, button) {
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", "./dismiss_notification.php", true); // Replace with your PHP script
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      xhr.onload = function () {
+        if (xhr.status === 200) {
+          // If dismissed successfully, remove the notification from DOM
+          button.parentElement.remove();  // Removes the list item (notification)
+
+          // Update the badge count
+          const remainingNotifications = document.querySelectorAll("#notificationList li");
+          notificationBadge.textContent = remainingNotifications.length;
+        } else {
+          console.error("Error dismissing notification: " + xhr.responseText);
+        }
+      };
+      xhr.send(`id=${notificationId}`);
+    }
+  });
+
+
+</script>

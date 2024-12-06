@@ -134,7 +134,7 @@ try {
 </html>
 
 <script>
-    document.getElementById('togglePassword').addEventListener('click', function() {
+    document.getElementById('togglePassword').addEventListener('click', function () {
         const passwordField = document.getElementById('password');
         const toggleButton = this;
 

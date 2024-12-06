@@ -82,6 +82,7 @@ $columns = array(
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $row['id'] . '">
                     <li>
                         <a class="dropdown-item" href="employee_all_details.php?employee_no=' . $row['employee_no'] . '">View Employee</a>
+                        <a class="dropdown-item" href="cash_advance_configuration.php?employee_no=' . $row['employee_no'] . '">Cash Advance Configuration</a>
                     </li>
                 </ul>
             </div>

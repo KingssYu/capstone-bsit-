@@ -52,7 +52,8 @@ if (isset($_POST['submit_payroll'])) {
                 cash_advance,
                 cash_advance_pay,
                 net_pay,
-                payment_date
+                payment_date,
+                payment_notification
             ) VALUES (
                 '$employee_no',
                 '$rate_per_hour',
@@ -67,7 +68,8 @@ if (isset($_POST['submit_payroll'])) {
                 '$cash_advance',
                 '$cash_advance_pay',
                 '$net_pay',
-                '$paymentDate'
+                '$paymentDate',
+                'Unread'
             )";
 
     // Execute the payroll query
