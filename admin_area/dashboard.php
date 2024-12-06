@@ -26,35 +26,54 @@ if ($result_total->num_rows > 0) {
     $total_employees = $row_total['total_employees'];
 }
 
-$sql_present = "SELECT COUNT(DISTINCT adding_employee.employee_no) AS total_employees_present
-                FROM adding_employee
-                INNER JOIN attendance
-                ON adding_employee.employee_no = attendance.employee_no
-                WHERE attendance.date = CURDATE()";
+// Prepare statement to get present and late employees for today
+$sql_present_late = "
+    SELECT attendance.employee_no,
+           CASE 
+               WHEN attendance.clock_in <= '08:30:00' THEN 'Present'
+               WHEN attendance.clock_in > '08:30:00' THEN 'Late'
+               ELSE 'Absent'
+           END AS status
+    FROM attendance
+    LEFT JOIN adding_employee ON adding_employee.employee_no = attendance.employee_no
+    WHERE attendance.date = CURDATE()";
 
-$result_present = $conn->query($sql_present);
-$total_employees_present = 0;
+// Prepare the statement to prevent SQL injection
+$stmt_present_late = $conn->prepare($sql_present_late);
+$stmt_present_late->execute();
+$result_present_late = $stmt_present_late->get_result();
 
-if ($result_present->num_rows > 0) {
-    $row_present = $result_present->fetch_assoc();
-    $total_employees_present = $row_present['total_employees_present'];
+$present = 0;
+$late = 0;
+$absent = 0;
+
+// Loop through the results and categorize employees
+while ($row = $result_present_late->fetch_assoc()) {
+    if ($row['status'] == 'Present') {
+        $present++;
+    } elseif ($row['status'] == 'Late') {
+        $late++;
+    }
 }
 
+// Now, find the employees who are absent (no attendance record for today)
+$sql_absent = "
+    SELECT COUNT(DISTINCT adding_employee.employee_no) AS total_employees_absent
+    FROM adding_employee
+    LEFT JOIN attendance ON adding_employee.employee_no = attendance.employee_no
+    WHERE (attendance.date != CURDATE() OR attendance.date IS NULL)";
 
-$sql_absent = "SELECT COUNT(DISTINCT adding_employee.employee_no) AS total_employees_absent
-        FROM adding_employee
-        LEFT JOIN attendance
-        ON adding_employee.employee_no = attendance.employee_no
-        AND (attendance.date = CURDATE() OR attendance.date IS NULL)
+$stmt_absent = $conn->prepare($sql_absent);
+$stmt_absent->execute();
+$result_absent = $stmt_absent->get_result();
 
-        ";
-$result_total = $conn->query($sql_absent);
+// Fetch the total number of absent employees
 $total_employees_absent = 0;
-
-if ($result_total->num_rows > 0) {
-    $row_total = $result_total->fetch_assoc();
-    $total_employees_absent = $row_total['total_employees_absent'];
+if ($result_absent->num_rows > 0) {
+    $row_absent = $result_absent->fetch_assoc();
+    $total_employees_absent = $row_absent['total_employees_absent'];
 }
+
 
 
 function getRecentEmployees($conn)
@@ -181,11 +200,11 @@ $recentEmployees = getRecentEmployees($conn);
         <div class="stats-container">
             <div class="stats-item total">
                 <h3>Total Employees</h3>
-                <p class="count"><?php echo $total_employees; ?></p>
+                <p class="count"><?php echo $present; ?></p>
             </div>
             <div class="stats-item present">
                 <h3>Present</h3>
-                <p class="count"><?php echo $total_employees_present; ?></p>
+                <p class="count"><?php echo $late; ?></p>
             </div>
             <div class="stats-item absent">
                 <h3>Absent</h3>
@@ -242,7 +261,7 @@ $recentEmployees = getRecentEmployees($conn);
         setInterval(updateTime, 1000);
         updateTime(); // Initial call to set date/time immediately
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const calendarContainer = document.getElementById('calendar');
             const date = new Date();
             let currentMonth = date.getMonth();

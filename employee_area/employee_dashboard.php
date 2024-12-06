@@ -3,16 +3,16 @@
 session_start();
 
 // THIS IS FOR LIVE
-$servername = "localhost";
-$username = "u759574209_bsupayroll";
-$password = "Mybossrocks081677!";
-$dbname = "u759574209_bsupayroll";
+// $servername = "localhost";
+// $username = "u759574209_bsupayroll";
+// $password = "Mybossrocks081677!";
+// $dbname = "u759574209_bsupayroll";
 
 // THIS IS FOR LOCAL TESTING
-// $servername = "localhost";
-// $username = "root";
-// $password = "";
-// $dbname = "bsu_payroll";
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "bsu_payroll";
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -34,43 +34,59 @@ if (!isset($_SESSION['employee'])) {
 $employee = $_SESSION['employee'];
 $employee_no = $_SESSION['employee']['employee_no'];
 
+// Prepare statement to get present and late employees for today
+$sql_present_late = "
+    SELECT attendance.employee_no,
+           CASE 
+               WHEN attendance.clock_in <= '08:30:00' THEN 'Present'
+               WHEN attendance.clock_in > '08:30:00' THEN 'Late'
+               ELSE 'Absent'
+           END AS status
+    FROM attendance
+    LEFT JOIN adding_employee ON adding_employee.employee_no = attendance.employee_no
+    WHERE attendance.date = CURDATE() AND adding_employee.employee_no = ?";
 
 // Prepare the statement to prevent SQL injection
-$sql_present = "SELECT COUNT(DISTINCT adding_employee.employee_no) AS total_employees_present
-                FROM adding_employee
-                INNER JOIN attendance_report
-                ON adding_employee.employee_no = attendance_report.employee_no
-                WHERE attendance_report.date = CURDATE() AND adding_employee.employee_no = ?";
+$stmt_present_late = $conn->prepare($sql_present_late);
+$stmt_present_late->bind_param("s", $employee_no); // Bind the employee number
+$stmt_present_late->execute();
+$result_present_late = $stmt_present_late->get_result();
 
-$stmt_present = $conn->prepare($sql_present);
-$stmt_present->bind_param("s", $employee_no); // Bind the employee number
-$stmt_present->execute();
-$result_present = $stmt_present->get_result();
+$present = 0;
+$late = 0;
+$absent = 0;
 
-$total_employees_present = 0;
-if ($result_present->num_rows > 0) {
-    $row_present = $result_present->fetch_assoc();
-    $total_employees_present = $row_present['total_employees_present'];
+// Loop through the results and categorize employees
+while ($row = $result_present_late->fetch_assoc()) {
+    if ($row['status'] == 'Present') {
+        $present++;
+    } elseif ($row['status'] == 'Late') {
+        $late++;
+    }
 }
 
-$sql_absent = "SELECT COUNT(DISTINCT adding_employee.employee_no) AS total_employees_absent
-               FROM adding_employee
-               LEFT JOIN attendance_report
-               ON adding_employee.employee_no = attendance_report.employee_no
-               AND (attendance_report.date = CURDATE() OR attendance_report.date IS NULL) 
-               WHERE adding_employee.employee_no = ?";
+// Now, find the employees who are absent (no attendance record for today)
+$sql_absent = "
+    SELECT COUNT(DISTINCT adding_employee.employee_no) AS total_employees_absent
+    FROM adding_employee
+    LEFT JOIN attendance ON adding_employee.employee_no = attendance.employee_no
+    WHERE (attendance.date != CURDATE() OR attendance.date IS NULL)
+    AND adding_employee.employee_no = ?";
 
 $stmt_absent = $conn->prepare($sql_absent);
 $stmt_absent->bind_param("s", $employee_no); // Bind the employee number
 $stmt_absent->execute();
 $result_absent = $stmt_absent->get_result();
 
+// Fetch the total number of absent employees
 $total_employees_absent = 0;
 if ($result_absent->num_rows > 0) {
     $row_absent = $result_absent->fetch_assoc();
     $total_employees_absent = $row_absent['total_employees_absent'];
 }
 
+// Display the total number of absent employees
+echo "Total Absent Employees: " . $total_employees_absent;
 
 ?>
 
@@ -137,8 +153,8 @@ if ($result_absent->num_rows > 0) {
         <div class="attendance-container">
             <h3>Attendance for today <a href="timesheet.php" class="view-stats">View Stats</a></h3>
             <div class="attendance-status">
-                <p><span class="dot green"></span> <?php echo $total_employees_present . ' Present'; ?></p>
-                <p><span class="dot yellow"></span> <?php echo $total_employees_present . ' Late'; ?></p>
+                <p><span class="dot green"></span> <?php echo $present . ' Present'; ?></p>
+                <p><span class="dot yellow"></span> <?php echo $late . ' Late'; ?></p>
                 <p><span class="dot red"></span> <?php echo $total_employees_absent . ' Absent'; ?></p>
             </div>
         </div>

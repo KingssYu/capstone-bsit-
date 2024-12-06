@@ -11,7 +11,7 @@
  Target Server Version : 100432
  File Encoding         : 65001
 
- Date: 06/12/2024 11:28:05
+ Date: 06/12/2024 17:01:30
 */
 
 SET NAMES utf8mb4;
@@ -100,9 +100,9 @@ CREATE TABLE `attendance`  (
 -- Records of attendance
 -- ----------------------------
 INSERT INTO `attendance` VALUES (4, 'EMP-2358', '2024-12-01', '2024-11-15 08:00:00', '2024-11-15 17:19:58', 'Present', '08:00:00', '00:00:00');
-INSERT INTO `attendance` VALUES (5, 'EMP-3475', '2024-11-15', '0000-00-00 00:00:00', '0000-00-00 00:00:00', 'Absent', '00:00:00', '00:00:00');
+INSERT INTO `attendance` VALUES (5, 'EMP-3475', '2024-12-06', '2024-12-06 08:23:16', '0000-00-00 00:00:00', 'Absent', '00:00:00', '00:00:00');
 INSERT INTO `attendance` VALUES (6, 'EMP-6601', '2024-11-15', '2024-11-15 08:00:00', '2024-11-15 17:53:26', 'Late', '08:00:00', '00:00:00');
-INSERT INTO `attendance` VALUES (7, 'EMP-6601', '2024-11-15', '2024-11-16 08:00:00', '2024-11-16 17:53:26', 'Late', '08:00:00', '00:00:00');
+INSERT INTO `attendance` VALUES (7, 'EMP-6601', '2024-12-05', '2024-11-16 08:00:00', '2024-11-16 17:53:26', 'Late', '08:00:00', '00:00:00');
 
 -- ----------------------------
 -- Table structure for attendance_report
@@ -148,7 +148,7 @@ CREATE TABLE `cash_advance`  (
   `requested_amount` decimal(10, 2) NOT NULL,
   `paid_amount` decimal(11, 2) NULL DEFAULT NULL,
   `remaining_balance` decimal(11, 2) NULL DEFAULT NULL,
-  `status` enum('Pending','Approved','Partially Paid','Paid','Declined') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT 'Pending',
+  `status` enum('Pending','Approved','Partially Paid','Paid','Cancelled') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT 'Pending',
   `request_date` timestamp(0) NOT NULL DEFAULT current_timestamp(0),
   `payment_date` timestamp(0) NULL DEFAULT NULL,
   `months` int(11) NULL DEFAULT NULL,
@@ -167,7 +167,7 @@ INSERT INTO `cash_advance` VALUES (19, 'EMP-3475', 4000.00, NULL, 0.00, 'Paid', 
 INSERT INTO `cash_advance` VALUES (21, 'EMP-3475', 30000.00, NULL, 0.00, 'Paid', '2024-12-01 13:10:21', NULL, 6, 39, 5000.00, 'Read');
 INSERT INTO `cash_advance` VALUES (22, 'EMP-3475', 4000.00, NULL, 0.00, 'Paid', '2024-12-01 13:52:29', NULL, 4, 39, 1000.00, 'Read');
 INSERT INTO `cash_advance` VALUES (23, 'EMP-3475', 4000.00, NULL, 2666.67, 'Paid', '2024-12-02 05:06:11', NULL, 3, 39, 1333.33, 'Read');
-INSERT INTO `cash_advance` VALUES (25, 'EMP-3475', 3.00, NULL, 2.00, 'Approved', '2024-12-06 11:01:20', NULL, 3, 39, 1.00, 'Unread');
+INSERT INTO `cash_advance` VALUES (25, 'EMP-3475', 3.00, NULL, 2.00, 'Cancelled', '2024-12-06 11:01:20', NULL, 3, 39, 1.00, 'Unread');
 
 -- ----------------------------
 -- Table structure for cash_advance_configuration
@@ -186,7 +186,7 @@ CREATE TABLE `cash_advance_configuration`  (
 -- Records of cash_advance_configuration
 -- ----------------------------
 INSERT INTO `cash_advance_configuration` VALUES (3, NULL, 40, 12, 'EMP-9237');
-INSERT INTO `cash_advance_configuration` VALUES (4, NULL, 40, 6, 'EMP-3475');
+INSERT INTO `cash_advance_configuration` VALUES (4, NULL, 3, 3, 'EMP-3475');
 
 -- ----------------------------
 -- Table structure for department

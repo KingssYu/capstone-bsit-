@@ -308,7 +308,7 @@ $conn->close();
                 clearTimeout(debounceTimer); // Clear any existing timer
                 debounceTimer = setTimeout(() => {
                     document.getElementById('searchForm').submit(); // Submit the form after delay
-                }, 800); // Adjust delay (in milliseconds) as needed
+                }, 500); // Adjust delay (in milliseconds) as needed
             });
         </script>
 

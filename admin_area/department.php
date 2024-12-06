@@ -244,7 +244,7 @@ if (!isset($_SESSION['admin'])) {
       "serverSide": true,
       "ajax": {
         "url": "./department_table.php",
-        "data": function(d) {
+        "data": function (d) {
           d.date_from = $('#dateFrom').val();
           d.date_to = $('#dateTo').val();
         }
