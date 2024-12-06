@@ -37,7 +37,7 @@ $employee = $_SESSION['employee'];
 
         <hr>
 
-        <div class="employee-greeting-modified" style="text-align: center;">
+        <div>
             <h2>Employee Status:</h2>
             <button type=" button" class="btn btn-success">
                 <?php echo $employee['employee_stats']; ?>
