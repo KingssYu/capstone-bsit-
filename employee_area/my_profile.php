@@ -28,12 +28,22 @@ $employee = $_SESSION['employee'];
     <?php include 'employee_navigation.php' ?>
     <?php include '../modals/update_profile_modal.php'; ?>
     <div>
-        <div class="employee-greeting" style="text-align: center; margin-bottom: 20px;">
-            <h1 style="color: #333;">Hello, <?php echo $employee['first_name']; ?></h1>
+        <div class="employee-greeting" style="text-align: center;">
+            <h1 style=" color: #333;">Hello, <?php echo $employee['first_name']; ?></h1>
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateProfile">
                 Update Profile
             </button>
         </div>
+
+        <hr>
+
+        <div class="employee-greeting-modified" style="text-align: center;">
+            <h2>Employee Status:</h2>
+            <button type=" button" class="btn btn-success">
+                <?php echo $employee['employee_stats']; ?>
+            </button>
+        </div>
+        <br>
 
         <div class="employee-details-container">
             <div class="main-content">

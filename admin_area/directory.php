@@ -279,24 +279,40 @@ $conn->close();
         <div class="directory-header">
             <h1>Directory</h1>
         </div>
-        <form method="GET" action="" class="search-container">
+        <form method="GET" action="" class="search-container" id="searchForm">
             <span style="padding: 10px; font-size: 14px; color: #333;"><?php echo $total_employees; ?> People</span>
             <input type="text" name="search" id="searchInput" placeholder="Search Directory"
-                value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>"
-                oninput="this.form.submit()">
-            <select name="department_name" onchange="this.form.submit()">
+                value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
+            <select name="department_name" onchange="document.getElementById('searchForm').submit()">
                 <option value="all-departments">All Departments</option>
                 <?php foreach ($departments as $dept): ?>
-                    <option value="<?php echo htmlspecialchars($dept); ?>" <?php echo (isset($_GET['department_name']) && $_GET['department_name'] == $dept) ? 'selected' : ''; ?>><?php echo htmlspecialchars($dept); ?></option>
+                    <option value="<?php echo htmlspecialchars($dept); ?>" <?php echo (isset($_GET['department_name']) && $_GET['department_name'] == $dept) ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($dept); ?>
+                    </option>
                 <?php endforeach; ?>
             </select>
-            <select name="rate_position" onchange="this.form.submit()">
+            <select name="rate_position" onchange="document.getElementById('searchForm').submit()">
                 <option value="all-positions">All Positions</option>
                 <?php foreach ($positions as $pos): ?>
-                    <option value="<?php echo htmlspecialchars($pos); ?>" <?php echo (isset($_GET['rate_position']) && $_GET['rate_position'] == $pos) ? 'selected' : ''; ?>><?php echo htmlspecialchars($pos); ?></option>
+                    <option value="<?php echo htmlspecialchars($pos); ?>" <?php echo (isset($_GET['rate_position']) && $_GET['rate_position'] == $pos) ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($pos); ?>
+                    </option>
                 <?php endforeach; ?>
             </select>
         </form>
+
+        <script>
+            // Debouncing function
+            let debounceTimer;
+            document.getElementById('searchInput').addEventListener('input', function () {
+                clearTimeout(debounceTimer); // Clear any existing timer
+                debounceTimer = setTimeout(() => {
+                    document.getElementById('searchForm').submit(); // Submit the form after delay
+                }, 800); // Adjust delay (in milliseconds) as needed
+            });
+        </script>
+
+
 
         <!-- Table with Employee Data -->
         <table class="directory-table">
@@ -337,7 +353,7 @@ $conn->close();
     </div>
 
     <script>
-        document.querySelector('form').addEventListener('submit', function(e) {
+        document.querySelector('form').addEventListener('submit', function (e) {
             e.preventDefault();
             var formData = new FormData(this);
             var searchParams = new URLSearchParams(formData);

@@ -105,7 +105,7 @@ $columns = array(
         $style = 'background-color: lightgreen; border-radius: 5px; padding: 5px;';
       } elseif ($status === 'Paid') {
         $style = 'background-color: lightgreen; border-radius: 5px; padding: 5px;';
-      } elseif ($status === 'Declined') {
+      } elseif ($status === 'Cancelled') {
         $style = 'background-color: #FF474C; border-radius: 5px; padding: 5px;';
       }
 
@@ -118,9 +118,9 @@ $columns = array(
     'dt' => 9,
     'field' => 'cash_advance_id',
     'formatter' => function ($lab4, $row) {
-      // Check if status is 'Approved', 'Declined', 'Paid' or 'Partially Paid'
-      $disabled = in_array($row['status'], ['Approved', 'Declined', 'Paid', 'Partially Paid']) ? 'disabled' : ''; // Disable options if status is 'Approved', 'Declined', 'Paid', or 'Partially Paid'
-      $tooltip = in_array($row['status'], ['Approved', 'Declined', 'Paid', 'Partially Paid']) ? 'This request has already been processed' : 'More options';
+      // Check if status is 'Approved', 'Cancelled', 'Paid' or 'Partially Paid'
+      $disabled = in_array($row['status'], ['Approved', 'Cancelled', 'Paid', 'Partially Paid']) ? 'disabled' : ''; // Disable options if status is 'Approved', 'Cancelled', 'Paid', or 'Partially Paid'
+      $tooltip = in_array($row['status'], ['Approved', 'Cancelled', 'Paid', 'Partially Paid']) ? 'This request has already been processed' : 'More options';
 
       return '
             <div class="dropdown">
@@ -129,10 +129,10 @@ $columns = array(
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $row['cash_advance_id'] . '">
                     <li>
-                        <a class="dropdown-item fetchDataCashAdvance" href="#" data-bs-toggle="tooltip" title="Approve this request" ' . (in_array($row['status'], ['Approved', 'Declined', 'Paid', 'Partially Paid']) ? 'style="pointer-events: none; color: #6c757d;"' : '') . '>Approve</a>
+                        <a class="dropdown-item fetchDataCashAdvance" href="#" data-bs-toggle="tooltip" title="Approve this request" ' . (in_array($row['status'], ['Approved', 'Cancelled', 'Paid', 'Partially Paid']) ? 'style="pointer-events: none; color: #6c757d;"' : '') . '>Approve</a>
                     </li>
                     <li>
-                        <a class="dropdown-item fetchDataCashAdvanceDecline" href="#" data-user-id="' . $row['cash_advance_id'] . '" data-bs-toggle="tooltip" title="Decline this request" ' . (in_array($row['status'], ['Approved', 'Declined', 'Paid', 'Partially Paid']) ? 'style="pointer-events: none; color: #6c757d;"' : '') . '>Decline</a>
+                        <a class="dropdown-item fetchDataCashAdvanceDecline" href="#" data-user-id="' . $row['cash_advance_id'] . '" data-bs-toggle="tooltip" title="Decline this request" ' . (in_array($row['status'], ['Approved', 'Cancelled', 'Paid', 'Partially Paid']) ? 'style="pointer-events: none; color: #6c757d;"' : '') . '>Cancel</a>
                     </li>
                 </ul>
             </div>

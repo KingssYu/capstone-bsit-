@@ -6,7 +6,7 @@ if (isset($_POST['edit_cash_advance'])) {
   // Retrieve values from the form
   $cash_advance_id = isset($_POST['cash_advance_id']) ? $_POST['cash_advance_id'] : null;
   $employee_no = isset($_POST['employee_no']) ? $_POST['employee_no'] : null;
-  $status = 'Declined';  // Set the status to 'Approved'
+  $status = 'Cancelled';  // Set the status to 'Approved'
 
   // Create the SQL query to update the data
   $sql = "UPDATE cash_advance SET status = '$status' WHERE cash_advance_id = '$cash_advance_id'";

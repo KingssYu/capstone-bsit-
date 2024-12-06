@@ -85,7 +85,7 @@ $columns = array(
         $style = 'background-color: lightgreen; border-radius: 5px; padding: 5px;';
       } elseif ($status === 'Paid') {
         $style = 'background-color: lightgreen; border-radius: 5px; padding: 5px;';
-      } elseif ($status === 'Declined') {
+      } elseif ($status === 'Cancelled') {
         $style = 'background-color: #FF474C; border-radius: 5px; padding: 5px;';
       }
 

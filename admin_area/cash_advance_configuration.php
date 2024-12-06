@@ -252,7 +252,7 @@ if ($result && mysqli_num_rows($result) > 0) {
 
     <!-- Rate Per Day -->
     <div class="mb-3" style="width: 50%; margin: 0 auto; text-align: center;">
-      <label for="cashloan_maximum_month" class="form-label">Max Month</label>
+      <label for="cashloan_maximum_month" class="form-label">Enter Max Month to Pay</label>
       <input type="number" class="form-control" id="cashloan_maximum_month" name="cashloan_maximum_month"
         placeholder="Maximum Month" value="<?php echo $row['cashloan_maximum_month']; ?>" readonly>
     </div>
@@ -283,16 +283,17 @@ if ($result && mysqli_num_rows($result) > 0) {
             <div class="mb-3">
               <label for="cashloan_percentage" class="form-label">Cash Loan Max Salary Percentage</label>
               <input type="number" class="form-control" id="cashloan_percentage" name="cashloan_percentage"
-                placeholder="Enter Cash Loan Percentage" value="<?php echo $row['cashloan_percentage']; ?>" min="0"
-                required>
+                placeholder="Enter Cash Loan Percentage" value="<?php echo $row['cashloan_percentage']; ?>" min="1"
+                max="50" oninput="this.value = this.value > 50 ? 50 : (this.value < 1 ? 1 : this.value)" required>
             </div>
             <!-- Maximum Month -->
             <div class="mb-3">
-              <label for="cashloan_maximum_month" class="form-label">Max Month</label>
+              <label for="cashloan_maximum_month" class="form-label">Enter Max Month to Pay</label>
               <input type="number" class="form-control" id="cashloan_maximum_month" name="cashloan_maximum_month"
-                placeholder="Enter Cash Loan Percentage" value="<?php echo $row['cashloan_maximum_month']; ?>" min="0"
-                required>
+                placeholder="Enter Max Month" value="<?php echo $row['cashloan_maximum_month']; ?>" min="1" max="12"
+                oninput="this.value = this.value > 12 ? 12 : (this.value < 1 ? 1 : this.value)" required>
             </div>
+
           </div>
           <div class="modal-footer">
             <button type="submit" class="btn btn-success">Save Changes</button>

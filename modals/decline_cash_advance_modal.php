@@ -33,7 +33,7 @@ if (isset($_POST['cash_advance_id'])) {
               <form method="post" enctype="multipart/form-data" action="decline_cash_advance_process.php">
                 <input type="hidden" name="cash_advance_id" value="<?php echo $row['cash_advance_id']; ?>">
 
-                <h1>Decline Cash Advance?</h1>
+                <h1>Cancel Cash Advance?</h1>
                 <!-- Add a hidden input field to submit the form with the button click -->
                 <input type="hidden" name="edit_cash_advance" value="1">
 

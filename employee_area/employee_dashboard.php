@@ -126,10 +126,9 @@ if ($result_absent->num_rows > 0) {
                     <p><strong>Department:</strong> <?php echo $employee['department_name']; ?></p>
                     <p><strong>Contact:</strong> <?php echo $employee['contact']; ?></p>
                 </div>
-                <div class="stat-row">
-                    <p><strong>Status:</strong> <?php echo $employee['employee_stats']; ?></p>
-
-                </div>
+                <!-- <div class="stat-row">
+                    <p><strong>Status:</strong> </?php echo $employee['employee_stats']; ?></p>
+                </div> -->
             </div>
         </div>
     </div>

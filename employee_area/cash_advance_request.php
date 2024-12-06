@@ -34,6 +34,15 @@ if ($result && mysqli_num_rows($result) > 0) {
   $maximum_cash_advance = 0; // Default value if no data is found
 }
 
+
+if ($_SESSION['employee']['employee_stats'] != 'Regular') {
+  echo "<script>
+    alert('You are not a regular employee and cannot access the Cash Advance Request.');
+    window.location.href = 'employee_dashboard.php';
+  </script>";
+  exit();
+}
+
 ?>
 
 <!DOCTYPE html>
