@@ -3,16 +3,16 @@
 session_start();
 
 // THIS IS FOR LIVE
-// $servername = "localhost";
-// $username = "u759574209_bsupayroll";
-// $password = "Mybossrocks081677!";
-// $dbname = "u759574209_bsupayroll";
-
-// THIS IS FOR LOCAL TESTING
 $servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "bsu_payroll";
+$username = "u759574209_bsupayroll";
+$password = "Mybossrocks081677!";
+$dbname = "u759574209_bsupayroll";
+
+// // THIS IS FOR LOCAL TESTING
+// $servername = "localhost";
+// $username = "root";
+// $password = "";
+// $dbname = "bsu_payroll";
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
