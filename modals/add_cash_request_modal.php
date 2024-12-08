@@ -89,11 +89,21 @@ if (!$employeeData) {
 </div>
 
 <script>
-  // JavaScript to calculate monthly payment
   document.addEventListener("DOMContentLoaded", function() {
     const amountInput = document.getElementById("requested_amount");
     const monthsInput = document.getElementById("months");
     const monthlyPaymentInput = document.getElementById("monthly_payment");
+
+    // Define the maximum values
+    const maxAmount = <?php echo json_encode($maximum_cash_advance); ?>;
+    const maxMonths = <?php echo json_encode($row['cashloan_maximum_month']); ?>;
+
+    function enforceLimits(input, maxValue) {
+      // Prevent entering values greater than the maximum
+      if (parseFloat(input.value) > maxValue) {
+        input.value = maxValue;
+      }
+    }
 
     function calculateMonthlyPayment() {
       const amount = parseFloat(amountInput.value) || 0;
@@ -108,8 +118,15 @@ if (!$employeeData) {
       }
     }
 
-    // Add event listeners to trigger calculation
-    amountInput.addEventListener("input", calculateMonthlyPayment);
-    monthsInput.addEventListener("input", calculateMonthlyPayment);
+    // Add event listeners to enforce limits and calculate payments
+    amountInput.addEventListener("input", function() {
+      enforceLimits(amountInput, maxAmount);
+      calculateMonthlyPayment();
+    });
+
+    monthsInput.addEventListener("input", function() {
+      enforceLimits(monthsInput, maxMonths);
+      calculateMonthlyPayment();
+    });
   });
 </script>

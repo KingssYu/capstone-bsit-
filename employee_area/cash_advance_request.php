@@ -113,14 +113,8 @@ if ($_SESSION['employee']['employee_stats'] != 'Regular') {
     "serverSide": true,
     "ajax": {
       "url": "./cash_advance_table.php",
-      "data": function (d) {
-        d.date_from = $('#dateFrom').val();
-        d.date_to = $('#dateTo').val();
-      }
     },
   });
-
-
 </script>
 
 <style>
