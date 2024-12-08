@@ -86,7 +86,7 @@ if ($result_absent->num_rows > 0) {
 }
 
 // Display the total number of absent employees
-echo "Total Absent Employees: " . $total_employees_absent;
+// echo "Total Absent Employees: " . $total_employees_absent;
 
 ?>
 

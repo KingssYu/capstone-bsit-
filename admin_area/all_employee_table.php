@@ -83,6 +83,11 @@ $columns = array(
     'dt' => 8,
     'field' => 'id',
     'formatter' => function ($lab4, $row) {
+      $cashAdvanceLink = '';
+      // Check if employee_stats is 'Regular'
+      if ($row['employee_stats'] === 'Regular') {
+        $cashAdvanceLink = '<a class="dropdown-item" href="cash_advance_configuration.php?employee_no=' . $row['employee_no'] . '">Cash Advance Configuration</a>';
+      }
       return '
             <div class="dropdown">
                 <button class="btn btn-info" type="button" id="dropdownMenuButton' . $row['id'] . '" data-bs-toggle="dropdown" aria-expanded="false">
@@ -91,13 +96,14 @@ $columns = array(
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $row['id'] . '">
                     <li>
                         <a class="dropdown-item" href="employee_all_details.php?employee_no=' . $row['employee_no'] . '">View Employee</a>
-                        <a class="dropdown-item" href="cash_advance_configuration.php?employee_no=' . $row['employee_no'] . '">Cash Advance Configuration</a>
+                        ' . $cashAdvanceLink . '
                     </li>
                 </ul>
             </div>
         ';
     }
   ),
+
 
   array(
     'db' => 'id',
