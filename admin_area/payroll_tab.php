@@ -336,8 +336,13 @@ while ($row = mysqli_fetch_assoc($result)) {
                     <p><strong>Overtime Total No. Hours:</strong> <?php echo number_format($total_hours_ot, 2) ?></p>
 
                     <p><strong>Gross Pay:</strong> <?php
+                                                    // Calculate the gross pay correctly
                                                     $totalWorkHours = number_format($total_hours, 2);
-                                                    echo number_format($totalWorkHours * $employee['rate_per_hour'], 2);
+                                                    $grossPayCalculation = number_format($totalWorkHours, 2) + number_format($total_hours_ot, 2);
+
+                                                    $grossPay = $grossPayCalculation * $employee['rate_per_hour'];
+                                                    // Ensure precision with rounding or formatting
+                                                    echo number_format($grossPay, 2);
                                                     ?></p>
                 </div>
                 <div class="deductions">
