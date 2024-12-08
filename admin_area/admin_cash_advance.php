@@ -313,7 +313,7 @@ if (!isset($_SESSION['admin'])) {
 
 </html>
 
-<style>
+<!-- <style>
   .directory-header {
     display: flex;
     justify-content: space-between;
@@ -393,7 +393,7 @@ if (!isset($_SESSION['admin'])) {
   .notification-button:hover+.tooltip-content {
     display: block;
   }
-</style>
+</style> -->
 
 <!-- <script>
   document.addEventListener("DOMContentLoaded", function () {
