@@ -205,6 +205,7 @@
     }
 
     // Function to render notifications
+    // Function to render notifications
     function renderNotifications(notifications) {
       notificationList.innerHTML = ""; // Clear the list
       if (notifications.length === 0) {
@@ -214,15 +215,21 @@
         notificationBadge.textContent = notifications.length;
         notifications.forEach((notification) => {
           const li = document.createElement("li");
+
+          // Make the notification clickable
           li.innerHTML = `
-        ${notification.message}
+        <a href="admin_cash_advance.php" class="notification-link" style="text-decoration: none; color: black;">
+          ${notification.message}
+        </a>
         <a class="dismiss-btn" data-id="${notification.id}" style="cursor: pointer;">X</a>
       `;
+
           notificationList.appendChild(li);
         });
         attachDismissHandlers();
       }
     }
+
 
 
     // Function to attach dismiss handlers to buttons
