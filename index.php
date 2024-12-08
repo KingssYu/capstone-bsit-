@@ -8,80 +8,160 @@
   <link rel="stylesheet" href="./employee_area/employee_styles/homepage.css">
   <!-- Add Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    /* Carousel Styles */
+    .carousel {
+      position: relative;
+      max-width: 100%;
+      margin: auto;
+      overflow: hidden;
+      border-radius: 10px;
+      /* Rounded corners for the carousel */
+      padding: 13px;
+      padding-bottom: 5rem;
+      /* Adds space between the carousel and the card edges */
+    }
+
+    .carousel-inner {
+      position: relative;
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+    }
+
+    .carousel-item {
+      min-width: 100%;
+      display: none;
+      /* Hide all slides by default */
+    }
+
+    .carousel-item.active {
+      display: block;
+      /* Show the active slide */
+    }
+
+    .carousel img {
+      width: 100%;
+      height: 550px;
+      /* Adjusted height for better proportion */
+      object-fit: cover;
+      /* Ensures the image fits nicely without distortion */
+      border-radius: 8px;
+      /* Optional rounded corners for images */
+    }
+
+    .carousel-caption {
+      position: absolute;
+      /* Keep it at the bottom */
+      left: 50%;
+      transform: translateX(-50%);
+      color: #fff;
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 10px 15px;
+      border-radius: 5px;
+      text-align: center;
+    }
+
+    /* Carousel Controls */
+    .carousel-control {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      border-radius: 50%;
+    }
+
+    .carousel-control.prev {
+      left: 20px;
+    }
+
+    .carousel-control.next {
+      right: 20px;
+    }
+
+    .carousel-indicators {
+      text-align: center;
+      position: absolute;
+      bottom: 12px;
+      width: 100%;
+    }
+
+    .carousel-indicators .indicator {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      margin: 0 5px;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .carousel-indicators .indicator.active {
+      background: #fff;
+    }
+
+    /* Card Styles */
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      margin-top: 3rem;
+      margin-left: 4rem;
+      margin-right: 4rem;
+      margin-bottom: 3rem;
+
+
+      /* Adds spacing above the card */
+    }
+  </style>
 </head>
 
 <body>
   <?php include './employee_area/header.php'; ?>
 
-
-  <!-- Rest of your existing content remains the same -->
-  <!-- Just adding the enhanced carousel controls -->
   <div id="home" class="home-section">
-    <div class="carousel">
-      <div class="carousel-inner">
-        <div class="carousel-item active">
-          <img src="image/slide1.jpg" alt="Construction Project 1">
-          <div class="carousel-caption">
-            <h3>Excellence in Construction</h3>
-            <p>Building tomorrow's infrastructure today</p>
+    <div class="card">
+      <div class="card-body">
+        <div class="carousel">
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              <img src="image/slide1.jpg" alt="Construction Project 1">
+              <div class="carousel-caption">
+                <p><strong>Excellence in Construction</strong> (Building tomorrow's infrastructure today)</p>
+              </div>
+            </div>
+            <div class="carousel-item">
+              <img src="image/slide2.jpg" alt="Construction Project 2">
+              <div class="carousel-caption">
+                <h3></h3>
+                <p><strong>Quality Engineering </strong>(Committed to superior standards)</p>
+              </div>
+            </div>
+            <div class="carousel-item">
+              <img src="image/slide3.jpg" alt="Construction Project 3">
+              <div class="carousel-caption">
+                <p><strong>Professional Services </strong>(Your trusted construction partner)</p>
+              </div>
+            </div>
           </div>
-        </div>
-        <div class="carousel-item">
-          <img src="image/slide2.jpg" alt="Construction Project 2">
-          <div class="carousel-caption">
-            <h3>Quality Engineering</h3>
-            <p>Committed to superior standards</p>
+          <div class="carousel-indicators">
+            <span class="indicator active" onclick="currentSlide(1)"></span>
+            <span class="indicator" onclick="currentSlide(2)"></span>
+            <span class="indicator" onclick="currentSlide(3)"></span>
           </div>
-        </div>
-        <div class="carousel-item">
-          <img src="image/slide3.jpg" alt="Construction Project 3">
-          <div class="carousel-caption">
-            <h3>Professional Services</h3>
-            <p>Your trusted construction partner</p>
-          </div>
-        </div>
-        <div class="carousel-item">
-          <img src="image/slide4.jpg" alt="Construction Project 4">
-          <div class="carousel-caption">
-            <h3>Professional Services</h3>
-            <p>Your trusted construction partner</p>
-          </div>
-        </div>
-        <div class="carousel-item">
-          <img src="image/slide5.jpg" alt="Construction Project 5">
-          <div class="carousel-caption">
-            <h3>Professional Services</h3>
-            <p>Your trusted construction partner</p>
-          </div>
+          <button class="carousel-control prev" onclick="plusSlides(-1)">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <button class="carousel-control next" onclick="plusSlides(1)">
+            <i class="fas fa-chevron-right"></i>
+          </button>
         </div>
       </div>
-      <div class="carousel-indicators">
-        <span class="indicator active" onclick="currentSlide(1)"></span>
-        <span class="indicator" onclick="currentSlide(2)"></span>
-        <span class="indicator" onclick="currentSlide(3)"></span>
-        <span class="indicator" onclick="currentSlide(4)"></span>
-        <span class="indicator" onclick="currentSlide(5)"></span>
-      </div>
-      <button class="carousel-control prev" onclick="plusSlides(-1)">
-        <i class="fas fa-chevron-left"></i>
-      </button>
-      <button class="carousel-control next" onclick="plusSlides(1)">
-        <i class="fas fa-chevron-right"></i>
-      </button>
     </div>
-
-    <!-- Content Section -->
-    <!-- <div class="content-section">
-            <div class="image-box">
-                <img src="image/cover.jpg" alt="Box Image">
-            </div>
-            <div class="portal-container">
-                <div class="portal-title">Company Portal</div>
-                <div class="portal-button-box">
-                    <a href="portal.php" class="button">Enter Portal</a>
-                </div>
-            </div>
-        </div> -->
 
     <!-- Content Sections -->
     <div id="about" class="section about-company-container">
@@ -105,6 +185,8 @@
       </div>
     </div>
 
+    <br>
+
     <div class="mission-vision-container">
       <h2 class="section-title">Mission and Vision</h2>
       <div class="mission-vision-content">
@@ -123,6 +205,8 @@
       </div>
     </div>
 
+    <br>
+
     <div class="trade-reference-container">
       <h2 class="section-title">Trade Reference</h2>
       <div class="trade-images">
@@ -135,6 +219,8 @@
         <!-- Add more images as needed -->
       </div>
     </div>
+
+    <br>
 
     <!-- Enhanced Footer -->
     <footer class="company-footer">

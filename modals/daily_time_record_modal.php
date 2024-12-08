@@ -29,7 +29,7 @@
           <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px;">
             <div>
               <label>Department:</label>
-              <div class="info-field"><?php echo htmlspecialchars($employee['department']); ?></div>
+              <div class="info-field"><?php echo htmlspecialchars($employee['department_name']); ?></div>
             </div>
             <div>
               <label>Position:</label>
@@ -59,9 +59,65 @@
       </div>
     </div>
     <div class="modal-buttons" style="margin-top: 20px;">
-      <button onclick="printTimeRecord()">Print</button>
+      <button onclick="printTimeRecordRun()">Print</button>
       <button onclick="downloadTimeRecordPDF()">Download PDF</button>
       <button onclick="closeTimeRecordModal()">Close</button>
     </div>
   </div>
 </div>
+
+<script>
+  function printTimeRecordRun() {
+    // Get the modal content
+    const modalContent = document.querySelector("#timeRecordContent").innerHTML;
+
+    // Create a new window for printing
+    const printWindow = window.open("", "_blank", "width=800,height=600");
+
+    // Write the modal content into the new window
+    printWindow.document.open();
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Print Daily Time Record</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 20px;
+                }
+                .time-record-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                }
+                .time-record-table th, .time-record-table td {
+                    border: 1px solid black;
+                    padding: 8px;
+                    text-align: center;
+                }
+                .info-field {
+                    border: 1px solid #ccc;
+                    padding: 5px;
+                    margin-top: 5px;
+                }
+                .modal-content h2 {
+                    margin: 10px 0;
+                }
+            </style>
+        </head>
+        <body>
+            ${modalContent}
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
+
+    // Trigger the print dialog
+    printWindow.print();
+
+    // Close the print window after printing
+    printWindow.onafterprint = () => {
+      printWindow.close();
+    };
+  }
+</script>

@@ -92,14 +92,14 @@ while ($row = mysqli_fetch_assoc($result)) {
 
         <label>Gross Pay:</label>
         <input type="text" id="grossPay" name="grossPay" readonly value="<?php
-        // Calculate the gross pay correctly
-        $totalWorkHours = number_format($total_hours, 2);
-        $grossPayCalculation = number_format($totalWorkHours, 2) + number_format($total_hours_ot, 2);
+                                                                          // Calculate the gross pay correctly
+                                                                          $totalWorkHours = number_format($total_hours, 2);
+                                                                          $grossPayCalculation = number_format($totalWorkHours, 2) + number_format($total_hours_ot, 2);
 
-        $grossPay = $grossPayCalculation * $employee['rate_per_hour'];
-        // Ensure precision with rounding or formatting
-        echo number_format($grossPay, 2);
-        ?>">
+                                                                          $grossPay = $grossPayCalculation * $employee['rate_per_hour'];
+                                                                          // Ensure precision with rounding or formatting
+                                                                          echo number_format($grossPay, 2);
+                                                                          ?>">
 
 
       </div>
@@ -292,7 +292,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 
   // Store the original netPay when the page loads
-  window.onload = function () {
+  window.onload = function() {
     const netPayInput = document.getElementById('netPay');
     netPayInput.dataset.originalValue = netPayInput.value; // Store original value in a custom data attribute
   };
@@ -333,10 +333,12 @@ while ($row = mysqli_fetch_assoc($result)) {
                     <p><strong>Basic per Day:</strong> ${document.getElementById('basicPerDay').value}</p>
                     <p><strong>Number of Days:</strong> ${document.getElementById('numberOfDays').value}</p>
                     <p><strong>Total No. of Hours:</strong> <?php echo number_format($total_hours, 2) ?></p>
+                    <p><strong>Overtime Total No. Hours:</strong> <?php echo number_format($total_hours_ot, 2) ?></p>
+
                     <p><strong>Gross Pay:</strong> <?php
-                    $totalWorkHours = number_format($total_hours, 2);
-                    echo number_format($totalWorkHours * $employee['rate_per_hour'], 2);
-                    ?></p>
+                                                    $totalWorkHours = number_format($total_hours, 2);
+                                                    echo number_format($totalWorkHours * $employee['rate_per_hour'], 2);
+                                                    ?></p>
                 </div>
                 <div class="deductions">
                     <h2>Government Deduction</h2>
@@ -378,8 +380,116 @@ while ($row = mysqli_fetch_assoc($result)) {
   }
 
   function printPayslip() {
-    window.print();
+    // Get the payslip content
+    const payslipContent = document.querySelector('.payslip').innerHTML;
+
+    // Open a new window for printing
+    const printWindow = window.open("", "_blank", "width=800,height=600");
+
+    // Write the payslip content into the new window
+    printWindow.document.open();
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Print Payslip</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 0;
+                    padding: 20px;
+                    box-sizing: border-box;
+                }
+                .payslip {
+                    width: 100%;
+                    max-width: 800px;
+                    margin: auto;
+                }
+                .payslip-header {
+                    text-align: center;
+                    margin-bottom: 20px;
+                }
+                .payslip-header img {
+                    max-width: 100px;
+                    height: auto;
+                }
+                .payslip-details {
+                    margin-bottom: 20px;
+                    display: flex;
+                    justify-content: space-between;
+                }
+                .employee-info {
+                    width: 48%;
+                }
+                hr {
+                    margin: 20px 0;
+                }
+                .earnings-deductions {
+                    display: flex;
+                    justify-content: space-between;
+                }
+                .earnings, .deductions {
+                    width: 48%;
+                }
+                .deductions {
+                    display: flex;
+                    flex-direction: column;
+                }
+                .cash-advance {
+                    margin-top: 20px;
+                }
+                h2 {
+                    margin: 10px 0;
+                    font-size: 1.2em;
+                }
+                .payslip-total {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-top: 20px;
+                    font-weight: bold;
+                    text-align: center;
+                }
+                .payslip-total div {
+                    width: 33%;
+                }
+                .payslip-netpay {
+                    text-align: center;
+                    font-weight: bold;
+                    margin-top: 20px;
+                    font-size: 1.2em;
+                }
+                .payslip-footer {
+                    margin-top: 30px;
+                    text-align: right;
+                }
+                @media print {
+                    body {
+                        margin: 0;
+                        padding: 0;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="payslip">
+                ${payslipContent}
+            </div>
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
+
+    // Trigger the print dialog
+    printWindow.print();
+
+    // Close the print window after printing
+    printWindow.onafterprint = () => {
+      printWindow.close();
+    };
   }
+
+
+
 
   function downloadPDF() {
     const {
@@ -389,7 +499,7 @@ while ($row = mysqli_fetch_assoc($result)) {
     const content = document.getElementById('payslipContent');
 
     doc.html(content, {
-      callback: function (doc) {
+      callback: function(doc) {
         doc.save('payslip.pdf');
       },
       x: 10,

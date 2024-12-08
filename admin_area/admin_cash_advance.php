@@ -211,20 +211,17 @@ if (!isset($_SESSION['admin'])) {
       <div class="header-left">
         <h1>Cash Advance Requests</h1>
       </div>
-      <div class="header-right">
-        <!-- Notification Button -->
+      <!-- <div class="header-right">
         <div class="notification-container">
           <button class="notification-button" id="notificationButton">
             Notifications <span class="notification-badge" id="notificationBadge">0</span>
           </button>
-          <!-- Tooltip Content -->
           <div class="tooltip-content" id="tooltipContent">
             <ul id="notificationList">
-              <!-- Notifications will be dynamically loaded here -->
             </ul>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
 
     <div id="modalContainerCashAdvance"></div>
@@ -265,9 +262,9 @@ if (!isset($_SESSION['admin'])) {
       },
     });
 
-    $(document).ready(function () {
+    $(document).ready(function() {
       // Function to handle click event on datatable rows
-      $('#admin_cash_advance_table').on('click', 'tr td:nth-child(10) .fetchDataCashAdvance', function () {
+      $('#admin_cash_advance_table').on('click', 'tr td:nth-child(10) .fetchDataCashAdvance', function() {
         var cash_advance_id = $(this).closest('tr').find('td').first().text(); // Get the user_id from the clicked row
 
         $.ajax({
@@ -276,21 +273,21 @@ if (!isset($_SESSION['admin'])) {
           data: {
             cash_advance_id: cash_advance_id
           },
-          success: function (response) {
+          success: function(response) {
             $('#modalContainerCashAdvance').html(response);
             $('#updateCashAdvance').modal('show');
             console.log("#updateCashAdvance" + cash_advance_id);
           },
-          error: function (xhr, status, error) {
+          error: function(xhr, status, error) {
             console.error(xhr.responseText);
           }
         });
       });
     });
 
-    $(document).ready(function () {
+    $(document).ready(function() {
       // Function to handle click event on datatable rows
-      $('#admin_cash_advance_table').on('click', 'tr td:nth-child(10) .fetchDataCashAdvanceDecline', function () {
+      $('#admin_cash_advance_table').on('click', 'tr td:nth-child(10) .fetchDataCashAdvanceDecline', function() {
         var cash_advance_id = $(this).closest('tr').find('td').first().text(); // Get the user_id from the clicked row
 
         $.ajax({
@@ -299,12 +296,12 @@ if (!isset($_SESSION['admin'])) {
           data: {
             cash_advance_id: cash_advance_id
           },
-          success: function (response) {
+          success: function(response) {
             $('#modalContainerCashAdvance').html(response);
             $('#updateCashAdvance').modal('show');
             console.log("#updateCashAdvance" + cash_advance_id);
           },
-          error: function (xhr, status, error) {
+          error: function(xhr, status, error) {
             console.error(xhr.responseText);
           }
         });
@@ -398,7 +395,7 @@ if (!isset($_SESSION['admin'])) {
   }
 </style>
 
-<script>
+<!-- <script>
   document.addEventListener("DOMContentLoaded", function () {
     const notificationButton = document.getElementById("notificationButton");
     const notificationList = document.getElementById("notificationList");
@@ -485,4 +482,4 @@ if (!isset($_SESSION['admin'])) {
   });
 
 
-</script>
+</script> -->

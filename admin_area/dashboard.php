@@ -106,6 +106,22 @@ $recentEmployees = getRecentEmployees($conn);
     <title>Dashboard</title>
     <link rel="stylesheet" href="admin_styles/dashboard.css">
     <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: auto;
+            /* Allow scrolling when content overflows */
+        }
+
+        .main-content {
+            max-height: 100vh;
+            /* Restrict the height to viewport height */
+            overflow-y: auto;
+            /* Enable vertical scrolling */
+        }
+
         /* Add this to your existing CSS or in a <style> tag */
         .recent-employees {
             background-color: #f0f0f0;
@@ -261,7 +277,7 @@ $recentEmployees = getRecentEmployees($conn);
         setInterval(updateTime, 1000);
         updateTime(); // Initial call to set date/time immediately
 
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const calendarContainer = document.getElementById('calendar');
             const date = new Date();
             let currentMonth = date.getMonth();
