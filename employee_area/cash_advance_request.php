@@ -26,7 +26,7 @@ if ($result && mysqli_num_rows($result) > 0) {
   $cashloan_percentage = $row['cashloan_percentage'];
 
   // Calculate monthly salary
-  $monthly_salary = $rate_per_hour * 8 * 22; // 8 hours/day, 22 days/month
+  $monthly_salary = $rate_per_hour * 8 * 11; // 8 hours/day, 22 days/month
 
   // Calculate maximum cash advance
   $maximum_cash_advance = ($monthly_salary * $cashloan_percentage) / 100;

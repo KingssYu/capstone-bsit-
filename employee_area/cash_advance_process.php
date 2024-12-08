@@ -61,7 +61,7 @@ if (isset($_POST['submit_cash_advance'])) {
   $cashloan_percentage = $employee['cashloan_percentage'];
 
   // Monthly salary calculation
-  $monthly_salary = $rate_per_hour * 8 * 22; // Assuming 8 hours/day, 22 days/month
+  $monthly_salary = $rate_per_hour * 8 * 11; // Assuming 8 hours/day, 22 days/month
   $max_cash_advance = ($monthly_salary * $cashloan_percentage) / 100;
 
   // Adjust the maximum cash advance by the cashloan_maximum_month
