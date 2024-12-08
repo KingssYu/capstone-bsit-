@@ -11,16 +11,6 @@
       <div class="tooltip-content" id="tooltipContent">
         <ul id="notificationList">
           <!-- Notifications will be dynamically loaded here -->
-          <li>Notification 1</li>
-          <li>Notification 2</li>
-          <li>Notification 3</li>
-          <li>Notification 4</li>
-          <li>Notification 5</li>
-          <li>Notification 6</li>
-          <li>Notification 7</li>
-          <li>Notification 8</li>
-          <li>Notification 9</li>
-          <li>Notification 10</li>
         </ul>
       </div>
     </div>
@@ -57,10 +47,14 @@
 </div>
 
 <style>
-  .sidenav {
+  li {
+    color: black;
+  }
+
+  /* .sidenav {
     overflow-y: auto;
     scrollbar-width: thin;
-  }
+  } */
 
   .logo img {
     display: block;
@@ -121,24 +115,30 @@
     right: 6rem;
   }
 
+  .sidenav {
+    /* Remove scrolling here */
+    scrollbar-width: thin;
+  }
+
+  .menu {
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+
+
   .tooltip-content {
     display: none;
-    position: absolute;
-    top: 120%;
-    left: 0;
-    /* Ensures alignment within the sidebar */
+    position: fixed;
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 5px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: calc(100% - 20px);
-    /* Keeps content within sidebar width */
-    z-index: 1000;
     padding: 10px;
-    overflow-y: auto;
     max-height: 300px;
-    /* Prevents excessive height for notifications */
+    overflow-y: auto;
+    z-index: 1000;
   }
+
 
   .tooltip-content ul {
     list-style: none;
@@ -155,10 +155,10 @@
     border-bottom: none;
   }
 
-  .notification-button:focus+.tooltip-content,
+  /* .notification-button:focus+.tooltip-content,
   .notification-button:hover+.tooltip-content {
     display: block;
-  }
+  } */
 
   .footer button {
     background-color: #ff4d4d;
