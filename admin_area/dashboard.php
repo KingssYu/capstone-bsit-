@@ -216,7 +216,7 @@ $recentEmployees = getRecentEmployees($conn);
         <div class="stats-container">
             <div class="stats-item total">
                 <h3>Total Employees</h3>
-                <p class="count"><?php echo $present; ?></p>
+                <p class="count"><?php echo $total_employees; ?></p>
             </div>
             <div class="stats-item present">
                 <h3>Present</h3>
@@ -277,7 +277,7 @@ $recentEmployees = getRecentEmployees($conn);
         setInterval(updateTime, 1000);
         updateTime(); // Initial call to set date/time immediately
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const calendarContainer = document.getElementById('calendar');
             const date = new Date();
             let currentMonth = date.getMonth();
